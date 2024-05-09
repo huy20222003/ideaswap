@@ -57,7 +57,7 @@ export const BlogProvider = (prop) => {
         // Bắt đầu upload, set giá trị tiến trình là 0
         setProgressValue(0);
     
-        const response = await blogApi.createCourse(blog, (progressEvent) => {
+        const response = await blogApi.createBlog(blog, (progressEvent) => {
           // Xử lý tiến trình upload ở đây
           const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
           setProgressValue(progress);

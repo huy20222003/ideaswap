@@ -229,18 +229,6 @@ const FormDialogUploadVideo = () => {
               />
             </Box>
             <VideoFormImage formik={formik} />
-            {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
-              <Box sx={{ my: '0.5rem' }}>
-                <LinearProgress variant="determinate" value={progressValue} />
-                <Stack
-                  sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    {progressValue}%
-                  </Typography>
-                </Stack>
-              </Box>
-            )}
             <Box sx={{ mt: '1.5rem' }}>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Course</InputLabel>
@@ -259,6 +247,18 @@ const FormDialogUploadVideo = () => {
                 </Select>
               </FormControl>
             </Box>
+            {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
+              <Box sx={{ my: '0.5rem' }}>
+                <LinearProgress variant="determinate" value={progressValue} />
+                <Stack
+                  sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    {progressValue}%
+                  </Typography>
+                </Stack>
+              </Box>
+            )}
           </Box>
           <Box>
             <Card sx={{ mx: '1rem', width: '15rem' }}>

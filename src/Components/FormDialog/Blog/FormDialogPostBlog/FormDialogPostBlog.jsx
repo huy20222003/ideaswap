@@ -66,6 +66,7 @@ const FormDialogPostBlog = () => {
       try {
         setShowProgress(true);
         const response = await handleCreateBlog(values, setProgressValue);
+        console.log(response);
         if (response.success) {
           setOpenFormDialog(false);
           Swal.fire({
