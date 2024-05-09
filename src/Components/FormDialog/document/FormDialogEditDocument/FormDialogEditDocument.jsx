@@ -1,0 +1,253 @@
+import { forwardRef, useRef, useState, useEffect } from 'react';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Slide,
+  Button,
+  Stack,
+  Divider,
+  Typography,
+  TextField,
+  LinearProgress,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadIcon from '@mui/icons-material/Upload';
+import axios from 'axios'; // Import Axios
+import Swal from 'sweetalert2';
+import { useDocument, useAuth } from '../../../../hooks/context';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import DocumentFormImage from './DocumentFormImage';
+import Cookies from 'js-cookie'
+
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const FormDialogEditDocument = () => {
+  const { documentState: {document}, openFormDialogEditDocument, setOpenFormDialogEditDocument, handleGetAllDocuments } = useDocument();
+  const {
+    authState: { user },
+  } = useAuth();
+
+  const handleClose = () => {
+    setOpenFormDialogEditDocument(false);
+  };
+
+  const fileInput = useRef(null);
+  const [selectedFileName, setSelectedFileName] = useState('');
+  const [progressValue, setProgressValue] = useState(0);
+  const [showProgress, setShowProgress] = useState(false);
+
+
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+      description: '',
+      file: null,
+      userID: user?._id,
+      imageBase64: ''
+    },
+    validationSchema: yup.object({
+      title: yup.string().required('Title is required').max(100, 'The maximum number of characters is 100'),
+      description: yup.string().required('Description is required').max(5000, 'The maximum number of characters is 5000'),
+      file: yup.mixed().required('File is required'),
+      userID: yup.string().required('User ID is required'),
+    }),
+    onSubmit: async (values) => {
+      try {
+        setShowProgress(true);
+        const formData = new FormData();
+        formData.append('file', values.file);
+        formData.append('title', values.title);
+        formData.append('description', values.description);
+        formData.append('userID', values.userID);
+        formData.append('imageBase64', values?.imageBase64);
+
+        // Sử dụng Axios để gửi dữ liệu form data
+        const response = await axios.put(`http://localhost:3000/api/v1/document/update/${document?._id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${Cookies.get('user')}`, // Sử dụng token từ cookie
+          },
+          onUploadProgress: (progressEvent) => {
+            // Tính toán và cập nhật giá trị tiến trình
+            const { loaded, total } = progressEvent;
+            const progress = Math.round((loaded * 100) / total);
+            setProgressValue(progress);
+          },
+        });       
+        
+        if (response.data.success) {
+          setOpenFormDialogEditDocument(false);
+          Swal.fire({
+            title: 'Update document successful!',
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+          });
+          handleGetAllDocuments();
+        } else {
+          Swal.fire({
+            title: 'Update document failed!',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+          });
+        }
+      } catch (error) {
+        setOpenFormDialogEditDocument(false);
+        Swal.fire({
+          title: 'Server Error',
+          icon: 'error',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+        });
+      } finally {
+        formik.setFieldValue('file', null);
+        setShowProgress(false); // Ẩn thanh tiến trình và label phần trăm sau khi quá trình xử lý hoàn tất
+      }
+    },
+  });
+
+  const handleFileSelect = (event) => {
+    const selectedFile = event.target.files[0];
+    formik.setFieldValue('file', selectedFile);
+    setSelectedFileName(selectedFile.name);
+  };
+
+  useEffect(() => {
+    if (document) {
+      formik.setValues({
+        title: document.title || '',
+        description: document.description || '',
+        imageBase64: document.imageUrl || '',
+        userID: document.userID || '',
+      });
+    }
+  }, [document]);
+
+  return (
+    <Dialog
+      open={openFormDialogEditDocument}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+      keepMounted
+    >
+      <form
+        onSubmit={formik.handleSubmit}
+        encType="multipart/form-data"
+        method="POST"
+      >
+        <Stack
+          sx={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <DialogTitle>Edit Document</DialogTitle>
+          <CloseIcon
+            onClick={handleClose}
+            sx={{ cursor: 'pointer', mr: '1rem' }}
+          />
+        </Stack>
+        <Divider />
+        <DialogContent>
+          <Box sx={{ mb: '1rem' }}>
+            <TextField
+              variant="outlined"
+              label="Title"
+              id="title"
+              name="title"
+              fullWidth
+              multiline
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.title}
+              error={formik.touched.title && Boolean(formik.errors.title)}
+              helperText={formik.touched.title && formik.errors.title}
+            />
+            <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.title.length}/100</Stack>
+          </Box>
+          <Box sx={{ mb: '1rem' }}>
+            <TextField
+              variant="outlined"
+              label="Description"
+              id="description"
+              name="description"
+              fullWidth
+              multiline
+              rows={3}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.description}
+              error={
+                formik.touched.description &&
+                Boolean(formik.errors.description)
+              }
+              helperText={
+                formik.touched.description && formik.errors.description
+              }
+            />
+            <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.description.length}/5000</Stack>
+          </Box>
+          <input
+            type="file"
+            name="file"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+            ref={fileInput}
+          />
+          <Button
+            type="button"
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => fileInput.current.click()}
+          >
+            Select File
+          </Button>
+          {selectedFileName && (
+            <Typography variant="body1" sx={{mb: '1rem'}}>
+              Selected File: {selectedFileName}
+            </Typography>
+          )}
+          <DocumentFormImage formik={formik}/>
+          {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
+            <Box sx={{ my: '0.5rem' }}>
+              <LinearProgress variant="determinate" value={progressValue} />
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <Typography variant="body2" color="text.secondary">
+                  {progressValue}%
+                </Typography>
+              </Stack>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            type="button"
+            variant="outlined"
+            sx={{ px: '1rem', mx: '0.5rem' }}
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            startIcon={<UploadIcon />}
+            sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
+          >
+            Edit
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
+};
+
+export default FormDialogEditDocument;
