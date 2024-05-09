@@ -165,7 +165,7 @@ const BlogItem = ({ blog }) => {
           />
         }
         action={
-          <IconButton aria-label="settings">
+          <IconButton aria-label="settings" onClick={handleClick}>
             <MoreVertIcon />
           </IconButton>
         }
@@ -285,7 +285,7 @@ const BlogItem = ({ blog }) => {
         </IconButton>
         <IconButton
           aria-label="share"
-          
+          onClick={() => handleOpenFormCommentBlog(_id)}
         >
           <CommentIcon />
         </IconButton>
