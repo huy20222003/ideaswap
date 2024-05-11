@@ -40,7 +40,7 @@ const VideoDescription = ({ video }) => {
     const timer = setInterval(async() => {
       // Tăng số lượng lượt xem sau mỗi khoảng thời gian
       await handleUpdateView(video?._id, { view: video?.view + 1 });
-    }, 180000); // Thời gian cập nhật là 1 giây (1000ms)
+    }, 60000); // Thời gian cập nhật là 1 giây (1000ms)
 
     // Xóa bộ đếm khi component unmount
     return () => clearInterval(timer);
