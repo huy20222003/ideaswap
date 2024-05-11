@@ -9,12 +9,19 @@ import FooterMedia from './FooterMedia';
 
 const Footer = () => {
   return (
-    <Box sx={{ mt: '4rem', backgroundColor: 'primary.main' }}>
+    <Box
+      sx={{
+        mt: '4rem',
+        backgroundColor: 'primary.main',
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+      }}
+    >
       <Divider />
       <Grid container>
-        <Grid item xs={3} md={3} sm={12}>
-          
-        </Grid>
+        <Grid item xs={3} md={3} sm={12}></Grid>
         <Grid item xs={3} md={3} sm={12}>
           <FooterInfo />
         </Grid>
@@ -26,7 +33,7 @@ const Footer = () => {
         </Grid>
       </Grid>
       <Divider sx={{ my: '1rem' }} />
-      <Box sx={{my: '1rem'}}>
+      <Box sx={{ my: '1rem' }}>
         <FooterMedia />
       </Box>
     </Box>
