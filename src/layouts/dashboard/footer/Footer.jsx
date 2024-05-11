@@ -13,10 +13,6 @@ const Footer = () => {
       sx={{
         mt: '4rem',
         backgroundColor: 'primary.main',
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
       }}
     >
       <Divider />
