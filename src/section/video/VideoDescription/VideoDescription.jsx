@@ -215,7 +215,7 @@ const VideoDescription = ({ video }) => {
         </Typography>
       </Stack>
       <Typography variant="body2">
-        {truncatedDescription}
+        {expanded ? video?.description : truncatedDescription}
         {video?.description.length > 200 && (
           <Typography
             variant="body2"
