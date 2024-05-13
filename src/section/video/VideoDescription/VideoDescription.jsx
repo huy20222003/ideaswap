@@ -1,11 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 //mui
 import { Box, Typography, Stack, Avatar, Button } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FlagIcon from '@mui/icons-material/Flag';
 //context
-import { useUser, useFollow, useVideo, useAuth, useHeart } from '../../../hooks/context';
+import {
+  useUser,
+  useFollow,
+  useVideo,
+  useAuth,
+  useHeart,
+} from '../../../hooks/context';
 //utils
 import { fDateTime } from '../../../utils/formatTime';
 //prop-types
@@ -22,7 +28,12 @@ const VideoDescription = ({ video }) => {
     handleGetUserById,
   } = useUser();
 
-  const {heartState: {hearts}, handleGetAllHearts} = useHeart();
+  const {
+    heartState: { hearts },
+    handleGetAllHearts,
+  } = useHeart();
+  const [expanded, setExpanded] = useState(false);
+  const toggleExpand = () => setExpanded(!expanded);
 
   const {
     followState: { follows },
@@ -37,7 +48,7 @@ const VideoDescription = ({ video }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setInterval(async() => {
+    const timer = setInterval(async () => {
       // Tăng số lượng lượt xem sau mỗi khoảng thời gian
       await handleUpdateView(video?._id, { view: video?.view + 1 });
     }, 60000); // Thời gian cập nhật là 1 giây (1000ms)
@@ -50,7 +61,12 @@ const VideoDescription = ({ video }) => {
     video?.userID && handleGetUserById(video?.userID);
     handleGetAllFollows();
     handleGetAllHearts();
-  }, [handleGetUserById, video?.userID, handleGetAllFollows, handleGetAllHearts]);
+  }, [
+    handleGetUserById,
+    video?.userID,
+    handleGetAllFollows,
+    handleGetAllHearts,
+  ]);
 
   const followFind = follows.find(
     (follow) =>
@@ -62,7 +78,7 @@ const VideoDescription = ({ video }) => {
     (follow) => follow?.userID === video?.userID
   );
 
-  const heartsFilter = hearts.filter((heart)=>heart?.bvID === video?._id);
+  const heartsFilter = hearts.filter((heart) => heart?.bvID === video?._id);
 
   const truncatedDescription =
     video?.description && video?.description.length > 200
@@ -198,7 +214,19 @@ const VideoDescription = ({ video }) => {
           {fDateTime(video?.createdAt)}
         </Typography>
       </Stack>
-      <Typography variant="body2">{truncatedDescription}</Typography>
+      <Typography variant="body2">
+        {truncatedDescription}
+        {video?.description.length > 200 && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            onClick={toggleExpand}
+            sx={{ cursor: 'pointer' }}
+          >
+            {expanded ? 'Short' : 'Show more'}
+          </Typography>
+        )}
+      </Typography>
     </Box>
   );
 };
