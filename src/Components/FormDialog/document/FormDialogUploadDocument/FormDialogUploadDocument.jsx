@@ -79,7 +79,7 @@ const FormDialogUploadDocument = () => {
 
         // Sử dụng Axios để gửi dữ liệu form data
         const response = await axios.post(
-          'http://localhost:3000/api/v1/document/add',
+          'https://ideaswap-server.onrender.com/api/v1/document/add',
           formData,
           {
             headers: {
