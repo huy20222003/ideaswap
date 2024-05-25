@@ -25,14 +25,15 @@ import HTMLReactParser from 'html-react-parser';
 
 const VideoDescription = ({ video }) => {
   const {
-    userState: { user },
-    handleGetUserById,
+    userState: { users },
+    handleGetAllUsers,
   } = useUser();
 
   const {
     heartState: { hearts },
     handleGetAllHearts,
   } = useHeart();
+
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
 
@@ -48,26 +49,31 @@ const VideoDescription = ({ video }) => {
   const { handleUpdateView } = useVideo();
   const navigate = useNavigate();
 
+  // State to track the view count
+  const [viewCount, setViewCount] = useState(video?.view || 0);
+
   useEffect(() => {
     const timer = setInterval(async () => {
-      // Tăng số lượng lượt xem sau mỗi khoảng thời gian
-      await handleUpdateView(video?._id, { view: video?.view + 1 });
-    }, 60000); // Thời gian cập nhật là 1 phút (60000ms)
+      // Check if viewCount is not null before updating
+      if (viewCount !== null) {
+        const response = await handleUpdateView(video?._id, {
+          view: viewCount + 1,
+        });
+        if (response.success) {
+          setViewCount((prevViewCount) => prevViewCount + 1); // Update state
+        }
+      }
+    }, 180000); // Thời gian cập nhật là 5 giây (5000ms)
 
     // Xóa bộ đếm khi component unmount
     return () => clearInterval(timer);
-  }, [handleUpdateView, video?._id, video?.view]); // useEffect sẽ chạy lại mỗi khi viewCount thay đổi
+  }, [handleUpdateView, video?._id, viewCount]); // useEffect sẽ chạy lại mỗi khi viewCount thay đổi
 
   useEffect(() => {
-    video?.userID && handleGetUserById(video?.userID);
+    handleGetAllUsers();
     handleGetAllFollows();
     handleGetAllHearts();
-  }, [
-    handleGetUserById,
-    video?.userID,
-    handleGetAllFollows,
-    handleGetAllHearts,
-  ]);
+  }, [handleGetAllFollows, handleGetAllHearts, handleGetAllUsers]);
 
   const followFind = follows.find(
     (follow) =>
@@ -81,7 +87,14 @@ const VideoDescription = ({ video }) => {
 
   const heartsFilter = hearts.filter((heart) => heart?.bvID === video?._id);
 
-  const truncatedDescription = expanded ? video?.description : `${video?.description.slice(0, 200)}...`;
+  const truncatedDescription = expanded
+    ? video?.description
+    : `${video?.description.slice(0, 200)}...`;
+
+  const newVideo = {
+    ...video,
+    user: users.find((user) => user?._id === video?.userID),
+  };
 
   const handleAddFollow = async () => {
     try {
@@ -131,18 +144,26 @@ const VideoDescription = ({ video }) => {
       <Stack
         sx={{
           justifyContent: 'space-between',
-          flexDirection: 'row',
+          flexDirection: { xs: 'column', sm: 'column', md: 'row', xl: 'row' },
           mt: '1rem',
         }}
       >
-        <Stack sx={{ flexDirection: 'row' }}>
-          <Avatar alt={user?.firstName + user?.lastName} src={user?.avatar} />
+        <Stack
+          sx={{
+            flexDirection: 'row',
+            justifyContent: { xs: 'space-between', sm: 'space-between' },
+          }}
+        >
+          <Avatar
+            alt={newVideo?.user?.firstName + newVideo?.user?.lastName}
+            src={newVideo?.user?.avatar}
+          />
           <Stack
             sx={{ ml: '0.5rem', alignItems: 'center', cursor: 'pointer' }}
-            onClick={() => handleNavigate(user?._id)}
+            onClick={() => handleNavigate(newVideo?.user?._id)}
           >
             <Typography variant="subtitle1">
-              {user?.firstName + user?.lastName}
+              {newVideo?.user?.firstName + newVideo?.user?.lastName}
             </Typography>
             <Typography variant="body2">
               {fShortenNumber(followsFilter?.length)}
@@ -179,7 +200,14 @@ const VideoDescription = ({ video }) => {
             </Button>
           )}
         </Stack>
-        <Stack sx={{ flexDirection: 'row', gap: '0.5rem' }}>
+        <Stack
+          sx={{
+            flexDirection: 'row',
+            gap: '0.5rem',
+            justifyContent: { xs: 'space-between', sm: 'space-between' },
+            mt: { xs: '1rem', sm: '1rem' },
+          }}
+        >
           <Button
             sx={{
               borderRadius: '2rem',
@@ -213,18 +241,18 @@ const VideoDescription = ({ video }) => {
         </Typography>
       </Stack>
       <Typography variant="body2" color="text.primary">
-          {HTMLReactParser(truncatedDescription)}
-          {video?.description.length > 50 && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              onClick={toggleExpand}
-              sx={{ cursor: 'pointer', display: 'inline' }}
-            >
-              {expanded ? ' Show less' : '... Show more'}
-            </Typography>
-          )}
-        </Typography>
+        {HTMLReactParser(truncatedDescription)}
+        {video?.description.length > 50 && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            onClick={toggleExpand}
+            sx={{ cursor: 'pointer', display: 'inline' }}
+          >
+            {expanded ? ' Show less' : '... Show more'}
+          </Typography>
+        )}
+      </Typography>
     </Box>
   );
 };

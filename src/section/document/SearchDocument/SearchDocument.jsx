@@ -14,7 +14,9 @@ import { useDocument, useAuth } from '../../../hooks/context';
 const SearchDocument = () => {
   const { handleSearchDocuments } = useDocument();
   const [searchTerm, setSearchTerm] = useState('');
-  const {authState: {user}} = useAuth();
+  const {
+    authState: { user },
+  } = useAuth();
 
   const handleSearch = useCallback(async () => {
     try {
@@ -49,12 +51,15 @@ const SearchDocument = () => {
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box sx={{ width: '38rem' }}>
+          <Box>
             <TextField
               variant="outlined"
               fullWidth
               size="small"
-              sx={{ bgcolor: 'white', borderRadius: '0.5rem' }}
+              sx={{
+                bgcolor: 'white',
+                borderRadius: '0.5rem',
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

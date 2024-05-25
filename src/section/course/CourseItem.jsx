@@ -26,16 +26,24 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
     title && title.length > 20 ? `${title.slice(0, 20)}...` : title;
 
   const navigate = useNavigate();
-  const {videoState: {videos}, handleGetAllVideo} = useVideo();
-  const { censorshipsState: {censorships}, handleGetAllCensorships } = useCensorships();
-  const {handleUpdateView} = useCourse();
+  const {
+    videoState: { videos },
+    handleGetAllVideo,
+  } = useVideo();
+  const {
+    censorshipsState: { censorships },
+    handleGetAllCensorships,
+  } = useCensorships();
+  const { handleUpdateView } = useCourse();
 
-  useEffect(()=>{
+  useEffect(() => {
     handleGetAllVideo();
     handleGetAllCensorships();
   }, [handleGetAllCensorships, handleGetAllVideo]);
 
-  const videoFilterByCourseId = videos.filter((video)=> video?.courseID === _id);
+  const videoFilterByCourseId = videos.filter(
+    (video) => video?.courseID === _id
+  );
 
   const videosWithStatus = videoFilterByCourseId.map((video) => {
     const censorshipItem = censorships.find(
@@ -49,13 +57,13 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
   });
 
   const handleNavigateToVideoPage = async () => {
-    if(videoFilterByCourseId.length !== 0) {
+    if (videoFilterByCourseId.length !== 0) {
       await handleUpdateView(_id, { view: view + 1 });
       navigate(`/course/${_id}?videoId=${videosWithStatus[0]?._id}`);
     } else {
       Swal.fire({
         text: 'This course does not have any videos yet. Please wait',
-        icon: 'warning'
+        icon: 'warning',
       });
     }
   };
@@ -65,7 +73,13 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
       sx={{
         m: '1rem 1rem 1rem 0',
         p: '0.5rem',
-        width: '14rem',
+        width: {
+          xs: '24rem',
+          sm: '24rem',
+          md: '14rem',
+          xl: '14rem',
+          lg: '14rem',
+        },
         height: '19rem',
         cursor: 'pointer',
       }}

@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 //context
 import { useUser, useRole, useAuth } from '../../../../hooks/context';
 //utils
-import { fDateTime } from '../../../../utils/formatTime';
+import { fToNow } from '../../../../utils/formatTime';
 //-------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -82,7 +82,7 @@ const FormDialogCommentItem = ({ comment }) => {
                 </LightTooltip>
               )}
               <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {fDateTime(comment?.createdAt)}
+                {fToNow(comment?.createdAt)}
               </Typography>
             </Stack>
             <Typography variant="body2">

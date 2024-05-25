@@ -24,7 +24,7 @@ import PostTab from './PostTab';
 import FollowingTab from './FollowingTab';
 import VideoTab from './VideoTab';
 //context
-import { useUser } from '../../hooks/context';
+import { useUser, useAuth } from '../../hooks/context';
 //---------------------------------------------------
 
 const AccountActionTabs = () => {
@@ -33,6 +33,8 @@ const AccountActionTabs = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const { authState } = useAuth();
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -46,10 +48,9 @@ const AccountActionTabs = () => {
     _id && handleGetUserById(_id);
   }, [_id, handleGetUserById]);
 
-
-  const handleNavigate = ()=> {
+  const handleNavigate = () => {
     navigate('/setting/profile');
-  }
+  };
 
   return (
     <Card>
@@ -95,17 +96,26 @@ const AccountActionTabs = () => {
               </Stack>
             </Stack>
           </Stack>
-          <Stack sx={{ justifyContent: 'flex-start' }}>
-            <Button
-              variant="contained"
-              size="medium"
-              startIcon={<EditIcon sx={{ color: '#fff' }} />}
-              sx={{ color: '#fff', mt: '2rem', mr: '2rem' }}
-              onClick={handleNavigate}
+          {authState?.user?._id === _id ? (
+            <Stack
+              sx={{
+                justifyContent: 'flex-start',
+                display: { xs: 'none', sm: 'none' },
+              }}
             >
-              Update Profile
-            </Button>
-          </Stack>
+              <Button
+                variant="contained"
+                size="medium"
+                startIcon={<EditIcon sx={{ color: '#fff' }} />}
+                sx={{ color: '#fff', mt: '2rem', mr: '2rem' }}
+                onClick={handleNavigate}
+              >
+                Update Profile
+              </Button>
+            </Stack>
+          ) : (
+            ''
+          )}
         </Stack>
         <Box sx={{ width: '100%', typography: 'body1' }}>
           <TabContext value={value}>

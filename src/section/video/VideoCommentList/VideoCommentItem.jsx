@@ -9,7 +9,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 //context
 import { useUser, useRole, useAuth } from '../../../hooks/context';
 //utils
-import { fDateTime } from '../../../utils/formatTime';
+import { fToNow } from '../../../utils/formatTime';
 //-------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -88,7 +88,7 @@ const VideoCommentItem = ({ comment }) => {
                 </LightTooltip>
               )}
               <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {fDateTime(comment?.createdAt)}
+                {fToNow(comment?.createdAt)}
               </Typography>
             </Stack>
 

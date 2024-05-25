@@ -20,8 +20,8 @@ export default function NavSection({ data = [], isOpen, ...other }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: { xs: 'center', md: 'flex-start' },
-          m: { xs: '0 2rem', md: '0 8rem' },
-          flexDirection: { xs: 'column', md: 'row' },
+          m: { md: '0 8rem' },
+          flexDirection: 'row',
         }}
       >
         {data.map((item, index) => (

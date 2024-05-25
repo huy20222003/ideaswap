@@ -1,19 +1,14 @@
 import { Box, Grid } from '@mui/material';
-import { useState, useEffect } from 'react'; // Import useState và useEffect
-//component
+import { useState, useEffect } from 'react';
 import Searchbar from './Searchbar';
 import Navigation from './nav';
 import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 import AccountPopover from './AccountPopover';
 
-//--------------------------------------------------------------------
-
 const Header = () => {
-  // State để lưu trạng thái của cuộn trang
   const [scrollPosition, setScrollPosition] = useState(0);
 
-  // Lắng nghe sự kiện cuộn trang và cập nhật scrollPosition
   useEffect(() => {
     const handleScroll = () => {
       const position = window.pageYOffset;
@@ -21,7 +16,6 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Xoá sự kiện lắng nghe khi component unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -38,19 +32,19 @@ const Header = () => {
         left: 0,
         right: 0,
         width: '100%',
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Thêm boxShadow
-        transition: 'opacity 0.3s ease', // Thêm transition
-        opacity: scrollPosition > 200 ? 0.9 : 1, // Thay đổi opacity dựa trên scrollPosition
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+        transition: 'opacity 0.3s ease',
+        opacity: scrollPosition > 200 ? 0.9 : 1,
       }}
     >
-      <Grid container>
-        <Grid item xl={3}>
+      <Grid container alignItems="center">
+        <Grid item xs={0} md={3} display={{ xs: 'none', md: 'block' }}>
           <Searchbar />
         </Grid>
-        <Grid item xl={6}>
+        <Grid item xl={6} md={6} xs={12}>
           <Navigation />
         </Grid>
-        <Grid item xl={3}>
+        <Grid item xs={12} md={3}>
           <Box
             sx={{
               display: 'flex',
@@ -59,7 +53,8 @@ const Header = () => {
               height: '4rem',
             }}
           >
-            <Box sx={{ m: '0 1rem 0 1rem' }}>
+            {/* LanguagePopover sẽ không hiển thị trên màn hình nhỏ (xs) */}
+            <Box sx={{ m: '0 1rem 0 1rem' }} display={{ xs: 'none', md: 'block' }}>
               <LanguagePopover />
             </Box>
             <Box sx={{ m: '0 1rem 0 1rem' }}>

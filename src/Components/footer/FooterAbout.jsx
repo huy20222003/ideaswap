@@ -6,7 +6,7 @@ import { Stack, Box, Typography } from "@mui/material";
 
 const FooterAbout = ()=> {
     return (
-        <Stack>
+        <Stack sx={{alignItems: {xs: 'center', sm: 'center'}}}>
             <Box sx={{my: '1.2rem'}}>
                 <Typography sx={{fontSize: '1rem', fontWeight: 700, color: 'white'}}>About IdeaSwap </Typography>
             </Box>

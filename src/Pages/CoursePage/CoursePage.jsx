@@ -81,7 +81,12 @@ const CoursePage = () => {
         <CourseTop courseTopFilter={courseTop} />
       </Box>
       <Box>
-        <Courses courses={courses.filter((course) => !courseNew.includes(course) && !courseTop.includes(course))} />
+        <Courses
+          courses={courses.filter(
+            (course) =>
+              !courseNew.includes(course) && !courseTop.includes(course)
+          )}
+        />
       </Box>
     </Container>
   );

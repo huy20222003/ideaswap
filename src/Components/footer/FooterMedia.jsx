@@ -12,12 +12,12 @@ const FooterMedia = () => {
   return (
     <Stack
       sx={{
-        flexDirection: 'row',
+        flexDirection: {xs: 'column', sm: 'column'},
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
-      <Box sx={{mx: '5rem'}}>
+      <Box sx={{mx: '4rem'}}>
         <Typography sx={{ fontSize: '0.8rem', color: 'white' }}>
           © 2024 - Ecosystem IdeaSwap, All rights reserved
         </Typography>

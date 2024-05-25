@@ -24,7 +24,19 @@ const CourseTop = ({ courseTopFilter }) => {
       ) : (
         ''
       )}
-      <Grid container>
+      <Grid
+        container
+        sx={{
+          flexDirection: {
+            xs: 'column',
+            sm: 'column',
+            md: 'row',
+            xl: 'row',
+            lg: 'row',
+          },
+          alignItems: { xs: 'center', sm: 'center' },
+        }}
+      >
         {courseTopFilter.map((course) => (
           <Grid key={course._id} item xl={4} md={6} sm={12} xs={12}>
             <CourseItem

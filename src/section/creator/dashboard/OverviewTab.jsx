@@ -113,7 +113,7 @@ const OverviewTab = () => {
     <Box>
       <Grid container>
         <Grid item md={8}>
-          <Card sx={{ mx: '0.5rem' }}>
+          <Card sx={{ m: '1rem' }}>
             <CardContent>
               <Chart
                 options={options}

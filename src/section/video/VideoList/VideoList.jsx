@@ -1,34 +1,24 @@
-//react
 import { useEffect, useState } from 'react';
-
-//mui
-import { Box, Typography } from '@mui/material';
-//component
+import { Box, Drawer, List, IconButton, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import VideoListItem from './VideoListItem';
-//context
 import { useVideo, useCensorships } from '../../../hooks/context';
-//---------------------------------------
 
 const VideoList = () => {
   const {
     videoState: { videos },
     handleGetAllVideo,
   } = useVideo();
-  const [courseId, setCourseId] = useState('');
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
+  const [courseId, setCourseId] = useState('');
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+
   useEffect(() => {
-    // Lấy đường dẫn URL hiện tại
     const currentPath = window.location.pathname;
-
-    // Chia nhỏ đường dẫn URL thành các phần bằng dấu '/'
     const pathParts = currentPath.split('/');
-
-    // Lấy phần tử thứ 2 từ mảng phân chia
     const courseIdFromPath = pathParts[2];
-
-    // Thiết lập state cho courseId
     setCourseId(courseIdFromPath);
-  }, []); // Chỉ chạy một lần khi component được tạo
+  }, []);
 
   useEffect(() => {
     handleGetAllVideo();
@@ -42,22 +32,91 @@ const VideoList = () => {
       (item) => item?.contentID === video?._id
     );
     const status = censorshipItem ? censorshipItem.status : 'pending';
-    return {
-      ...video,
-      status,
-    };
+    return { ...video, status };
   });
 
-  const videoApproveds = videosWithStatus.filter((video)=>video.status === 'approved');
+  const videoApproveds = videosWithStatus.filter(
+    (video) => video.status === 'approved'
+  );
+
+  const toggleDrawer = () => {
+    setIsOpenDrawer(!isOpenDrawer);
+  };
 
   return (
-    <Box sx={{ mt: '5rem', ml: '1rem' }}>
-      <Box>
+    <Box sx={{ mt: '5rem', ml: '1rem', position: 'relative' }}>
+      <IconButton
+        sx={{
+          position: 'fixed',
+          bottom: '1rem',
+          right: '1rem', // Đặt vị trí ở bên phải dưới
+          zIndex: 999,
+          display: {
+            xs: 'block',
+            sm: 'block',
+            md: 'none',
+            xl: 'none',
+            lg: 'none',
+          },
+          bgcolor: 'primary.main', // Màu nền
+          color: 'white', // Màu chữ
+          width: '3rem',
+          height: '3rem',
+          borderRadius: '50%', // Bo tròn
+          boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.2)', // Đổ bóng
+        }}
+        onClick={toggleDrawer}
+      >
+        <AddIcon sx={{ fontSize: '2rem' }} />
+      </IconButton>
+      <Drawer
+        anchor="bottom"
+        open={isOpenDrawer}
+        onClose={toggleDrawer}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: '100%',
+            maxWidth: '360px',
+          },
+        }}
+      >
+        <Box sx={{ p: '0.5rem' }}>
+          <Typography variant="subtitle1">Course video</Typography>
+        </Box>
+        <List>
+          {videoApproveds.map((video) => (
+            <>
+              <VideoListItem key={video._id} video={video} />
+            </>
+          ))}
+        </List>
+      </Drawer>
+      <Box
+        sx={{
+          display: {
+            xs: 'none',
+            sm: 'none',
+            md: 'block',
+            xl: 'block',
+            lg: 'block',
+          },
+        }}
+      >
         <Typography variant="subtitle1" sx={{ color: 'gray' }}>
           Course video
         </Typography>
       </Box>
-      <Box>
+      <Box
+        sx={{
+          display: {
+            xs: 'none',
+            sm: 'none',
+            md: 'block',
+            xl: 'block',
+            lg: 'block',
+          },
+        }}
+      >
         {videoApproveds.map((video) => (
           <VideoListItem key={video._id} video={video} />
         ))}

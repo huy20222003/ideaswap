@@ -17,14 +17,14 @@ const Footer = () => {
     >
       <Divider />
       <Grid container>
-        <Grid item xs={3} md={3} sm={12}></Grid>
-        <Grid item xs={3} md={3} sm={12}>
+        <Grid item xs={12} md={3} xl={3} lg={3} sm={12}></Grid>
+        <Grid item xs={12} md={3} xl={3} lg={3} sm={12}>
           <FooterInfo />
         </Grid>
-        <Grid item xs={3} md={3} sm={12}>
+        <Grid item xs={12} md={3} xl={3} lg={3} sm={12}>
           <FooterAbout />
         </Grid>
-        <Grid item xs={3} md={3} sm={12}>
+        <Grid item xs={12} md={3} xl={3} lg={3} sm={12}>
           <FooterEco />
         </Grid>
       </Grid>

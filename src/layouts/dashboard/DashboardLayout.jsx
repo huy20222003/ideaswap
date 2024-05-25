@@ -16,14 +16,49 @@ const DashboardLayout = () => {
         <Header />
       </Box>
       <Box>
-        <Grid container>
-          <Grid item xl={3}>
+        <Grid
+          container
+          sx={{
+            flexDirection: {
+              xs: 'column',
+              sm: 'column',
+              md: 'row',
+              xl: 'row',
+              lg: 'row',
+            },
+          }}
+        >
+          <Grid
+            item
+            xl={3}
+            sx={{
+              display: {
+                xs: 'none',
+                sm: 'none',
+                md: 'none',
+                xl: 'block',
+                lg: 'block',
+              },
+            }}
+          >
             <Banner />
           </Grid>
           <Grid item xl={6} md={6} xs={12} sm={12}>
             <Outlet />
           </Grid>
-          <Grid item xl={3}>
+          <Grid
+            item
+            xl={3}
+            sx={{
+              display: {
+                xs: 'none',
+                sm: 'none',
+                md: 'block',
+                xl: 'block',
+                lg: 'block',
+              },
+            }}
+          >
             <VideoHot />
           </Grid>
         </Grid>

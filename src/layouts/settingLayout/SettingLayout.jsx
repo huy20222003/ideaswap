@@ -18,7 +18,7 @@ const SettingLayout = () => {
         <Card sx={{mt: '5rem'}}>
           <Grid container>
             <Grid item xs={12} sm={12} md={3} xl={3}>
-              <Box sx={{minHeight: '100vh'}}>
+              <Box>
                 <List component="nav">
                   <ListItemSetting />
                 </List>

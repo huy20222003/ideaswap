@@ -37,7 +37,7 @@ const VideoHot = () => {
 
   return (
     <Box sx={{ mt: '5rem' }}>
-      <Box>
+      <Box sx={{ ml: { xs: '2rem', sm: '2rem' } }}>
         <Typography variant="subtitle1">Top video</Typography>
       </Box>
       <Box>

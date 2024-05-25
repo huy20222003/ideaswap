@@ -18,7 +18,7 @@ const VideoListItem = (props) => {
   }
 
   const truncatedTitle =
-    title && title.length > 40 ? `${title.slice(0, 40)}...` : title;
+    title && title.length > 30 ? `${title.slice(0, 30)}...` : title;
 
 
   return (
@@ -38,6 +38,7 @@ const VideoListItem = (props) => {
         sx={{
           width: '5rem',
           height: '3rem',
+          p: '0.25rem',
           borderRadius: '0.4rem',
           objectFit: 'contain'
         }}

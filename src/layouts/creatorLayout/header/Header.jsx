@@ -53,12 +53,14 @@ const Header = () => {
             m: '0 0.5rem',
             fontSize: '1rem',
           }}
+          display={{ xs: 'none', md: 'block' }}
         >
           Idea Swap
         </Box>
-        <Box>
+        <Box display={{ xs: 'none', md: 'block' }}>
           <Searchbar />
         </Box>
+        <Box></Box>
         <Box>
           <Box
             sx={{
@@ -68,7 +70,10 @@ const Header = () => {
               height: '4rem',
             }}
           >
-            <Box sx={{ m: '0 1rem 0 1rem' }}>
+            <Box
+              sx={{ m: '0 1rem 0 1rem' }}
+              display={{ xs: 'none', md: 'block' }}
+            >
               <LanguagePopover />
             </Box>
             <Box sx={{ m: '0 1rem 0 1rem' }}>

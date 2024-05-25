@@ -44,7 +44,17 @@ const DonateAbout = () => {
           </Box>
         </Box>
         <Divider orientation="vertical" flexItem />
-        <Box>
+        <Box
+          sx={{
+            display: {
+              xs: 'none',
+              sm: 'none',
+              md: 'block',
+              xl: 'block',
+              lg: 'block',
+            },
+          }}
+        >
           <Box
             component={'img'}
             sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}
@@ -74,7 +84,7 @@ const DonateAbout = () => {
               color="text.secondary"
               sx={{ color: 'white', p: '0.5rem' }}
             >
-                IdeaSwap Ecosystem
+              IdeaSwap Ecosystem
             </Typography>
           </Box>
           <Box sx={{ ml: '2rem' }}>
@@ -84,7 +94,17 @@ const DonateAbout = () => {
           </Box>
         </Box>
         <Divider orientation="vertical" flexItem />
-        <Box>
+        <Box
+          sx={{
+            display: {
+              xs: 'none',
+              sm: 'none',
+              md: 'block',
+              xl: 'block',
+              lg: 'block',
+            },
+          }}
+        >
           <Box
             component={'img'}
             sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}

@@ -96,10 +96,23 @@ const FollowingTab = () => {
     <Box>
       <Stack
         sx={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: {
+            xs: 'column-reverse',
+            sm: 'column-reverse',
+            md: 'row',
+            xl: 'row',
+            lg: 'row',
+          },
           justifyContent: 'space-between',
-          my: '0.5rem',
+          alignItems: {
+            xs: 'flex-start',
+            sm: 'flex-start',
+            md: 'center',
+            xl: 'center',
+            lg: 'center',
+          },
+          my: '1rem',
+          gap: { xs: '1rem', sm: '1rem' },
         }}
       >
         <Typography variant="subtitle2" sx={{ color: 'primary.main' }}>
