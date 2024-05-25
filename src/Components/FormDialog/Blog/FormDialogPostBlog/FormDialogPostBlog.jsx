@@ -12,14 +12,13 @@ import {
   Stack,
   Divider,
   Typography,
-  TextField,
   Avatar,
   LinearProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/Upload';
 //context
-import { useCommon, useAuth, useBlog } from '../../../../hooks/context';
+import { useCommon, useAuth, useBlog, useNotification } from '../../../../hooks/context';
 //component
 import BlogFormImage from './BlogFormImage';
 //fomik
@@ -29,6 +28,10 @@ import * as yup from 'yup';
 //sweetalert
 import Swal from 'sweetalert2';
 import { fDateTime } from '../../../../utils/formatTime';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
 //------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -41,6 +44,7 @@ const FormDialogPostBlog = () => {
     authState: { user },
   } = useAuth();
   const { handleCreateBlog } = useBlog();
+  const {handleGetAllNotifications} = useNotification();
 
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
@@ -76,6 +80,7 @@ const FormDialogPostBlog = () => {
             showCancelButton: true,
             confirmButtonText: 'OK',
           });
+          handleGetAllNotifications();
         } else {
           Swal.fire({
             title: 'Create Blog failed!',
@@ -134,22 +139,24 @@ const FormDialogPostBlog = () => {
           </Stack>
         </Box>
         <Box sx={{ mb: '1.5rem' }}>
-          <TextField
-            variant="outlined"
-            label="Content"
-            id="content"
-            name="content"
-            fullWidth
-            multiline
-            rows={5}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.content}
-            error={formik.touched.content && Boolean(formik.errors.content)}
-            helperText={formik.touched.content && formik.errors.content}
+          <CKEditor
+            editor={ClassicEditor}
+            data={formik.values.content}
+            config={editorConfig}
+            onReady={(editor) => {
+              console.log('Editor is ready to use!', editor);
+            }}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              formik.setFieldValue('content', data);
+            }}
           />
+          {formik.touched.content && formik.errors.content && (
+            <span style={{ color: 'red' }}>{formik.errors.content}</span>
+          )}
+
           <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            {formik.values.description?.length}/5000
+            {formik.values.content?.length}/5000
           </Stack>
         </Box>
         <BlogFormImage formik={formik} />

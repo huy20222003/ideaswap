@@ -20,6 +20,7 @@ import PropTypes from 'prop-types';
 import { fShortenNumber } from '../../../utils/formatNumber';
 //sweetalert2
 import Swal from 'sweetalert2';
+import HTMLReactParser from 'html-react-parser';
 //---------------------------------------------
 
 const VideoDescription = ({ video }) => {
@@ -51,7 +52,7 @@ const VideoDescription = ({ video }) => {
     const timer = setInterval(async () => {
       // Tăng số lượng lượt xem sau mỗi khoảng thời gian
       await handleUpdateView(video?._id, { view: video?.view + 1 });
-    }, 60000); // Thời gian cập nhật là 1 giây (1000ms)
+    }, 60000); // Thời gian cập nhật là 1 phút (60000ms)
 
     // Xóa bộ đếm khi component unmount
     return () => clearInterval(timer);
@@ -80,10 +81,7 @@ const VideoDescription = ({ video }) => {
 
   const heartsFilter = hearts.filter((heart) => heart?.bvID === video?._id);
 
-  const truncatedDescription =
-    video?.description && video?.description.length > 200
-      ? `${video?.description.slice(0, 200)}...`
-      : video?.description;
+  const truncatedDescription = expanded ? video?.description : `${video?.description.slice(0, 200)}...`;
 
   const handleAddFollow = async () => {
     try {
@@ -214,19 +212,19 @@ const VideoDescription = ({ video }) => {
           {fDateTime(video?.createdAt)}
         </Typography>
       </Stack>
-      <Typography variant="body2">
-        {expanded ? video?.description : truncatedDescription}
-        {video?.description.length > 200 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            onClick={toggleExpand}
-            sx={{ cursor: 'pointer' }}
-          >
-            {expanded ? 'Short' : 'Show more'}
-          </Typography>
-        )}
-      </Typography>
+      <Typography variant="body2" color="text.primary">
+          {HTMLReactParser(truncatedDescription)}
+          {video?.description.length > 50 && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              onClick={toggleExpand}
+              sx={{ cursor: 'pointer', display: 'inline' }}
+            >
+              {expanded ? ' Show less' : '... Show more'}
+            </Typography>
+          )}
+        </Typography>
     </Box>
   );
 };

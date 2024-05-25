@@ -21,9 +21,17 @@ const courseApi = {
       onUploadProgress: onUploadProgress, // Bắt sự kiện upload tiến trình
     });
   },
+  updateView: (courseId, data)=> {
+    const url = `/course/update/view/${courseId}`;
+    return axiosConfig.put(url, data);
+},
   deleteCourse: (courseId) => {
     const url = `/course/delete/${courseId}`;
     return axiosConfig.delete(url);
+  },
+  searchCourse: (searchValue) => {
+    const url = `/course/search?q=${searchValue}`;
+    return axiosConfig.get(url);
   },
 };
 

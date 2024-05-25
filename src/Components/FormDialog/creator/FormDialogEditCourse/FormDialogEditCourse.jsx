@@ -26,6 +26,12 @@ import { fShortenNumber } from '../../../../utils/formatNumber';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
+import HTMLReactParser from 'html-react-parser';
+
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -59,15 +65,25 @@ const FormDialogEditCourse = () => {
       userID: user?._id || '', // Ensuring user ID is always available
     },
     validationSchema: yup.object({
-      title: yup.string().required('Title is required').max(100, 'The maximum number of characters is 100'),
-      description: yup.string().required('Description is required').max(5000, 'The maximum number of characters is 5000'),
+      title: yup
+        .string()
+        .required('Title is required')
+        .max(100, 'The maximum number of characters is 100'),
+      description: yup
+        .string()
+        .required('Description is required')
+        .max(5000, 'The maximum number of characters is 5000'),
       imageBase64: yup.string().required('Image URL is required'),
       userID: yup.string().required('User ID is required'),
     }),
     onSubmit: async (values) => {
       try {
         setShowProgress(true);
-        const response = await handleUpdateCourse(course?._id, values, setProgressValue);
+        const response = await handleUpdateCourse(
+          course?._id,
+          values,
+          setProgressValue
+        );
         const successMessage = response.success
           ? 'Update course successful!'
           : 'Update course failed!';
@@ -110,7 +126,7 @@ const FormDialogEditCourse = () => {
       TransitionComponent={Transition}
       keepMounted
       onClose={handleClose}
-      sx={{ width: 'auto', maxWidth: 'xl' }}
+      sx={{ '& .MuiDialog-paper': { width: 'auto', maxWidth: 'none' } }}
     >
       <Stack
         sx={{
@@ -143,29 +159,26 @@ const FormDialogEditCourse = () => {
                 error={formik.touched.title && Boolean(formik.errors.title)}
                 helperText={formik.touched.title && formik.errors.title}
               />
-              <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.title.length}/100</Stack>
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                {formik.values.title.length}/100
+              </Stack>
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <TextField
-                variant="outlined"
-                label="Description"
-                id="description"
-                name="description"
-                fullWidth
-                multiline
-                rows={3}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.description}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+              <CKEditor
+                editor={ClassicEditor}
+                data={formik.values.description}
+                config={editorConfig}
+                onReady={(editor) => {
+                  console.log('Editor is ready to use!', editor);
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  formik.setFieldValue('description', data);
+                }}
               />
-              <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.description.length}/5000</Stack>
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                {formik.values.description.length}/5000
+              </Stack>
             </Box>
             <CourseFormImage formik={formik} />
             {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
@@ -225,7 +238,7 @@ const FormDialogEditCourse = () => {
                     color="text.secondary"
                     sx={{ px: '0.5rem' }}
                   >
-                    {formik.values.description}
+                    {HTMLReactParser(formik.values.description)}
                   </Typography>
                 </Box>
               </CardContent>

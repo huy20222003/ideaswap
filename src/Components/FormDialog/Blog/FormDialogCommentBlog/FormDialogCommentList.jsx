@@ -10,7 +10,6 @@ const FormDialogCommentList = ({
   const childComments = comments.filter(
     (comment) => comment.parentCommentID === parentCommentID
   );
-  console.log(childComments);
 
   return (
     <>

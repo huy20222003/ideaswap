@@ -1,41 +1,87 @@
-import { useEffect } from 'react';
-//mui
-import { Container, Box } from '@mui/material';
-//component
+import { useEffect, useState, useCallback } from 'react';
+import { Container, Box, TextField, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { CourseNew, CourseTop, Courses } from '../../section/course';
 import { useCourse } from '../../hooks/context';
-//------------------------------------------------------------
 
 const CoursePage = () => {
   document.title = 'Course';
   const {
     courseState: { courses },
-    handleGetAllCourses,
+    handleSearchCourses,
   } = useCourse();
 
-  const now = new Date();
-  const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [courseNew, setCourseNew] = useState([]);
+  const [courseTop, setCourseTop] = useState([]);
+
+  const handleSearch = useCallback(async () => {
+    try {
+      await handleSearchCourses(searchTerm);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [searchTerm, handleSearchCourses]);
+
   useEffect(() => {
-    handleGetAllCourses();
-  }, [handleGetAllCourses]);
+    const delayDebounceFn = setTimeout(() => {
+      handleSearch();
+    }, 300);
 
-  const courseNewFilter = courses.filter((course) => {
-    const createdAtDate = new Date(course.createdAt);
-    return createdAtDate >= oneMonthAgo && createdAtDate <= now;
-  });
+    return () => clearTimeout(delayDebounceFn);
+  }, [handleSearch]);
 
-  const courseTopFilter = courses.sort((a, b) => b.view - a.view);
+  useEffect(() => {
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+
+    const courseNewFilter = courses.filter((course) => {
+      const createdAtDate = new Date(course.createdAt);
+      return createdAtDate >= oneMonthAgo && createdAtDate <= now;
+    });
+    setCourseNew(courseNewFilter);
+
+    const courseTopFilter = courses
+      .filter((course) => !courseNewFilter.includes(course))
+      .sort((a, b) => b.view - a.view);
+    setCourseTop(courseTopFilter);
+  }, [courses]);
+
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
   return (
     <Container maxWidth="md" sx={{ mt: '5rem' }}>
-      <Box>
-        <CourseNew courseNewFilter={courseNewFilter} />
+      <Box sx={{ width: '100%', mb: '2rem' }}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          size="small"
+          sx={{ bgcolor: 'white', borderRadius: '0.5rem' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          value={searchTerm}
+          onChange={handleChange}
+        />
       </Box>
       <Box>
-        <CourseTop courseTopFilter={courseTopFilter} />
+        <CourseNew courseNewFilter={courseNew} />
       </Box>
       <Box>
-        <Courses courses={courses} />
+        <CourseTop courseTopFilter={courseTop} />
+      </Box>
+      <Box>
+        <Courses courses={courses.filter((course) => !courseNew.includes(course) && !courseTop.includes(course))} />
       </Box>
     </Container>
   );

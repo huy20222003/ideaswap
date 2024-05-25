@@ -17,7 +17,9 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  styled,
 } from '@mui/material';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
@@ -35,9 +37,19 @@ import {
   useBlog,
   useRole,
 } from '../../../hooks/context';
-import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
-import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
-import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
+import HTMLReactParser from 'html-react-parser';
+//--------------------------------------------------------
+
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  },
+}));
 
 const BlogItem = ({ blog }) => {
   const {
@@ -69,13 +81,18 @@ const BlogItem = ({ blog }) => {
   const handleClose = () => setAnchorEl(null);
 
   const {
-    roleState: { role },
-    handleGetRoleById,
+    roleState: { roles },
+    handleGetAllRoles,
   } = useRole();
 
   useEffect(() => {
-    user?.roleID && handleGetRoleById(user?.roleID);
-  }, [handleGetRoleById, user?.roleID]);
+    authState?.isAuthenticated && handleGetAllRoles();
+  }, [authState?.isAuthenticated, handleGetAllRoles]);
+
+  const newUser = {
+    ...user,
+    roleName: roles.find((role) => role?._id === user?.roleID),
+  };
 
   useEffect(() => {
     const updateHeartIcon = () => {
@@ -147,12 +164,7 @@ const BlogItem = ({ blog }) => {
     }
   };
 
-  const truncatedContent =
-    content.length > 30
-      ? expanded
-        ? content
-        : `${content.slice(0, 30)}...`
-      : content;
+  const truncatedContent = expanded ? content : `${content.slice(0, 100)}...`;
 
   return (
     <Card sx={{ my: '1rem' }}>
@@ -165,7 +177,7 @@ const BlogItem = ({ blog }) => {
           />
         }
         action={
-          <IconButton aria-label="settings">
+          <IconButton aria-label="settings" onClick={handleClick}>
             <MoreVertIcon />
           </IconButton>
         }
@@ -174,14 +186,14 @@ const BlogItem = ({ blog }) => {
             <Typography
               variant="subtitle1"
               onClick={() => handleNavigate(user?._id)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', marginRight: '0.25rem' }}
             >
               {`${user?.firstName} ${user?.lastName}`}
             </Typography>
-            {role?.name === 'creator' && (
-              <CheckCircleIcon
-                sx={{ color: '#3366FF', fontSize: '1rem', ml: '0.25rem' }}
-              />
+            {newUser?.roleName?.name == 'creator' && (
+              <LightTooltip title="Creator" placement="right">
+                <CheckCircleIcon sx={{ color: '#3366FF', fontSize: '1rem' }} />
+              </LightTooltip>
             )}
           </div>
         }
@@ -217,20 +229,17 @@ const BlogItem = ({ blog }) => {
           <ListItemText primary="Báo cáo bài viết" />
         </MenuItem>
       </Menu>
-      <FormDialogEditBlog />
-      <FormDialogDeleteBlog />
-      <FormDialogCommentBlog />
       <CardContent sx={{ pb: '0.2rem' }}>
         <Typography variant="body2" color="text.primary">
-          {truncatedContent}
-          {content.length > 10 && (
+          {HTMLReactParser(truncatedContent)}
+          {content.length > 100 && (
             <Typography
               variant="body2"
               color="text.secondary"
               onClick={toggleExpand}
-              sx={{ cursor: 'pointer' }}
+              sx={{ cursor: 'pointer', display: 'inline' }}
             >
-              {expanded ? 'Short' : 'Show more'}
+              {expanded ? ' Show less' : '... Show more'}
             </Typography>
           )}
         </Typography>
@@ -285,6 +294,7 @@ const BlogItem = ({ blog }) => {
         </IconButton>
         <IconButton
           aria-label="share"
+          onClick={() => handleOpenFormCommentBlog(blog?._id)}
         >
           <CommentIcon />
         </IconButton>

@@ -26,7 +26,6 @@ const doumentApi = {
     return axiosConfig.delete(url);
   },
   searchDocument: (searchValue) => {
-    console.log(searchValue);
     const url = `/document/search?q=${searchValue}`;
     return axiosConfig.get(url);
   },

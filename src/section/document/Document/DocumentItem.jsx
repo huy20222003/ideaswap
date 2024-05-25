@@ -1,11 +1,24 @@
 //mui
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, styled, Stack } from '@mui/material';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 //propTypes
 import PropTypes from 'prop-types';
 //context
 import { useDocument } from '../../../hooks/context';
 //----------------------------------------------------------------
+
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  },
+}));
 
 const DocumentItem = ({ document }) => {
   const { _id, title, imageUrl, user, countDownload, fileUrl } = document;
@@ -51,10 +64,17 @@ const DocumentItem = ({ document }) => {
           }}
         >
           <Typography variant="body1">{shortenedTitle}</Typography>
-          <Typography variant="body2">
-            {' '}
-            Author: {user?.firstName + ' ' + user?.lastName}
-          </Typography>
+          <Stack
+            sx={{ flexDirection: 'row', gap: '0.25rem', alignItems: 'center' }}
+          >
+            <Typography variant="body2">
+              {' '}
+              Author: {user?.firstName + ' ' + user?.lastName}
+            </Typography>
+            <LightTooltip title="Creator" placement="right">
+              <CheckCircleIcon sx={{ color: '#3366FF', fontSize: '1rem' }} />
+            </LightTooltip>
+          </Stack>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>

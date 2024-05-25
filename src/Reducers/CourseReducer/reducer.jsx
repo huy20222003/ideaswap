@@ -3,7 +3,9 @@ import {
   DELETE_COURSE,
   GET_ALL_COURSES,
   GET_COURSE_BY_ID,
+  SEARCH_COURSE,
   UPDATE_COURSE,
+  UPDATE_VIEW,
 } from './constants';
 
 export const initCourseState = {
@@ -39,10 +41,24 @@ export const reducer = (state, action) => {
         ...state,
         courses: newCourses,
       };
+    case UPDATE_VIEW:
+      const newCoursesView = state.courses.map((course) =>
+        course._id === payload._id ? payload : course
+      );
+
+      return {
+        ...state,
+        courses: newCoursesView,
+      };
     case DELETE_COURSE:
       return {
         ...state,
         courses: state.courses.filter((course) => course._id !== payload),
+      };
+    case SEARCH_COURSE:
+      return {
+        ...state,
+        courses: payload,
       };
     default:
       return {

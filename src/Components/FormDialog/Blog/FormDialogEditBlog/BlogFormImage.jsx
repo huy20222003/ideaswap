@@ -8,6 +8,12 @@ import BlogFormImageItem from './BlogFormImageItem';
 
 const BlogFormImage = ({ formik }) => {
   const [imageUrl, setImageUrl] = useState('');
+  const [imageSelected, setImageSelected] = useState(false);
+
+  useEffect(() => {
+    setImageUrl(formik.values.imageBase64);
+    setImageSelected(!!formik.values.imageBase64); // Set imageSelected based on whether formik.values.imageBase64 is truthy
+  }, [formik.values.imageBase64]);
 
   const onDrop = async (acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -17,6 +23,7 @@ const BlogFormImage = ({ formik }) => {
     reader.onload = () => {
       formik.setFieldValue('imageBase64', reader.result);
       setImageUrl(URL.createObjectURL(file));
+      setImageSelected(true);
     };
     reader.onerror = () => {
       console.error('Error occurred while reading the file.');
@@ -30,6 +37,7 @@ const BlogFormImage = ({ formik }) => {
 
   const handleDeleteImage = () => {
     setImageUrl('');
+    setImageSelected(false);
     formik.setFieldValue('imageBase64', '');
   };
 
@@ -67,7 +75,7 @@ const BlogFormImage = ({ formik }) => {
               </Stack>
             </Stack>
           </div>
-          {imageUrl && (
+          {imageSelected && imageUrl && (
             <Box
               sx={{
                 display: 'flex',
@@ -82,6 +90,11 @@ const BlogFormImage = ({ formik }) => {
                 handleDeleteImage={handleDeleteImage}
               />
             </Box>
+          )}
+          {!imageSelected && ( // Hiển thị thông báo dưới phần chọn ảnh
+            <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'red' }}>
+              Please select an image
+            </Typography>
           )}
         </Box>
       </Stack>

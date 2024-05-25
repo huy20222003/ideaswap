@@ -26,10 +26,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 //context
-import {
-  useCourse,
-  useVideo,
-} from '../../../../hooks/context';
+import { useCourse, useVideo } from '../../../../hooks/context';
 //component
 import VideoFormImage from './VideoFormImage';
 //ultils
@@ -40,6 +37,11 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 //sweetalert
 import Swal from 'sweetalert2';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
+import HTMLReactParser from 'html-react-parser';
 //------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -53,7 +55,7 @@ const FormDialogEditVideo = () => {
   } = useCourse();
 
   const {
-    videoState: {video},
+    videoState: { video },
     handleUpdateVideo,
     openFormDialogEditVideo,
     setOpenFormDialogEditvideo,
@@ -76,8 +78,14 @@ const FormDialogEditVideo = () => {
       courseID: '',
     },
     validationSchema: yup.object({
-      title: yup.string().required('Title is required').max(100, 'The maximum number of characters is 100'),
-      description: yup.string().required('Description is required').max(5000, 'The maximum number of characters is 5000'),
+      title: yup
+        .string()
+        .required('Title is required')
+        .max(100, 'The maximum number of characters is 100'),
+      description: yup
+        .string()
+        .required('Description is required')
+        .max(5000, 'The maximum number of characters is 5000'),
       imageBase64: yup.string().required('Image URL is required'),
       videoUrl: yup
         .string()
@@ -89,7 +97,11 @@ const FormDialogEditVideo = () => {
     onSubmit: async (values) => {
       try {
         setShowProgress(true);
-        const response = await handleUpdateVideo(video?._id, values, setProgressValue);
+        const response = await handleUpdateVideo(
+          video?._id,
+          values,
+          setProgressValue
+        );
         if (response.success) {
           setOpenFormDialogEditvideo(false);
           Swal.fire({
@@ -132,7 +144,7 @@ const FormDialogEditVideo = () => {
         imageBase64: video.imageUrl || '',
         userID: video.userID || '',
         courseID: video?.courseID || '',
-        videoUrl: video?.videoUrl || ''
+        videoUrl: video?.videoUrl || '',
       });
     }
   }, [video]);
@@ -147,7 +159,7 @@ const FormDialogEditVideo = () => {
       TransitionComponent={Transition}
       keepMounted
       onClose={handleClose}
-      sx={{ width: 'auto', maxWidth: 'xl' }}
+      sx={{ '& .MuiDialog-paper': { width: 'auto', maxWidth: 'none' } }}
     >
       <Stack
         sx={{
@@ -180,29 +192,26 @@ const FormDialogEditVideo = () => {
                 error={formik.touched.title && Boolean(formik.errors.title)}
                 helperText={formik.touched.title && formik.errors.title}
               />
-              <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.title.length}/100</Stack>
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                {formik.values.title.length}/100
+              </Stack>
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <TextField
-                variant="outlined"
-                label="Description"
-                id="description"
-                name="description"
-                fullWidth
-                multiline
-                rows={3}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.description}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+              <CKEditor
+                editor={ClassicEditor}
+                data={formik.values.description}
+                config={editorConfig}
+                onReady={(editor) => {
+                  console.log('Editor is ready to use!', editor);
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  formik.setFieldValue('description', data);
+                }}
               />
-              <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.description.length}/5000</Stack>
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                {formik.values.description.length}/5000
+              </Stack>
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
               <TextField
@@ -293,7 +302,7 @@ const FormDialogEditVideo = () => {
                     {formik.values.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {formik.values.description}
+                  {HTMLReactParser(formik.values.description)}
                   </Typography>
                 </Box>
               </CardContent>

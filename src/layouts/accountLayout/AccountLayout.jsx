@@ -3,8 +3,8 @@ import { Box, Container } from '@mui/material';
 //react-router-dom
 import { Outlet } from 'react-router-dom';
 //component
-import Header from './header';
-import Footer from './footer';
+import Header from '../../Components/header';
+import Footer from '../../Components/footer';
 //-------------------------------------------------
 
 const AccountLayout = () => {

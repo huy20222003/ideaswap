@@ -5,6 +5,7 @@ import AccountActionTabs from '../../section/account';
 //--------------------------------------------
 
 const AccountPage = () => {
+  document.title = "Account";
   return (
     <Box sx={{ mt: '5rem' }}>
       <AccountActionTabs />

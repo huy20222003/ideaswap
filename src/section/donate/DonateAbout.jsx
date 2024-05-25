@@ -48,7 +48,7 @@ const DonateAbout = () => {
           <Box
             component={'img'}
             sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg_No3tldugUVxpf57sks2nBE9LLekF35qHnr_ieL7w8WmgCMIseLWnWnPu5iPOAFJHttDhm882ZuTuG6T2gqZbcQ2rZI-UecmJiDEjr6dKc6g81wW4t2tXYasiPWa6ZSYQ8KoM1-ENThA/s1600/1_0vWKsATw_uUzjZioJU8DyQ.png"
+            src="/assets/images/banners/anh_bia.png"
           ></Box>
         </Box>
       </Box>
@@ -88,7 +88,7 @@ const DonateAbout = () => {
           <Box
             component={'img'}
             sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}
-            src="https://topviecit.vn/blog/wp-content/uploads/2021/11/thumb-5.jpg"
+            src="/assets/images/banners/anh_bia_fb.png"
           ></Box>
         </Box>
       </Box>

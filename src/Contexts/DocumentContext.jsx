@@ -63,15 +63,19 @@ export const DocumentProvider = (prop) => {
   const handleSearchDocuments = useCallback(
     async (searchValue) => {
       try {
-        const response = await documentApi.searchDocument(searchValue);
-        if (response.data.success) {
-          dispatch(searchDocument(response.data.documents));
+        if(searchValue != '') {
+          const response = await documentApi.searchDocument(searchValue);
+          if (response.data.success) {
+            dispatch(searchDocument(response.data.documents));
+          }
+        } else {
+          handleGetAllDocuments();
         }
       } catch (error) {
         return handleError(error);
       }
     },
-    [handleError]
+    [handleError, handleGetAllDocuments]
   );
 
   const handleCreateDocument = useCallback(

@@ -31,6 +31,7 @@ import {
   useAuth,
   useCourse,
   useVideo,
+  useNotification,
 } from '../../../../hooks/context';
 //component
 import VideoFormImage from './VideoFormImage';
@@ -42,6 +43,11 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 //sweetalert
 import Swal from 'sweetalert2';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
+import HTMLReactParser from 'html-react-parser';
 //------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -58,6 +64,8 @@ const FormDialogUploadVideo = () => {
     courseState: { courses },
     handleGetAllCourses,
   } = useCourse();
+
+  const {handleGetAllNotifications} = useNotification();
 
   const { handleCreateVideo, handleGetAllVideo } = useVideo();
   const [progressValue, setProgressValue] = useState(0);
@@ -113,6 +121,7 @@ const FormDialogUploadVideo = () => {
             showCancelButton: true,
             confirmButtonText: 'OK',
           });
+          handleGetAllNotifications();
         } else {
           Swal.fire({
             title: 'Upload Video failed!',
@@ -150,7 +159,7 @@ const FormDialogUploadVideo = () => {
       TransitionComponent={Transition}
       keepMounted
       onClose={handleClose}
-      sx={{ width: 'auto', maxWidth: 'xl' }}
+      sx={{ '& .MuiDialog-paper': { width: 'auto', maxWidth: 'none' } }}
     >
       <Stack
         sx={{
@@ -188,24 +197,17 @@ const FormDialogUploadVideo = () => {
               </Stack>
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <TextField
-                variant="outlined"
-                label="Description"
-                id="description"
-                name="description"
-                fullWidth
-                multiline
-                rows={3}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.description}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+              <CKEditor
+                editor={ClassicEditor}
+                data={formik.values.description}
+                config={editorConfig}
+                onReady={(editor) => {
+                  console.log('Editor is ready to use!', editor);
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  formik.setFieldValue('description', data);
+                }}
               />
               <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                 {formik.values.description.length}/5000
@@ -304,7 +306,7 @@ const FormDialogUploadVideo = () => {
                     color="text.secondary"
                     sx={{ px: '0.5rem' }}
                   >
-                    {formik.values.description}
+                    {HTMLReactParser(formik.values.description)}
                   </Typography>
                 </Box>
               </CardContent>

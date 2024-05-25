@@ -11,6 +11,9 @@ import {
   useUser,
   useCensorships,
 } from '../../../hooks/context';
+import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
+import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
+import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
 
 const PostTabBlog = () => {
   const { blogState, handleGetAllBlog } = useBlog();
@@ -44,9 +47,7 @@ const PostTabBlog = () => {
   const { censorships } = censorshipsState;
   const { _id } = useParams();
 
-  const blogsFilterByUserID = blogs.filter(
-    (blog) => blog?.userID === _id
-  );
+  const blogsFilterByUserID = blogs.filter((blog) => blog?.userID === _id);
 
   const blogsWithStatus = blogsFilterByUserID
     .map((blog) => {
@@ -85,6 +86,9 @@ const PostTabBlog = () => {
           </Typography>
         </Box>
       )}
+      <FormDialogEditBlog />
+      <FormDialogDeleteBlog />
+      <FormDialogCommentBlog />
     </Box>
   );
 };

@@ -11,7 +11,7 @@ import {
 import Chart from 'react-apexcharts';
 import { fShortenNumber } from '../../../utils/formatNumber';
 import { useVideo, useFollow, useAuth } from '../../../hooks/context';
-import VideoHot from '../../dashboard/VideoHot';
+import VideoHot from '../dashboard/VideoHot';
 
 const OverviewTab = () => {
   const {

@@ -9,6 +9,9 @@ import {
   useUser,
   useCensorships,
 } from '../../../hooks/context';
+import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
+import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
+import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
 
 const Blog = () => {
   const { blogState, handleGetAllBlog } = useBlog();
@@ -77,6 +80,9 @@ const Blog = () => {
           </Typography>
         </Box>
       )}
+      <FormDialogEditBlog />
+      <FormDialogDeleteBlog />
+      <FormDialogCommentBlog />
     </Box>
   );
 };

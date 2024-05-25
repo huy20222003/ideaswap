@@ -1,5 +1,5 @@
 //react
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 //prop-type
 import PropTypes from 'prop-types';
 //@mui
@@ -31,11 +31,9 @@ import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import { fDateTime } from '../../../utils/formatTime';
 //context
 import { useAuth, useCommon, useHeart, useBlog } from '../../../hooks/context';
-//component
-import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
-import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
 //sweetalert2
 import Swal from 'sweetalert2';
+import HTMLReactParser from 'html-react-parser';
 //--------------------------------------------------------------------------------------
 
 const PostTabBlogItem = ({ blog }) => {
@@ -43,8 +41,7 @@ const PostTabBlogItem = ({ blog }) => {
   const [expanded, setExpanded] = useState(false);
   const { authState } = useAuth();
   const { setOpenFormDialogEditBlog } = useCommon();
-  const { setOpenFormDialogDeleteBlog } = useBlog();
-  const [blogToEdit, setBlogToEdit] = useState({});
+  const { setOpenFormDialogDeleteBlog, handleGetOneBlog, setOpenFormDialogCommentBlog } = useBlog();
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
   const { handleCreateHeart, handleDeleteHeart } = useHeart();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,16 +59,38 @@ const PostTabBlogItem = ({ blog }) => {
     updateHeartIcon();
   }, [_id, authState.user, heartArrays]);
 
-  const handleEditBlogClick = (blog) => {
-    setBlogToEdit(blog);
-    setOpenFormDialogEditBlog(true);
-    handleClose();
-  };
+  const handleEditBlogClick = useCallback(
+    async (blogId) => {
+      const response = await handleGetOneBlog(blogId);
+      if (response.success) {
+        setOpenFormDialogEditBlog(true);
+        handleClose();
+      }
+    },
+    [handleGetOneBlog, setOpenFormDialogEditBlog]
+  );
 
-  const handleDeleteBlog = () => {
-    setOpenFormDialogDeleteBlog(true);
-    handleClose();
-  };
+  const handleDeleteBlog = useCallback(
+    async (blogId) => {
+      const response = await handleGetOneBlog(blogId);
+      if (response.success) {
+        setOpenFormDialogDeleteBlog(true);
+        handleClose();
+      }
+    },
+    [handleGetOneBlog, setOpenFormDialogDeleteBlog]
+  );
+
+  const handleOpenFormCommentBlog = useCallback(
+    async (blogId) => {
+      const response = await handleGetOneBlog(blogId);
+      if (response.success) {
+        setOpenFormDialogCommentBlog(true);
+        handleClose();
+      }
+    },
+    [handleGetOneBlog, setOpenFormDialogCommentBlog]
+  );
 
   const handleClickHeart = async () => {
     const data = { userID: authState.user._id, bvID: _id };
@@ -94,7 +113,7 @@ const PostTabBlogItem = ({ blog }) => {
     }
   };
 
-  const truncatedContent = content.length > 30 ? (expanded ? content : `${content.slice(0, 30)}...`) : content;
+  const truncatedContent = expanded ? content : `${content.slice(0, 50)}...`;
 
   return (
     <Card sx={{ my: '1rem' }}>
@@ -132,14 +151,17 @@ const PostTabBlogItem = ({ blog }) => {
           <ListItemText primary="Báo cáo bài viết" />
         </MenuItem>
       </Menu>
-      <FormDialogEditBlog blog={blogToEdit} />
-      <FormDialogDeleteBlog blogId={blog?._id} />
       <CardContent sx={{ pb: '0.2rem' }}>
         <Typography variant="body2" color="text.primary">
-          {truncatedContent}
-          {content.length > 10 && (
-            <Typography variant="body2" color="text.secondary" onClick={toggleExpand} sx={{ cursor: 'pointer' }}>
-              {expanded ? 'Short' : 'Show more'}
+          {HTMLReactParser(truncatedContent)}
+          {content.length > 50 && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              onClick={toggleExpand}
+              sx={{ cursor: 'pointer', display: 'inline' }}
+            >
+              {expanded ? ' Show less' : '... Show more'}
             </Typography>
           )}
         </Typography>
@@ -160,7 +182,7 @@ const PostTabBlogItem = ({ blog }) => {
         <IconButton aria-label="add to favorites" onClick={handleClickHeart}>
           {heartIcon}
         </IconButton>
-        <IconButton aria-label="share"><CommentIcon /></IconButton>
+        <IconButton aria-label="share" onClick={()=>handleOpenFormCommentBlog(blog?._id)}><CommentIcon /></IconButton>
         <IconButton aria-label="share"><ShareIcon /></IconButton>
       </CardActions>
     </Card>

@@ -1,4 +1,4 @@
-import { ADD_COURSE, DELETE_COURSE, GET_ALL_COURSES, GET_COURSE_BY_ID, UPDATE_COURSE } from "./constants"
+import { ADD_COURSE, DELETE_COURSE, GET_ALL_COURSES, GET_COURSE_BY_ID, SEARCH_COURSE, UPDATE_COURSE, UPDATE_VIEW } from "./constants"
 
 
 export const getAll = (payload)=> {
@@ -29,9 +29,23 @@ export const updateCourse = (payload)=> {
     }
 }
 
+export const updateView = (payload)=> {
+    return {
+        type: UPDATE_VIEW,
+        payload
+    }
+}
+
 export const deleteCourse = (payload)=> {
     return {
         type: DELETE_COURSE,
+        payload
+    }
+}
+
+export const searchCourse = (payload)=> {
+    return {
+        type: SEARCH_COURSE,
         payload
     }
 }

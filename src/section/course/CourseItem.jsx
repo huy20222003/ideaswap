@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 //utils
 import { fShortenNumber } from '../../utils/formatNumber';
 //context
-import { useVideo, useCensorships } from '../../hooks/context';
+import { useVideo, useCensorships, useCourse } from '../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
 //-------------------------------------------------
@@ -21,11 +21,15 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
     description && description.length > 60
       ? `${description.slice(0, 60)}...`
       : description;
+
   const truncatedTitle =
     title && title.length > 20 ? `${title.slice(0, 20)}...` : title;
+
   const navigate = useNavigate();
   const {videoState: {videos}, handleGetAllVideo} = useVideo();
   const { censorshipsState: {censorships}, handleGetAllCensorships } = useCensorships();
+  const {handleUpdateView} = useCourse();
+
   useEffect(()=>{
     handleGetAllVideo();
     handleGetAllCensorships();
@@ -44,8 +48,9 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
     };
   });
 
-  const handleNavigateToVideoPage = () => {
+  const handleNavigateToVideoPage = async () => {
     if(videoFilterByCourseId.length !== 0) {
+      await handleUpdateView(_id, { view: view + 1 });
       navigate(`/course/${_id}?videoId=${videosWithStatus[0]?._id}`);
     } else {
       Swal.fire({

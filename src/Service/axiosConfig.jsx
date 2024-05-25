@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 //----------------------------------------------
 
 const axiosConfig = axios.create({
+  // baseURL: 'http://localhost:3000/api/v1',
   baseURL: 'https://ideaswap-server.onrender.com/api/v1',
   timeout: 10000,
   headers: {

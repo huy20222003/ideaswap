@@ -17,11 +17,19 @@ import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/Upload';
 import axios from 'axios'; // Import Axios
 import Swal from 'sweetalert2';
-import { useDocument, useAuth } from '../../../../hooks/context';
+import {
+  useDocument,
+  useAuth,
+  useNotification,
+} from '../../../../hooks/context';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import DocumentFormImage from './DocumentFormImage';
 import Cookies from 'js-cookie';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,6 +48,8 @@ const FormDialogUploadDocument = () => {
   const handleClose = () => {
     setOpenFormDialogAddDocument(false);
   };
+
+  const { handleGetAllNotifications } = useNotification();
 
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
@@ -79,7 +89,8 @@ const FormDialogUploadDocument = () => {
 
         // Sử dụng Axios để gửi dữ liệu form data
         const response = await axios.post(
-          'http://localhost:3000/api/v1/document/add',
+          // 'http://localhost:3000/api/v1/document/add',
+          'https://ideaswap-server.onrender.com/api/v1/document/add',
           formData,
           {
             headers: {
@@ -104,6 +115,7 @@ const FormDialogUploadDocument = () => {
             confirmButtonText: 'OK',
           });
           handleGetAllDocuments();
+          handleGetAllNotifications();
         } else {
           Swal.fire({
             title: 'Add document failed!',
@@ -182,23 +194,17 @@ const FormDialogUploadDocument = () => {
             </Stack>
           </Box>
           <Box sx={{ mb: '1rem' }}>
-            <TextField
-              variant="outlined"
-              label="Description"
-              id="description"
-              name="description"
-              fullWidth
-              multiline
-              rows={3}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.description}
-              error={
-                formik.touched.description && Boolean(formik.errors.description)
-              }
-              helperText={
-                formik.touched.description && formik.errors.description
-              }
+            <CKEditor
+              editor={ClassicEditor}
+              data={formik.values.description}
+              config={editorConfig}
+              onReady={(editor) => {
+                console.log('Editor is ready to use!', editor);
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                formik.setFieldValue('description', data);
+              }}
             />
             <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
               {formik.values.description.length}/5000

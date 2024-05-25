@@ -33,6 +33,11 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 //sweetalert
 import Swal from 'sweetalert2';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
+import HTMLReactParser from 'html-react-parser';
 //------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -110,7 +115,7 @@ const FormDialogAddCourse = () => {
         formik.setFieldValue('description', '');
         formik.setFieldValue('imageBase64', '');
         formik.setFieldValue('imageUrl', '');
-        setShowProgress(false); // Ẩn thanh tiến trình và label phần trăm sau khi quá trình xử lý hoàn tất
+        setShowProgress(false); // Hide progress bar and percentage label after the process is complete
       }
     },
   });
@@ -121,7 +126,7 @@ const FormDialogAddCourse = () => {
       TransitionComponent={Transition}
       keepMounted
       onClose={handleClose}
-      sx={{ width: 'auto', maxWidth: 'xl' }}
+      sx={{ '& .MuiDialog-paper': { width: 'auto', maxWidth: 'none' } }} // Let the dialog adapt to its content
     >
       <Stack
         sx={{
@@ -159,31 +164,24 @@ const FormDialogAddCourse = () => {
               </Stack>
             </Box>
             <Box sx={{ mb: '1.5rem' }}>
-              <TextField
-                variant="outlined"
-                label="Description"
-                id="description"
-                name="description"
-                fullWidth
-                multiline
-                rows={3}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.description}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
+              <CKEditor
+                editor={ClassicEditor}
+                data={formik.values.description}
+                config={editorConfig}
+                onReady={(editor) => {
+                  console.log('Editor is ready to use!', editor);
+                }}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  formik.setFieldValue('description', data);
+                }}
               />
               <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                 {formik.values.description.length}/5000
               </Stack>
             </Box>
             <CourseFormImage formik={formik} />
-            {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
+            {showProgress && (
               <Box sx={{ my: '0.5rem' }}>
                 <LinearProgress variant="determinate" value={progressValue} />
                 <Stack
@@ -240,7 +238,7 @@ const FormDialogAddCourse = () => {
                     color="text.secondary"
                     sx={{ px: '0.5rem' }}
                   >
-                    {formik.values.description}
+                    {HTMLReactParser(formik.values.description)}
                   </Typography>
                 </Box>
               </CardContent>

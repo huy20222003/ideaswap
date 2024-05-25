@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 //component
 import VideoHotItem from './VideoHotItem';
 //context
-import { useVideo, useCensorships } from '../../../hooks/context';
+import { useVideo, useCensorships } from '../../../../hooks/context';
 //---------------------------------------
 
 const VideoHot = () => {
@@ -33,7 +33,7 @@ const VideoHot = () => {
     })
     .filter((video) => video.status === 'approved')
     .sort((a, b) => b.view - a.view)
-    .slice(0, 5);
+    .slice(0, 1);
 
   return (
     <Box sx={{ mt: '5rem' }}>
@@ -43,7 +43,7 @@ const VideoHot = () => {
       <Box>
         {videosWithStatus.length > 0 ? (
           videosWithStatus.map((video) => (
-            <VideoHotItem key={video._id} video={video} />
+            <VideoHotItem key={video.id} video={video} />
           ))
         ) : (
           <Typography>No video reached the top</Typography>

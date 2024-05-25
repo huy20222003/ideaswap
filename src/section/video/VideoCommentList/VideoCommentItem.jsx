@@ -5,8 +5,9 @@ import { styled, Box, Avatar, Stack, Typography } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CommentIcon from '@mui/icons-material/Comment';
 //context
-import { useUser, useRole } from '../../../hooks/context';
+import { useUser, useRole, useAuth } from '../../../hooks/context';
 //utils
 import { fDateTime } from '../../../utils/formatTime';
 //-------------------------------------------------------
@@ -24,34 +25,42 @@ const LightTooltip = styled(({ className, ...props }) => (
 
 const VideoCommentItem = ({ comment }) => {
   const {
-    userState: { user, users },
+    userState: { users },
     handleGetAllUsers,
     handleGetUserById,
   } = useUser();
 
   const {
-    roleState: { role },
-    handleGetRoleById,
+    authState: { isAuthenticated },
+  } = useAuth();
+
+  const {
+    roleState: { roles },
+    handleGetAllRoles,
   } = useRole();
 
   const [roleLoaded, setRoleLoaded] = useState(false);
 
   useEffect(() => {
     comment?.userID && handleGetUserById(comment?.userID);
-    user?.roleID && handleGetRoleById(user?.roleID);
-  }, [comment?.userID, handleGetRoleById, handleGetRoleById]);
+    isAuthenticated && handleGetAllRoles();
+  }, [comment?.userID, handleGetAllRoles, handleGetUserById, isAuthenticated]);
+
+  const userComment = users?.find((user) => user?._id === comment?.userID);
+  const newUser = {
+    ...userComment,
+    roleName: roles.find((role) => role?._id === userComment?.roleID),
+  };
 
   useEffect(() => {
     handleGetAllUsers();
   }, [handleGetAllUsers]);
 
   useEffect(() => {
-    if (!roleLoaded && role) {
+    if (!roleLoaded && newUser?.roleName) {
       setRoleLoaded(true);
     }
-  }, [role, roleLoaded]);
-
-  const userComment = users?.find((user) => user?._id === comment?.userID);
+  }, [newUser?.roleName, roleLoaded]);
 
   return (
     <Box sx={{ p: '0.5rem', my: '0.5rem' }}>
@@ -71,8 +80,12 @@ const VideoCommentItem = ({ comment }) => {
               <Typography variant="subtitle1">
                 {userComment?.firstName} {userComment?.lastName}
               </Typography>
-              {roleLoaded && role?.name === 'creator' && (
-                <CheckCircleIcon sx={{ color: '#3366FF', fontSize: '1rem' }} />
+              {roleLoaded && newUser?.roleName?.name === 'creator' && (
+                <LightTooltip title="Creator" placement="right">
+                  <CheckCircleIcon
+                    sx={{ color: '#3366FF', fontSize: '1rem' }}
+                  />
+                </LightTooltip>
               )}
               <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                 {fDateTime(comment?.createdAt)}
@@ -80,9 +93,14 @@ const VideoCommentItem = ({ comment }) => {
             </Stack>
 
             <Typography variant="body2">{comment.content}</Typography>
-            <LightTooltip title="Report" placement="right">
-              <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
-            </LightTooltip>
+            <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
+              <LightTooltip title="Report" placement="right">
+                <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
+              </LightTooltip>
+              <LightTooltip title="Reply" placement="right">
+                <CommentIcon color="primary" sx={{ cursor: 'pointer' }} />
+              </LightTooltip>
+            </Stack>
           </Stack>
         </Box>
       </Box>

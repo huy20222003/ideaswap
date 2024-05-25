@@ -3,7 +3,7 @@ import { Box, Container } from '@mui/material';
 //react-router-dom
 import { Outlet } from 'react-router-dom';
 //component
-import Header from './header';
+import Header from '../../Components/header';
 //--------------------------------------------------------------
 
 const VideoLayout = () => {

@@ -1,8 +1,7 @@
-///react
 import { forwardRef, useEffect, useState } from 'react';
-//prop-type
+// prop-type
 import PropTypes from 'prop-types';
-//mui
+// mui
 import {
   Box,
   Dialog,
@@ -25,23 +24,26 @@ import CloseIcon from '@mui/icons-material/Close';
 import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-//context
+// context
 import {
   useBlog,
   useComment,
   useUser,
   useAuth,
+  useHeart,
+  useShare,
 } from '../../../../hooks/context';
-//ultils
+// utils
 import { fDateTime } from '../../../../utils/formatTime';
-//component
+// component
 import FormDialogCommentList from './FormDialogCommentList';
-//formik
+// formik
 import { useFormik } from 'formik';
-//yup
+// yup
 import * as yup from 'yup';
-//sweetalert2
+// sweetalert2
 import Swal from 'sweetalert2';
+import HTMLReactParser from 'html-react-parser';
 //------------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -66,10 +68,25 @@ const FormDialogCommentBlog = () => {
     handleGetUserById,
   } = useUser();
   const { authState } = useAuth();
+  const {
+    heartState,
+    handleGetAllHearts,
+    handleCreateHeart,
+    handleDeleteHeart,
+  } = useHeart();
+  const { shareState, handleGetAllShares } = useShare();
+  const { hearts } = heartState;
+  const { shares } = shareState;
+  const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
 
   const commentsFilter = comments.filter(
     (comment) => comment?.bvID === blog?._id
   );
+
+  useEffect(() => {
+    handleGetAllHearts();
+    handleGetAllShares();
+  }, [handleGetAllHearts, handleGetAllShares]);
 
   useEffect(() => {
     handleGetAllComments();
@@ -79,13 +96,49 @@ const FormDialogCommentBlog = () => {
   const handleClose = () => {
     setOpenFormDialogCommentBlog(false);
   };
-  console.log(blog);
-  const truncatedContent =
-    blog?.content?.length > 30
-      ? expanded
-        ? blog?.content
-        : `${blog?.content.slice(0, 30)}...`
-      : blog?.content;
+
+  const heartArrays = hearts.filter((heart) => heart?.bvID === blog?._id);
+  const shareArrays = shares.filter((share) => share?.bvID === blog?._id);
+
+  const [heartLength, setHeartLength] = useState(heartArrays.length);
+
+  useEffect(() => {
+    const updateHeartIcon = () => {
+      const heartFind = heartArrays.find(
+        (heart) =>
+          heart?.userID === authState.user?._id && heart.bvID === blog?._id
+      );
+      setHeartIcon(
+        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
+      );
+    };
+    updateHeartIcon();
+  }, [blog?._id, authState.user, heartArrays]);
+
+  const handleClickHeart = async () => {
+    const data = { userID: authState.user._id, bvID: blog?._id };
+    try {
+      if (heartIcon.props.sx) {
+        await handleDeleteHeart(data);
+        setHeartLength((prevHeartLength) => prevHeartLength - 1);
+        setHeartIcon(<FavoriteIcon />);
+      } else {
+        await handleCreateHeart(data);
+        setHeartLength((prevHeartLength) => prevHeartLength + 1);
+        setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while processing your action. Please try again later.',
+        icon: 'error',
+      });
+    }
+  };
+
+  const truncatedContent = expanded
+    ? blog?.content
+    : `${blog?.content.slice(0, 100)}...`;
 
   const validationSchema = yup.object({
     userID: yup.string().required('User ID is required'),
@@ -117,14 +170,24 @@ const FormDialogCommentBlog = () => {
       }
     },
   });
+
+  useEffect(() => {
+    formik.setFieldValue('bvID', blog?._id);
+  }, [blog?._id]);
+
   return (
     <Dialog
       open={openFormDialogCommentBlog}
-      onClose={handleClose}
       TransitionComponent={Transition}
       keepMounted
+      onClose={handleClose}
+      sx={{
+        '& .MuiDialog-paper': {
+          width: { lg: '70%', xl: '60%', md: '60%', sm: '80%', xs: '90%' },
+          maxWidth: 'none',
+        },
+      }}
       scroll="paper"
-      sx={{ p: '1rem', maxWidth: 'xl' }}
     >
       <Stack
         sx={{
@@ -142,123 +205,147 @@ const FormDialogCommentBlog = () => {
         />
       </Stack>
       <Divider />
-      <Card sx={{ my: '1rem' }}>
-        <CardHeader
-          avatar={<Avatar src={user?.avatar} />}
-          title={`${user?.firstName} ${user?.lastName}`}
-          subheader={fDateTime(blog?.createdAt)}
-        />
-        <CardContent sx={{ pb: '0.2rem' }}>
-          <Typography variant="body2" color="text.primary">
-            {truncatedContent}
-            {blog?.content?.length > 30 && (
+      <Box
+        sx={{
+          overflowY: 'auto',
+          maxHeight: '70vh',
+          p: '1rem',
+          '&::-webkit-scrollbar': {
+            width: '0.4em',
+          },
+          '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.05)',
+            webkitBoxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.05)',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,.5)',
+            outline: '1px solid slategrey',
+            borderRadius: '0.5em',
+          },
+        }}
+      >
+        <Card sx={{ my: '1rem' }}>
+          <CardHeader
+            avatar={<Avatar src={user?.avatar} />}
+            title={`${user?.firstName} ${user?.lastName}`}
+            subheader={fDateTime(blog?.createdAt)}
+            sx={{ py: 0 }}
+          />
+          <CardContent sx={{ pb: '0.2rem' }}>
+            <Typography variant="body2" color="text.primary">
+              {HTMLReactParser(truncatedContent)}
+              {blog?.content.length > 100 && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  onClick={toggleExpand}
+                  sx={{ cursor: 'pointer', display: 'inline' }}
+                >
+                  {expanded ? ' Show less' : '... Show more'}
+                </Typography>
+              )}
+            </Typography>
+          </CardContent>
+          <CardMedia
+            component="img"
+            sx={{
+              p: '0.5rem',
+              borderRadius: '0.4rem',
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+            image={blog?.url}
+            alt={`${user?.firstName} ${user?.lastName}`}
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              p: '0.5rem',
+            }}
+          >
+            <Stack sx={{ flexDirection: 'row' }}>
+              <FavoriteIcon sx={{ color: 'red' }} />
               <Typography
-                variant="body2"
+                variant="body1"
                 color="text.secondary"
-                onClick={toggleExpand}
-                sx={{ cursor: 'pointer' }}
+                sx={{ mx: '0.2rem' }}
               >
-                {expanded ? 'Short' : 'Show more'}
+                {heartLength}
               </Typography>
-            )}
-          </Typography>
-        </CardContent>
-        <CardMedia
-          component="img"
-          sx={{
-            p: '0.5rem',
-            borderRadius: '0.4rem',
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-          }}
-          image={blog?.url}
-          alt={`${user?.firstName} ${user?.lastName}`}
-        />
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            p: '0.5rem',
-          }}
-        >
-          <Stack sx={{ flexDirection: 'row' }}>
-            <FavoriteIcon sx={{ color: 'red' }} />
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mx: '0.2rem' }}
+            </Stack>
+            <Stack sx={{ flexDirection: 'row' }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ mx: '0.4rem' }}
+              >
+                {commentsFilter?.length} comments
+              </Typography>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ mx: '0.4rem' }}
+              >
+                {shareArrays?.length} shares
+              </Typography>
+            </Stack>
+          </Box>
+          <Divider />
+          <CardActions sx={{ display: 'flex', justifyContent: 'space-around' }}>
+            <IconButton
+              aria-label="add to favorites"
+              onClick={handleClickHeart}
             >
-              {/* {heartArrays?.length} */}
-            </Typography>
-          </Stack>
-          <Stack sx={{ flexDirection: 'row' }}>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mx: '0.4rem' }}
+              {heartIcon}
+            </IconButton>
+            <IconButton aria-label="share">
+              <CommentIcon />
+            </IconButton>
+            <IconButton aria-label="share">
+              <ShareIcon />
+            </IconButton>
+          </CardActions>
+        </Card>
+        <Box sx={{ m: '1rem' }}>
+          <TextField
+            fullWidth
+            label="Comment"
+            variant="outlined"
+            size="medium"
+            id="content"
+            name="content"
+            multiline
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.content}
+          />
+          <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{ color: '#fff', my: '1rem' }}
+              onClick={formik.handleSubmit}
             >
-              {/* {commentArrays?.length} comments */}
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ mx: '0.4rem' }}
-            >
-              {/* {shareArrays?.length} shares */}
-            </Typography>
+              Comment
+            </Button>
           </Stack>
         </Box>
-        <Divider />
-        <CardActions sx={{ display: 'flex', justifyContent: 'space-around' }}>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <CommentIcon />
-          </IconButton>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-        </CardActions>
-      </Card>
-      <Box sx={{ my: '1rem' }}>
-        <Typography variant="subtitle1" sx={{ ml: '1rem' }}>
-          Comments
-        </Typography>
-        {commentsFilter.length > 0 ? (
-          <Box>
-            <FormDialogCommentList comments={commentsFilter} />
-          </Box>
-        ) : (
-          'Chưa có bình luận nào'
-        )}
-      </Box>
-      <Box sx={{ m: '1rem' }}>
-        <TextField
-          fullWidth
-          label="Comment"
-          variant="outlined"
-          size="medium"
-          id="content"
-          name="content"
-          multiline
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.content}
-        />
-        <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{ color: '#fff', my: '1rem' }}
-            onClick={formik.handleSubmit}
-          >
-            Comment
-          </Button>
-        </Stack>
+        <Box sx={{ my: '1rem' }}>
+          <Typography variant="subtitle1" sx={{ ml: '1rem' }}>
+            Comments
+          </Typography>
+          {commentsFilter.length > 0 ? (
+            <Box>
+              <FormDialogCommentList comments={commentsFilter} />
+            </Box>
+          ) : (
+            'Chưa có bình luận nào'
+          )}
+        </Box>
       </Box>
     </Dialog>
   );

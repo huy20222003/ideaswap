@@ -13,3 +13,4 @@ export { default as useRole } from './useRole';
 export { default as useCode } from './useCode';
 export { default as useDocument } from './useDocument';
 export { default as useBanner } from './useBanner';
+export {default as useNotification} from './useNotification';

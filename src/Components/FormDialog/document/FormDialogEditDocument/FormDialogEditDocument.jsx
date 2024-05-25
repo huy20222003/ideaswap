@@ -21,14 +21,23 @@ import { useDocument, useAuth } from '../../../../hooks/context';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import DocumentFormImage from './DocumentFormImage';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+//ckeditor
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import editorConfig from '../../../../config/editorConfig';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const FormDialogEditDocument = () => {
-  const { documentState: {document}, openFormDialogEditDocument, setOpenFormDialogEditDocument, handleGetAllDocuments } = useDocument();
+  const {
+    documentState: { document },
+    openFormDialogEditDocument,
+    setOpenFormDialogEditDocument,
+    handleGetAllDocuments,
+  } = useDocument();
   const {
     authState: { user },
   } = useAuth();
@@ -42,18 +51,23 @@ const FormDialogEditDocument = () => {
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
 
-
   const formik = useFormik({
     initialValues: {
       title: '',
       description: '',
       file: null,
       userID: user?._id,
-      imageBase64: ''
+      imageBase64: '',
     },
     validationSchema: yup.object({
-      title: yup.string().required('Title is required').max(100, 'The maximum number of characters is 100'),
-      description: yup.string().required('Description is required').max(5000, 'The maximum number of characters is 5000'),
+      title: yup
+        .string()
+        .required('Title is required')
+        .max(100, 'The maximum number of characters is 100'),
+      description: yup
+        .string()
+        .required('Description is required')
+        .max(5000, 'The maximum number of characters is 5000'),
       file: yup.mixed().required('File is required'),
       userID: yup.string().required('User ID is required'),
     }),
@@ -68,19 +82,24 @@ const FormDialogEditDocument = () => {
         formData.append('imageBase64', values?.imageBase64);
 
         // Sử dụng Axios để gửi dữ liệu form data
-        const response = await axios.put(`http://localhost:3000/api/v1/document/update/${document?._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${Cookies.get('user')}`, // Sử dụng token từ cookie
-          },
-          onUploadProgress: (progressEvent) => {
-            // Tính toán và cập nhật giá trị tiến trình
-            const { loaded, total } = progressEvent;
-            const progress = Math.round((loaded * 100) / total);
-            setProgressValue(progress);
-          },
-        });       
-        
+        const response = await axios.put(
+          `https://ideaswap-server.onrender.com/api/v1/document/update/${document?._id}`,
+          // `http://localhost:3000/api/v1/document/update/${document?._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${Cookies.get('user')}`, // Sử dụng token từ cookie
+            },
+            onUploadProgress: (progressEvent) => {
+              // Tính toán và cập nhật giá trị tiến trình
+              const { loaded, total } = progressEvent;
+              const progress = Math.round((loaded * 100) / total);
+              setProgressValue(progress);
+            },
+          }
+        );
+
         if (response.data.success) {
           setOpenFormDialogEditDocument(false);
           Swal.fire({
@@ -171,29 +190,26 @@ const FormDialogEditDocument = () => {
               error={formik.touched.title && Boolean(formik.errors.title)}
               helperText={formik.touched.title && formik.errors.title}
             />
-            <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.title.length}/100</Stack>
+            <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+              {formik.values.title.length}/100
+            </Stack>
           </Box>
           <Box sx={{ mb: '1rem' }}>
-            <TextField
-              variant="outlined"
-              label="Description"
-              id="description"
-              name="description"
-              fullWidth
-              multiline
-              rows={3}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.description}
-              error={
-                formik.touched.description &&
-                Boolean(formik.errors.description)
-              }
-              helperText={
-                formik.touched.description && formik.errors.description
-              }
+            <CKEditor
+              editor={ClassicEditor}
+              data={formik.values.description}
+              config={editorConfig}
+              onReady={(editor) => {
+                console.log('Editor is ready to use!', editor);
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                formik.setFieldValue('description', data);
+              }}
             />
-            <Stack sx={{flexDirection: 'row', justifyContent: 'flex-end'}}>{formik.values.description.length}/5000</Stack>
+            <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+              {formik.values.description.length}/5000
+            </Stack>
           </Box>
           <input
             type="file"
@@ -211,11 +227,11 @@ const FormDialogEditDocument = () => {
             Select File
           </Button>
           {selectedFileName && (
-            <Typography variant="body1" sx={{mb: '1rem'}}>
+            <Typography variant="body1" sx={{ mb: '1rem' }}>
               Selected File: {selectedFileName}
             </Typography>
           )}
-          <DocumentFormImage formik={formik}/>
+          <DocumentFormImage formik={formik} />
           {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
             <Box sx={{ my: '0.5rem' }}>
               <LinearProgress variant="determinate" value={progressValue} />

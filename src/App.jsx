@@ -26,6 +26,7 @@ import { RoleProvider } from './Contexts/RoleContext';
 import { CodeProvider } from './Contexts/CodeContext';
 import { DocumentProvider } from './Contexts/DocumentContext';
 import { BannerProvider } from './Contexts/BannerContext';
+import { NotificationProvider } from './Contexts/NotificationContext';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +53,9 @@ export default function App() {
                                   <CodeProvider>
                                     <DocumentProvider>
                                       <BannerProvider>
-                                        <Router />
+                                        <NotificationProvider>
+                                          <Router />
+                                        </NotificationProvider>
                                       </BannerProvider>
                                     </DocumentProvider>
                                   </CodeProvider>

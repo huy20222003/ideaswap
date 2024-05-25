@@ -69,7 +69,7 @@ const PostTabFollower = () => {
           followsWithUser.map((follow) => (
             <Card
               key={follow?._id}
-              sx={{ width: '7rem', height: '8rem', cursor: 'pointer' }}
+              sx={{ width: '7rem', height: '8rem', cursor: 'pointer', mx: '0.25rem' }}
               onClick={() => handleNavigate(follow?.followerID)}
             >
               <CardContent sx={{ p: 1, textAlign: 'center' }}>

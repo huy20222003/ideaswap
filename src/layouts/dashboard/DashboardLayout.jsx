@@ -3,10 +3,10 @@ import { Box, Grid } from '@mui/material';
 //react-router-dom
 import { Outlet } from 'react-router-dom';
 //component
-import Header from './header';
 import Banner from './banner';
 import VideoHot from '../../section/dashboard/VideoHot';
-import Footer from './footer';
+import Header from '../../Components/header';
+import Footer from '../../Components/footer';
 //-------------------------------------------------
 
 const DashboardLayout = () => {

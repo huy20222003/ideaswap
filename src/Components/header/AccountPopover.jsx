@@ -13,7 +13,7 @@ import {
   Popover,
 } from '@mui/material';
 //context
-import { useAuth, useRole } from '../../../hooks/context';
+import { useAuth, useRole } from '../../hooks/context';
 //js-cookie
 import Cookie from 'js-cookie';
 // ----------------------------------------------------------------------
@@ -26,13 +26,18 @@ export default function AccountPopover() {
   } = useAuth();
 
   const {
-    roleState: { role },
-    handleGetRoleById,
+    roleState: { roles },
+    handleGetAllRoles,
   } = useRole();
 
   useEffect(() => {
-    isAuthenticated && user?.roleID && handleGetRoleById(user?.roleID);
-  }, [handleGetRoleById, isAuthenticated, user?.roleID]);
+    isAuthenticated && handleGetAllRoles();
+  }, [handleGetAllRoles, isAuthenticated]);
+
+  const newUser = {
+    ...user,
+    roleName: roles.find((role) => role?._id === user?.roleID),
+  };  
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -131,7 +136,7 @@ export default function AccountPopover() {
               <MenuItem onClick={() => handleNavigate('setting')}>
                 Setting
               </MenuItem>
-              {role?.name === 'creator' ? (
+              {newUser?.roleName?.name == 'creator' ? (
                 <MenuItem onClick={() => handleNavigate('creator')}>
                   Creator
                 </MenuItem>

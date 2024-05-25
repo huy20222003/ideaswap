@@ -28,6 +28,7 @@ import Swal from 'sweetalert2';
 //--------------------------------------
 
 const ProfileInfo = () => {
+  document.title = "Setting";
   const [datimeValue, setDateTimeValue] = useState(dayjs(Date.now()));
   const [gender, setGender] = useState('Male');
   const {
@@ -230,7 +231,6 @@ const ProfileInfo = () => {
             label="PhoneNumber"
             name="phoneNumber"
             id="phoneNumber"
-            required
             variant="outlined"
             fullWidth
             autoComplete="PhoneNumber"
@@ -246,7 +246,6 @@ const ProfileInfo = () => {
             label="Address"
             name="address"
             id="address"
-            required
             variant="outlined"
             fullWidth
             autoComplete="Address"

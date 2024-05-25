@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import { NavLink as RouterLink } from 'react-router-dom';
-// @mui
-import { Box, List } from '@mui/material';
+import { Box, List, ListItemText } from '@mui/material';
 import { StyledNavItem, StyledNavItemIcon } from './styles';
 
 // ----------------------------------------------------------------------
 
 NavSection.propTypes = {
   data: PropTypes.array,
+  isOpen: PropTypes.bool,
 };
 
-export default function NavSection({ data = [], ...other }) {
+export default function NavSection({ data = [], isOpen, ...other }) {
   return (
     <Box {...other}>
       <List
@@ -19,12 +19,13 @@ export default function NavSection({ data = [], ...other }) {
           p: 1,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          m: '0 8rem',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          m: { xs: '0 2rem', md: '0 8rem' },
+          flexDirection: { xs: 'column', md: 'row' },
         }}
       >
         {data.map((item, index) => (
-          <NavItem key={index} item={item} />
+          <NavItem key={index} item={item} isOpen={isOpen} />
         ))}
       </List>
     </Box>
@@ -35,10 +36,11 @@ export default function NavSection({ data = [], ...other }) {
 
 NavItem.propTypes = {
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+  isOpen: PropTypes.bool,
 };
 
-function NavItem({ item }) {
-  const { path, icon, info } = item;
+function NavItem({ item, isOpen }) {
+  const { path, icon, info, title } = item;
 
   return (
     <StyledNavItem
@@ -49,8 +51,8 @@ function NavItem({ item }) {
         textDecoration: 'none',
         color: 'text.secondary',
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center', 
+        flexDirection: 'row',
+        alignItems: 'center',
         '&.active': {
           color: 'text.primary',
         },
@@ -60,18 +62,27 @@ function NavItem({ item }) {
           bottom: 0,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '0%', 
-          height: 3, 
+          width: '0%',
+          height: 3,
           backgroundColor: 'white',
           borderRadius: '10%',
-          transition: 'width 0.3s ease', 
+          transition: 'width 0.3s ease',
         },
         '&.active::after': {
-          width: '80%', 
+          width: '80%',
         },
+        mx: { xs: 1, md: 2 },
+        my: { xs: 0.5, md: 0 },
       }}
     >
       <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
+      {isOpen && (
+        <ListItemText
+          primary={title}
+          sx={{ ml: 2, display: { md: 'none', xl: 'none', lg: 'none' } }}
+        />
+      )}{' '}
+      {/* Display title if menu is open */}
       {info && info}
     </StyledNavItem>
   );

@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-import { set, sub } from 'date-fns';
-import { noCase } from 'change-case';
-import { faker } from '@faker-js/faker';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // @mui
 import {
   Box,
@@ -21,65 +18,34 @@ import {
   ListItemButton,
 } from '@mui/material';
 // utils
-import { fToNow } from '../../../utils/formatTime';
+import { fToNow } from '../../utils/formatTime';
 // components
-import Iconify from '../../../Components/iconify';
-import Scrollbar from '../../../Components/scrollbar';
+import Iconify from '../iconify';
+import Scrollbar from '../scrollbar';
+//context
+import { useNotification, useAuth } from '../../hooks/context';
 
 // ----------------------------------------------------------------------
 
-const NOTIFICATIONS = [
-  {
-    id: faker.string.uuid(),
-    title: 'Your order is placed',
-    description: 'waiting for shipping',
-    avatar: null,
-    type: 'order_placed',
-    createdAt: set(new Date(), { hours: 10, minutes: 30 }),
-    isUnRead: true,
-  },
-  {
-    id: faker.string.uuid(),
-    title: faker.person.fullName(),
-    description: 'answered to your comment on the Minimal',
-    avatar: '/assets/images/avatars/avatar_2.jpg',
-    type: 'friend_interactive',
-    createdAt: sub(new Date(), { hours: 3, minutes: 30 }),
-    isUnRead: true,
-  },
-  {
-    id: faker.string.uuid(),
-    title: 'You have new message',
-    description: '5 unread messages',
-    avatar: null,
-    type: 'chat_message',
-    createdAt: sub(new Date(), { days: 1, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-  {
-    id: faker.string.uuid(),
-    title: 'You have new mail',
-    description: 'sent from Guido Padberg',
-    avatar: null,
-    type: 'mail',
-    createdAt: sub(new Date(), { days: 2, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-  {
-    id: faker.string.uuid(),
-    title: 'Delivery processing',
-    description: 'Your order is being shipped',
-    avatar: null,
-    type: 'order_shipped',
-    createdAt: sub(new Date(), { days: 3, hours: 3, minutes: 30 }),
-    isUnRead: false,
-  },
-];
-
 export default function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const {
+    notificationState: { notifications },
+    handleGetAllNotifications,
+  } = useNotification();
 
-  const totalUnRead = notifications.filter(
+  const {
+    authState: { user, isAuthenticated },
+  } = useAuth();
+
+  useEffect(() => {
+    isAuthenticated && handleGetAllNotifications();
+  }, [handleGetAllNotifications, isAuthenticated]);
+
+  const notificationByUserId = notifications.filter(
+    (item) => item?.userID === user?._id
+  );
+
+  const totalUnRead = notificationByUserId.filter(
     (item) => item.isUnRead === true
   ).length;
 
@@ -94,12 +60,12 @@ export default function NotificationsPopover() {
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
+    // setNotifications(
+    //   notifications.map((notification) => ({
+    //     ...notification,
+    //     isUnRead: false,
+    //   }))
+    // );
   };
 
   return (
@@ -159,9 +125,9 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(0, 2).map((notification) => (
+            {notificationByUserId.slice(0, 2).map((notification) => (
               <NotificationItem
-                key={notification.id}
+                key={notification._id}
                 notification={notification}
               />
             ))}
@@ -178,12 +144,14 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
+            {notificationByUserId
+              .slice(2, notificationByUserId.length)
+              .map((notification) => (
+                <NotificationItem
+                  key={notification._id}
+                  notification={notification}
+                />
+              ))}
           </List>
         </Scrollbar>
 
@@ -203,18 +171,21 @@ export default function NotificationsPopover() {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape({
-    createdAt: PropTypes.instanceOf(Date),
-    id: PropTypes.string,
+    createdAt: PropTypes.string,
+    _id: PropTypes.string,
     isUnRead: PropTypes.bool,
-    title: PropTypes.string,
     description: PropTypes.string,
-    type: PropTypes.string,
-    avatar: PropTypes.any,
+    imageUrl: PropTypes.any,
   }),
 };
 
 function NotificationItem({ notification }) {
-  const { avatar, title } = renderContent(notification);
+  const { imageUrl, description } = renderContent(notification);
+  const { handleUpdateNotifications } = useNotification();
+
+  const handleUpdateRead = async () => {
+    await handleUpdateNotifications(notification?._id, { isUnRead: false });
+  };
 
   return (
     <ListItemButton
@@ -226,12 +197,13 @@ function NotificationItem({ notification }) {
           bgcolor: 'action.selected',
         }),
       }}
+      onClick={handleUpdateRead}
     >
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
+        <Avatar sx={{ bgcolor: 'background.neutral' }}>{imageUrl}</Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={title}
+        primary={description}
         secondary={
           <Typography
             variant="caption"
@@ -257,67 +229,19 @@ function NotificationItem({ notification }) {
 // ----------------------------------------------------------------------
 
 function renderContent(notification) {
-  const title = (
-    <Typography variant="subtitle2">
-      {notification.title}
-      <Typography
-        component="span"
-        variant="body2"
-        sx={{ color: 'text.secondary' }}
-      >
-        &nbsp; {noCase(notification.description)}
-      </Typography>
+  const description = (
+    <Typography
+      component="span"
+      variant="body2"
+      sx={{ color: 'text.secondary' }}
+    >
+      {notification.description}
     </Typography>
   );
-
-  if (notification.type === 'order_placed') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/assets/icons/ic_notification_package.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'order_shipped') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/assets/icons/ic_notification_shipping.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'mail') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/assets/icons/ic_notification_mail.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'chat_message') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/assets/icons/ic_notification_chat.svg"
-        />
-      ),
-      title,
-    };
-  }
   return {
-    avatar: notification.avatar ? (
-      <img alt={notification.title} src={notification.avatar} />
+    imageUrl: notification.imageUrl ? (
+      <img alt={notification.description} src={notification.imageUrl} />
     ) : null,
-    title,
+    description,
   };
 }

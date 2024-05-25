@@ -9,31 +9,28 @@ import {
   InputAdornment,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useDocument } from '../../../hooks/context';
+import { useDocument, useAuth } from '../../../hooks/context';
 
 const SearchDocument = () => {
   const { handleSearchDocuments } = useDocument();
   const [searchTerm, setSearchTerm] = useState('');
+  const {authState: {user}} = useAuth();
 
-  const handleSearch = useCallback(()=>{
-    async () => {
-      try {
-        await handleSearchDocuments(searchTerm);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  }, [handleSearchDocuments, searchTerm]);
+  const handleSearch = useCallback(async () => {
+    try {
+      await handleSearchDocuments(searchTerm);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [searchTerm, handleSearchDocuments]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       handleSearch();
-    }, 1); 
+    }, 300); // Thường thì chúng ta để debounce time khoảng 300ms
 
     return () => clearTimeout(delayDebounceFn);
-  }, [handleSearch, searchTerm]);
-
-  handleSearch();
+  }, [handleSearch]);
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
@@ -50,7 +47,7 @@ const SearchDocument = () => {
           }}
         >
           <Box>
-            <Avatar alt="Avatar" src="/assets/images/avatars/avatar_2.jpg" />
+            <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
           <Box sx={{ width: '38rem' }}>
             <TextField
