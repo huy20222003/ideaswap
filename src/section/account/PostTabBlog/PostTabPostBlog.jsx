@@ -56,6 +56,7 @@ const PostTabPostBlog = () => {
                     <ModeEditOutlineOutlinedIcon />
                   </InputAdornment>
                 ),
+                readOnly: true,
               }}
               onClick = {handleOpenPostBlog}
             />

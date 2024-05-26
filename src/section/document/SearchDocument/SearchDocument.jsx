@@ -59,6 +59,7 @@ const SearchDocument = () => {
               sx={{
                 bgcolor: 'white',
                 borderRadius: '0.5rem',
+                width: {xs: '15rem', sm: '16rem', md: '25rem', xl: '38rem', lg: '40rem'}
               }}
               InputProps={{
                 startAdornment: (

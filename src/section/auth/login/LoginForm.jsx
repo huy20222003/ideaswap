@@ -1,8 +1,5 @@
-//react
 import { useState } from 'react';
-//react-router-dom
 import { Link, useNavigate } from 'react-router-dom';
-//mui
 import {
   Box,
   Typography,
@@ -15,27 +12,22 @@ import {
   IconButton,
   InputAdornment,
   CircularProgress,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import GoogleIcon from '@mui/icons-material/Google';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import styled from '@emotion/styled';
-import { LoadingButton } from '@mui/lab';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-//components
 import Iconify from '../../../Components/iconify';
-//sweetalert
 import Swal from 'sweetalert2';
-//yup
 import * as yup from 'yup';
-//formik
 import { useFormik } from 'formik';
-//context
 import { useAuth } from '../../../hooks/context';
-//cookie
 import Cookies from 'js-cookie';
-//-------------------------------
 
 const LinkStyled = styled(Link)`
   text-decoration: none;
@@ -49,6 +41,9 @@ const LoginForm = () => {
   document.title = 'Login';
   const { loginUser, loadUser } = useAuth();
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -83,16 +78,16 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Box sx={{ maxWidth: '30rem' }}>
-      <Typography variant="h4" sx={{ my: '0.5rem' }}>
+    <Box sx={{ maxWidth: '30rem', margin: 'auto' }}>
+      <Typography variant="h4" sx={{ my: '0.5rem', textAlign: 'center' }}>
         Login
       </Typography>
-      <Typography variant="body2" sx={{ color: 'grey' }}>
-        Wellcome back, Enter your credenitials to access your account
+      <Typography variant="body2" sx={{ color: 'grey', textAlign: 'center' }}>
+        {isMobile ? 'Welcome back! Enter your credentials to access your account' : 'Wellcome back, Enter your credentials to access your account'}
       </Typography>
       <Box sx={{ mt: '0.5rem', my: '1rem' }}>
         <Stack sx={{ gap: '1.5rem' }}>
-          <Box>
+          <Box sx={{ width: '100%' }}>
             <TextField
               label="Username"
               name='username'
@@ -123,7 +118,7 @@ const LoginForm = () => {
               }}
             />
           </Box>
-          <Box>
+          <Box sx={{ width: '100%' }}>
             <TextField
               label="Password"
               name='password'
@@ -162,19 +157,36 @@ const LoginForm = () => {
                 }
               }}
             />
-            <Typography
-              sx={{
-                textAlign: 'end',
-                color: 'primary.main',
-                fontSize: '0.75rem',
-                mt: '0.25rem',
-                cursor: 'pointer'
-              }}
-            >
-              Forget password?
-            </Typography>
+            {isMobile && (
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: 'end',
+                  color: 'primary.main',
+                  fontSize: '0.75rem',
+                  mt: '0.25rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Forget password?
+              </Typography>
+            )}
           </Box>
         </Stack>
+        {!isMobile && (
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: 'end',
+              color: 'primary.main',
+              fontSize: '0.75rem',
+              mt: '0.25rem',
+              cursor: 'pointer'
+            }}
+          >
+            Forget password?
+          </Typography>
+        )}
         <FormControlLabel
           control={<Checkbox defaultChecked />}
           label="Remember me"
@@ -187,68 +199,69 @@ const LoginForm = () => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            >
+              <CircularProgress size={30} />
+            </Stack>
+          ) : (
+            <LoadingButton
+              fullWidth
+              size="medium"
+              type="submit"
+              variant="contained"
+              sx={{color: 'white', py: '0.5rem', my: '1rem'}}
+              loadingIndicator={<CircularProgress size={16} />}
+              onClick={formik.handleSubmit}
+            >
+              Login
+            </LoadingButton>
+          )}
+        </Box>
+        <Divider sx={{ fontSize: '0.8rem' }}>OR</Divider>
+        <Stack
+          sx={{
+            flexDirection: 'row',
+            gap: '1rem',
+            mt: '1rem',
+            justifyContent: 'center',
+          }}
+        >
+         
+         <Button
+            variant="outlined"
+            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+            startIcon={<GoogleIcon />}
           >
-            <CircularProgress size={30} />
-          </Stack>
-        ) : (
-          <LoadingButton
-            fullWidth
-            size="medium"
-            type="submit"
-            variant="contained"
-            sx={{color: 'white', py: '0.5rem', my: '1rem'}}
-            loadingIndicator={<CircularProgress size={16} />}
-            onClick={formik.handleSubmit}
+            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+              Google
+            </Typography>
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+            startIcon={<FacebookIcon />}
           >
-            Login
-          </LoadingButton>
-        )}
+            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+              Facebook
+            </Typography>
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+            startIcon={<TelegramIcon />}
+          >
+            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+              Telegram
+            </Typography>
+          </Button>
+        </Stack>
+        <Stack
+          sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}
+        >
+          <Typography variant="body2">Do not have an account?</Typography>
+          <LinkStyled to="/auth/register">Register here</LinkStyled>
+        </Stack>
       </Box>
-      <Divider sx={{ fontSize: '0.8rem' }}>OR</Divider>
-      <Stack
-        sx={{
-          flexDirection: 'row',
-          gap: '1rem',
-          mt: '1rem',
-          justifyContent: 'center',
-        }}
-      >
-        <Button
-          variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
-          startIcon={<GoogleIcon />}
-        >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
-            Google
-          </Typography>
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
-          startIcon={<FacebookIcon />}
-        >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
-            Facebook
-          </Typography>
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
-          startIcon={<TelegramIcon />}
-        >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
-            Telegram
-          </Typography>
-        </Button>
-      </Stack>
-      <Stack
-        sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}
-      >
-        <Typography variant="body2">Do not have an account?</Typography>
-        <LinkStyled to="/auth/register">Register here</LinkStyled>
-      </Stack>
-    </Box>
-  );
-};
-
-export default LoginForm;
+    );
+  };
+  
+  export default LoginForm;

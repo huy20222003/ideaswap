@@ -404,28 +404,28 @@ const RegisterForm = () => {
       >
         <Button
           variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
+          sx={{ px: '1.5rem', mx: '0.2rem' }}
           startIcon={<GoogleIcon />}
         >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
             Google
           </Typography>
         </Button>
         <Button
           variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
+          sx={{ px: '1.5rem', mx: '0.2rem' }}
           startIcon={<FacebookIcon />}
         >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
             Facebook
           </Typography>
         </Button>
         <Button
           variant="outlined"
-          sx={{ px: '1.5rem', mx: '0.5rem' }}
+          sx={{ px: '1.5rem', mx: '0.2rem' }}
           startIcon={<TelegramIcon />}
         >
-          <Typography sx={{ color: 'black', ml: '0.5rem', fontSize: '0.8rem' }}>
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
             Telegram
           </Typography>
         </Button>
