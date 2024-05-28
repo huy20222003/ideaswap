@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 //mui
 import {
   Avatar,
@@ -18,18 +18,19 @@ import FormDialogPostBlog from '../../../Components/FormDialog/Blog/FormDialogPo
 //------------------------------------------------------------------------
 
 const PostTabPostBlog = () => {
-
-  const {setOpenFormDialog} = useCommon();
-  const {authState: {isAuthenticated, user}} = useAuth();
+  const { setOpenFormDialog } = useCommon();
+  const {
+    authState: { isAuthenticated, user },
+  } = useAuth();
   const navigate = useNavigate();
 
-  const handleOpenPostBlog = ()=> {
-    if(isAuthenticated) {
+  const handleOpenPostBlog = () => {
+    if (isAuthenticated) {
       setOpenFormDialog(true);
     } else {
-      navigate("/auth/login");
+      navigate('/auth/login');
     }
-  }
+  };
 
   return (
     <Card sx={{ my: '1rem', bgcolor: 'primary.main' }}>
@@ -39,17 +40,22 @@ const PostTabPostBlog = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box sx={{ width: {xl: '28rem', md: '26rem', sm: '25rem'} }}>
+          <Box sx={{ width: { xl: '28rem', md: '26rem', sm: '25rem' } }}>
             <TextField
               variant="outlined"
               fullWidth
               size="small"
-              sx={{bgcolor: 'white', borderRadius: '0.5rem'}}
+              sx={{
+                bgcolor: 'white',
+                borderRadius: '0.5rem',
+                width: { xl: '80%', md: '80%', sm: '80%', xs: '80%' },
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -58,13 +64,18 @@ const PostTabPostBlog = () => {
                 ),
                 readOnly: true,
               }}
-              onClick = {handleOpenPostBlog}
+              onClick={handleOpenPostBlog}
             />
           </Box>
           <Box>
             <CameraAltOutlinedIcon
-              sx={{ width: '2rem', height: '2rem', color: 'white', cursor: 'pointer' }}
-              onClick = {handleOpenPostBlog}
+              sx={{
+                width: '2rem',
+                height: '2rem',
+                color: 'white',
+                cursor: 'pointer',
+              }}
+              onClick={handleOpenPostBlog}
             />
           </Box>
         </Stack>
