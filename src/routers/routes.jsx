@@ -23,6 +23,7 @@ const ProfilePage = lazy(() => import('../Pages/ProfilePage'));
 const PasswordPage = lazy(() => import('../Pages/PasswordPage'));
 const LanguagePage = lazy(() => import('../Pages/LanguagePage'));
 const AccountPage = lazy(() => import('../Pages/AccountPage'));
+const BlogDetailPage = lazy(() => import('../Pages/BlogDetailPage'));
 //auth page
 const LoginPage = lazy(() => import('../Pages/AuthPage/LoginPage'));
 const RegiterPage = lazy(() => import('../Pages/AuthPage/RegisterPage'));
@@ -43,6 +44,7 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
+        { path: 'blog/:_id', element: <BlogDetailPage /> },
         { path: 'document', element: <DocumentPage /> },
         { path: 'course', element: <CoursePage /> },
         { path: 'donate', element: <DonatePage /> },

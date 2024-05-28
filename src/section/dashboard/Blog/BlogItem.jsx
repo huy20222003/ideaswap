@@ -22,7 +22,7 @@ import {
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentIcon from '@mui/icons-material/Comment';
-import ShareIcon from '@mui/icons-material/Share';
+import LinkIcon from '@mui/icons-material/Link';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,6 +36,7 @@ import {
   useHeart,
   useBlog,
   useRole,
+  useShare,
 } from '../../../hooks/context';
 import HTMLReactParser from 'html-react-parser';
 //--------------------------------------------------------
@@ -62,6 +63,8 @@ const BlogItem = ({ blog }) => {
     commentArrays,
     user,
   } = blog;
+  const { handleCreateShare, handleGetAllShares } = useShare();
+
   const [expanded, setExpanded] = useState(false);
   const { authState } = useAuth();
   const { setOpenFormDialogEditBlog } = useCommon();
@@ -85,6 +88,8 @@ const BlogItem = ({ blog }) => {
     handleGetAllRoles,
   } = useRole();
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   useEffect(() => {
     authState?.isAuthenticated && handleGetAllRoles();
   }, [authState?.isAuthenticated, handleGetAllRoles]);
@@ -93,6 +98,10 @@ const BlogItem = ({ blog }) => {
     ...user,
     roleName: roles.find((role) => role?._id === user?.roleID),
   };
+
+  useEffect(() => {
+    handleGetAllShares();
+  }, [handleGetAllShares]);
 
   useEffect(() => {
     const updateHeartIcon = () => {
@@ -105,6 +114,18 @@ const BlogItem = ({ blog }) => {
     };
     updateHeartIcon();
   }, [_id, authState.user, heartArrays]);
+
+  const handleShare = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    await handleCreateShare({
+      userID: authState?.user?._id,
+      bvID: blog?._id,
+    });
+    handleGetAllShares();
+  };
 
   const handleEditBlogClick = useCallback(
     async (blogId) => {
@@ -166,6 +187,31 @@ const BlogItem = ({ blog }) => {
         icon: 'error',
       });
     }
+  };
+
+  const handleNavigateBlogDetail = async (blogId) => {
+    const response = await handleGetOneBlog(blogId);
+    if (response.success) {
+      navigate(`/dashboard/blog/${_id}`);
+    }
+  };
+
+  const handleCopyToClipboard = () => {
+    const url = new URL(window.location.href);
+    const baseUrl = `${url.protocol}//${url.host}`;
+    const fullUrl = `${baseUrl}/dashboard/blog/${_id}`;
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        setTooltipOpen(true);
+        setTimeout(() => {
+          setTooltipOpen(false);
+        }, 2000); // Show tooltip for 2 seconds
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+    handleShare();
   };
 
   const truncatedContent = expanded ? content : `${content.slice(0, 100)}...`;
@@ -251,9 +297,15 @@ const BlogItem = ({ blog }) => {
       <CardMedia
         component="img"
         height="350"
-        sx={{ p: '0.5rem', borderRadius: '0.4rem', objectFit: 'contain' }}
+        sx={{
+          p: '0.5rem',
+          borderRadius: '0.4rem',
+          objectFit: 'contain',
+          cursor: 'pointer',
+        }}
         image={url}
         alt={`${user?.firstName} ${user?.lastName}`}
+        onClick={() => handleNavigateBlogDetail(_id)}
       />
       <Box
         sx={{
@@ -302,9 +354,17 @@ const BlogItem = ({ blog }) => {
         >
           <CommentIcon />
         </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+        <LightTooltip
+          title="URL copied to clipboard!"
+          open={tooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+        >
+          <IconButton aria-label="share" onClick={handleCopyToClipboard}>
+            <LinkIcon />
+          </IconButton>
+        </LightTooltip>
       </CardActions>
     </Card>
   );

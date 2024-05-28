@@ -21,10 +21,12 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  styled,
 } from '@mui/material';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentIcon from '@mui/icons-material/Comment';
-import ShareIcon from '@mui/icons-material/Share';
+import LinkIcon from '@mui/icons-material/Link';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,18 +34,52 @@ import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 //ultils
 import { fDateTime } from '../../../utils/formatTime';
 //context
-import { useAuth, useCommon, useHeart, useBlog } from '../../../hooks/context';
+import {
+  useAuth,
+  useCommon,
+  useHeart,
+  useBlog,
+  useShare,
+} from '../../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
 //--------------------------------------------------------------------------------------
 
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  },
+}));
+
 const PostTabBlogItem = ({ blog }) => {
-  const { _id, content, url, createdAt, heartArrays, shareArrays, commentArrays, user } = blog;
+  const {
+    _id,
+    content,
+    url,
+    createdAt,
+    heartArrays,
+    shareArrays,
+    commentArrays,
+    user,
+  } = blog;
   const [expanded, setExpanded] = useState(false);
   const { authState } = useAuth();
   const { setOpenFormDialogEditBlog } = useCommon();
-  const { setOpenFormDialogDeleteBlog, handleGetOneBlog, setOpenFormDialogCommentBlog } = useBlog();
+  const {
+    setOpenFormDialogDeleteBlog,
+    handleGetOneBlog,
+    setOpenFormDialogCommentBlog,
+  } = useBlog();
+
+  const { handleCreateShare, handleGetAllShares } = useShare();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
   const { handleCreateHeart, handleDeleteHeart } = useHeart();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,8 +92,12 @@ const PostTabBlogItem = ({ blog }) => {
 
   useEffect(() => {
     const updateHeartIcon = () => {
-      const heartFind = heartArrays.find(heart => heart?.userID === authState.user?._id && heart.bvID == _id);
-      setHeartIcon(heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />);
+      const heartFind = heartArrays.find(
+        (heart) => heart?.userID === authState.user?._id && heart.bvID == _id
+      );
+      setHeartIcon(
+        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
+      );
     };
     updateHeartIcon();
   }, [_id, authState.user, heartArrays]);
@@ -72,6 +112,36 @@ const PostTabBlogItem = ({ blog }) => {
     },
     [handleGetOneBlog, setOpenFormDialogEditBlog]
   );
+
+  const handleShare = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    await handleCreateShare({
+      userID: authState?.user?._id,
+      bvID: blog?._id,
+    });
+    handleGetAllShares();
+  };
+
+  const handleCopyToClipboard = () => {
+    const url = new URL(window.location.href);
+    const baseUrl = `${url.protocol}//${url.host}`;
+    const fullUrl = `${baseUrl}/dashboard/blog/${_id}`;
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        setTooltipOpen(true);
+        setTimeout(() => {
+          setTooltipOpen(false);
+        }, 2000); // Show tooltip for 2 seconds
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+    handleShare();
+  };
 
   const handleDeleteBlog = useCallback(
     async (blogId) => {
@@ -104,11 +174,11 @@ const PostTabBlogItem = ({ blog }) => {
     try {
       if (heartIcon.props.sx) {
         await handleDeleteHeart(data);
-        setHeartLength(prevHeartLength => prevHeartLength - 1);
+        setHeartLength((prevHeartLength) => prevHeartLength - 1);
         setHeartIcon(<FavoriteIcon />);
       } else {
         await handleCreateHeart(data);
-        setHeartLength(prevHeartLength => prevHeartLength + 1);
+        setHeartLength((prevHeartLength) => prevHeartLength + 1);
         setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
       }
     } catch (error) {
@@ -117,6 +187,13 @@ const PostTabBlogItem = ({ blog }) => {
         text: 'An error occurred while processing your action. Please try again later.',
         icon: 'error',
       });
+    }
+  };
+
+  const handleNavigateBlogDetail = async (blogId) => {
+    const response = await handleGetOneBlog(blogId);
+    if (response.success) {
+      navigate(`/dashboard/blog/${_id}`);
     }
   };
 
@@ -144,17 +221,23 @@ const PostTabBlogItem = ({ blog }) => {
         {authState?.user?._id === user?._id && (
           <Box>
             <MenuItem onClick={() => handleEditBlogClick(blog)}>
-              <ListItemIcon><EditIcon /></ListItemIcon>
+              <ListItemIcon>
+                <EditIcon />
+              </ListItemIcon>
               <ListItemText primary="Sửa bài viết" />
             </MenuItem>
             <MenuItem onClick={handleDeleteBlog}>
-              <ListItemIcon><DeleteIcon /></ListItemIcon>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
               <ListItemText primary="Xoá bài viết" />
             </MenuItem>
           </Box>
         )}
         <MenuItem onClick={handleClose}>
-          <ListItemIcon><FlagCircleIcon /></ListItemIcon>
+          <ListItemIcon>
+            <FlagCircleIcon />
+          </ListItemIcon>
           <ListItemText primary="Báo cáo bài viết" />
         </MenuItem>
       </Menu>
@@ -173,15 +256,53 @@ const PostTabBlogItem = ({ blog }) => {
           )}
         </Typography>
       </CardContent>
-      <CardMedia component="img" height="350" sx={{ p: '0.5rem', borderRadius: '0.4rem', objectFit: 'contain' }} image={url} alt={`${user?.firstName} ${user?.lastName}`} />
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', p: '0.5rem' }}>
+      <CardMedia
+        component="img"
+        height="350"
+        sx={{
+          p: '0.5rem',
+          borderRadius: '0.4rem',
+          objectFit: 'contain',
+          cursor: 'pointer',
+        }}
+        image={url}
+        alt={`${user?.firstName} ${user?.lastName}`}
+        onClick={() => handleNavigateBlogDetail(blog?._id)}
+      />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          p: '0.5rem',
+        }}
+      >
         <Stack sx={{ flexDirection: 'row' }}>
           <FavoriteIcon sx={{ color: 'red' }} />
-          <Typography variant="body1" color="text.secondary" sx={{ mx: '0.2rem' }}>{heartLength}</Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mx: '0.2rem' }}
+          >
+            {heartLength}
+          </Typography>
         </Stack>
         <Stack sx={{ flexDirection: 'row' }}>
-          <Typography variant="body1" color="text.secondary" sx={{ mx: '0.4rem' }}>{commentArrays.length} comments</Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mx: '0.4rem' }}>{shareArrays.length} shares</Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mx: '0.4rem' }}
+          >
+            {commentArrays.length} comments
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mx: '0.4rem' }}
+          >
+            {shareArrays.length} shares
+          </Typography>
         </Stack>
       </Box>
       <Divider />
@@ -189,8 +310,23 @@ const PostTabBlogItem = ({ blog }) => {
         <IconButton aria-label="add to favorites" onClick={handleClickHeart}>
           {heartIcon}
         </IconButton>
-        <IconButton aria-label="share" onClick={()=>handleOpenFormCommentBlog(blog?._id)}><CommentIcon /></IconButton>
-        <IconButton aria-label="share"><ShareIcon /></IconButton>
+        <IconButton
+          aria-label="share"
+          onClick={() => handleOpenFormCommentBlog(blog?._id)}
+        >
+          <CommentIcon />
+        </IconButton>
+        <LightTooltip
+          title="URL copied to clipboard!"
+          open={tooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+        >
+          <IconButton aria-label="share" onClick={handleCopyToClipboard}>
+            <LinkIcon />
+          </IconButton>
+        </LightTooltip>
       </CardActions>
     </Card>
   );

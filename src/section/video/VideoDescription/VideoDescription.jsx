@@ -139,10 +139,12 @@ const VideoDescription = ({ video }) => {
         await handleDeleteHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength - 1);
         setHeartIcon(<FavoriteBorderIcon />);
+        handleGetAllHearts();
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
         setHeartIcon(<FavoriteIcon />);
+        handleGetAllHearts();
       }
     } catch (error) {
       Swal.fire({

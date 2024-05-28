@@ -1,13 +1,10 @@
-import { forwardRef, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useMemo, useCallback, memo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 // prop-type
 import PropTypes from 'prop-types';
 // mui
 import {
   Box,
-  Dialog,
-  DialogTitle,
-  Slide,
   Stack,
   Divider,
   Typography,
@@ -23,10 +20,9 @@ import {
   styled,
 } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import CloseIcon from '@mui/icons-material/Close';
 import CommentIcon from '@mui/icons-material/Comment';
-import LinkIcon from '@mui/icons-material/Link';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import LinkIcon from '@mui/icons-material/Link';
 // context
 import {
   useBlog,
@@ -39,7 +35,7 @@ import {
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // component
-import FormDialogCommentList from './FormDialogCommentList';
+import BlogDetailCommentList from './BlogDetailCommentList';
 // formik
 import { useFormik } from 'formik';
 // yup
@@ -47,7 +43,6 @@ import * as yup from 'yup';
 // sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
-//------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -60,25 +55,20 @@ const LightTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
-const FormDialogCommentBlog = () => {
+const BlogDetail = () => {
   const {
     blogState: { blog },
-    openFormDialogCommentBlog,
-    setOpenFormDialogCommentBlog,
+    handleGetOneBlog,
   } = useBlog();
   const [expanded, setExpanded] = useState(false);
-  const toggleExpand = () => setExpanded(!expanded);
-  const navigate = useNavigate();
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const toggleExpand = useCallback(() => setExpanded((prev) => !prev), []);
   const {
     commentState: { comments },
     handleGetAllComments,
     handleCreateComment,
   } = useComment();
+  const navigate = useNavigate();
+  const { _id } = useParams();
   const {
     userState: { user },
     handleGetUserById,
@@ -95,23 +85,10 @@ const FormDialogCommentBlog = () => {
   const { shares } = shareState;
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
 
-  const commentsFilter = comments.filter(
-    (comment) => comment?.bvID === blog?._id
-  );
-
   useEffect(() => {
     handleGetAllHearts();
     handleGetAllShares();
   }, [handleGetAllHearts, handleGetAllShares]);
-
-  useEffect(() => {
-    handleGetAllComments();
-    blog?.userID && handleGetUserById(blog?.userID);
-  }, [blog?.userID, handleGetAllComments, handleGetUserById]);
-
-  const handleClose = () => {
-    setOpenFormDialogCommentBlog(false);
-  };
 
   const handleShare = async () => {
     if (!authState.isAuthenticated) {
@@ -125,10 +102,16 @@ const FormDialogCommentBlog = () => {
     handleGetAllShares();
   };
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const fetchBlog = useCallback(async () => {
+    await handleGetOneBlog(_id);
+  }, [_id, handleGetOneBlog]);
+
   const handleCopyToClipboard = () => {
     const url = new URL(window.location.href);
     const baseUrl = `${url.protocol}//${url.host}`;
-    const fullUrl = `${baseUrl}/dashboard/blog/${blog?._id}`;
+    const fullUrl = `${baseUrl}/dashboard/blog/${_id}`;
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -143,8 +126,28 @@ const FormDialogCommentBlog = () => {
     handleShare();
   };
 
-  const heartArrays = hearts.filter((heart) => heart?.bvID === blog?._id);
-  const shareArrays = shares.filter((share) => share?.bvID === blog?._id);
+  useEffect(() => {
+    fetchBlog();
+  }, [fetchBlog]);
+
+  useEffect(() => {
+    handleGetAllComments();
+    if (blog?.userID) {
+      handleGetUserById(blog.userID);
+    }
+  }, [blog?.userID, handleGetAllComments, handleGetUserById]);
+
+  const commentsFilter = useMemo(() => {
+    return comments.filter((comment) => comment?.bvID === blog?._id);
+  }, [comments, blog?._id]);
+
+  const heartArrays = useMemo(() => {
+    return hearts.filter((heart) => heart?.bvID === blog?._id);
+  }, [hearts, blog?._id]);
+
+  const shareArrays = useMemo(() => {
+    return shares.filter((share) => share?.bvID === blog?._id);
+  }, [shares, blog?._id]);
 
   const [heartLength, setHeartLength] = useState(heartArrays.length);
 
@@ -161,12 +164,12 @@ const FormDialogCommentBlog = () => {
     updateHeartIcon();
   }, [blog?._id, authState.user, heartArrays]);
 
-  const handleClickHeart = async () => {
+  const handleClickHeart = useCallback(async () => {
     if (!authState.isAuthenticated) {
       navigate('/auth/login');
       return;
     }
-    const data = { userID: authState.user._id, bvID: blog?._id };
+    const data = { userID: authState?.user?._id, bvID: blog?._id };
     try {
       if (heartIcon.props.sx) {
         await handleDeleteHeart(data);
@@ -184,7 +187,15 @@ const FormDialogCommentBlog = () => {
         icon: 'error',
       });
     }
-  };
+  }, [
+    authState?.isAuthenticated,
+    authState?.user?._id,
+    blog?._id,
+    handleCreateHeart,
+    handleDeleteHeart,
+    heartIcon.props.sx,
+    navigate,
+  ]);
 
   const truncatedContent = expanded
     ? blog?.content
@@ -226,54 +237,8 @@ const FormDialogCommentBlog = () => {
   }, [blog?._id]);
 
   return (
-    <Dialog
-      open={openFormDialogCommentBlog}
-      TransitionComponent={Transition}
-      keepMounted
-      onClose={handleClose}
-      sx={{
-        '& .MuiDialog-paper': {
-          width: { lg: '70%', xl: '60%', md: '60%', sm: '80%', xs: '90%' },
-          maxWidth: 'none',
-        },
-      }}
-      scroll="paper"
-    >
-      <Stack
-        sx={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <DialogTitle>
-          Blog of {user?.firstName + ' ' + user?.lastName}
-        </DialogTitle>
-        <CloseIcon
-          onClick={handleClose}
-          sx={{ cursor: 'pointer', mr: '1rem' }}
-        />
-      </Stack>
-      <Divider />
-      <Box
-        sx={{
-          overflowY: 'auto',
-          maxHeight: '70vh',
-          p: '1rem',
-          '&::-webkit-scrollbar': {
-            width: '0.4em',
-          },
-          '&::-webkit-scrollbar-track': {
-            boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.05)',
-            webkitBoxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.05)',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(0,0,0,.5)',
-            outline: '1px solid slategrey',
-            borderRadius: '0.5em',
-          },
-        }}
-      >
+    <Box sx={{ p: '1rem', mt: '4rem' }}>
+      <Box>
         <Card sx={{ my: '1rem' }}>
           <CardHeader
             avatar={<Avatar src={user?.avatar} />}
@@ -398,18 +363,18 @@ const FormDialogCommentBlog = () => {
           </Typography>
           {commentsFilter.length > 0 ? (
             <Box>
-              <FormDialogCommentList comments={commentsFilter} />
+              <BlogDetailCommentList comments={commentsFilter} />
             </Box>
           ) : (
             'Chưa có bình luận nào'
           )}
         </Box>
       </Box>
-    </Dialog>
+    </Box>
   );
 };
 
-FormDialogCommentBlog.propTypes = {
+BlogDetail.propTypes = {
   blog: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
@@ -423,4 +388,4 @@ FormDialogCommentBlog.propTypes = {
   }).isRequired,
 };
 
-export default FormDialogCommentBlog;
+export default memo(BlogDetail);
