@@ -1,18 +1,81 @@
-//react
-import { useState, useCallback, useEffect } from 'react';
-//mui
-import { Grid, Box, Card, CardContent, Divider } from '@mui/material';
-//chart
+import { useCallback, useEffect } from 'react';
+import {
+  Grid,
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Typography,
+  Stack,
+} from '@mui/material';
 import Chart from 'react-apexcharts';
-//component
-import VideoHot from '../../dashboard/VideoHot';
-//--------------------------------------------------------
+import VideoHot from './VideoHot';
+import {
+  useHeart,
+  useComment,
+  useShare,
+  useVideo,
+  useAuth,
+} from '../../../hooks/context';
+import { fShortenNumber } from '../../../utils/formatNumber';
 
 const VideoTab = () => {
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
-  const [series, setSeries] = useState([]);
 
+  const {
+    heartState: { hearts },
+    handleGetAllHearts,
+  } = useHeart();
+  const {
+    commentState: { comments },
+    handleGetAllComments,
+  } = useComment();
+  const {
+    shareState: { shares },
+    handleGetAllShares,
+  } = useShare();
+  const { videoState, handleGetAllVideo } = useVideo();
+  const {
+    authState: { user },
+  } = useAuth();
+
+  const videos = videoState?.videos || []; // Default to an empty array if videoState is undefined
+
+  useEffect(() => {
+    handleGetAllHearts();
+    handleGetAllComments();
+    handleGetAllShares();
+    handleGetAllVideo();
+  }, [
+    handleGetAllComments,
+    handleGetAllHearts,
+    handleGetAllShares,
+    handleGetAllVideo,
+  ]);
+
+  useEffect(() => {
+    const newDailyData = {
+      hearts: Array(currentDay).fill(0),
+      comments: Array(currentDay).fill(0),
+      shares: Array(currentDay).fill(0),
+    };
+
+    hearts.forEach((heart) => {
+      const day = new Date(heart.date).getDate();
+      if (day <= currentDay) newDailyData.hearts[day - 1] += 1;
+    });
+
+    comments.forEach((comment) => {
+      const day = new Date(comment.date).getDate();
+      if (day <= currentDay) newDailyData.comments[day - 1] += 1;
+    });
+
+    shares.forEach((share) => {
+      const day = new Date(share.date).getDate();
+      if (day <= currentDay) newDailyData.shares[day - 1] += 1;
+    });
+  }, [hearts, comments, shares, currentDay]);
 
   const getDaysFromStartOfMonth = useCallback(() => {
     const daysArray = [];
@@ -22,35 +85,59 @@ const VideoTab = () => {
     return daysArray;
   }, [currentDay]);
 
-  useEffect(() => {
-    const downloadDataFake = [];
-    const viewDataFake = [];
-    const commentDataFake = [];
+  const videoFilterByUserID = videos.filter(
+    (video) => video?.userID === user?._id
+  );
 
-    for (let i = 1; i <= currentDay; i++) {
-      const downloadValue = Math.sin((i / currentDay) * Math.PI * 2) * 50 + 50;
-      const viewValue = Math.cos((i / currentDay) * Math.PI * 2) * 50 + 25;
-      const commentValue = Math.cos((i / currentDay) * Math.PI * 2) * 50 + 50;
+  // Tính tổng số hearts, shares, comments cho mỗi ngày từ video của user
+  const totalDataByDay = Array(currentDay)
+    .fill(null)
+    .map((_, index) => {
+      const currentDate = new Date();
+      currentDate.setDate(index + 1);
 
-      downloadDataFake.push(Math.round(downloadValue));
-      viewDataFake.push(Math.round(viewValue));
-      commentDataFake.push(Math.round(commentValue));
-    }
-    setSeries([
-      {
-        name: 'Count Downloads',
-        data: downloadDataFake,
-      },
-      {
-        name: 'View',
-        data: viewDataFake,
-      },
-      {
-        name: 'Comment',
-        data: commentDataFake,
-      },
-    ]);
-  }, [currentDay]);
+      const total = {
+        hearts: 0,
+        comments: 0,
+        shares: 0,
+      };
+
+      videoFilterByUserID.forEach((video) => {
+        const videoDate = new Date(video.createdAt);
+        if (
+          videoDate.getFullYear() === currentDate.getFullYear() &&
+          videoDate.getMonth() === currentDate.getMonth() &&
+          videoDate.getDate() === currentDate.getDate()
+        ) {
+          // Lọc hearts, comments, shares theo trường bvID theo từng video._id
+          const videoHearts = hearts.filter(
+            (heart) => heart.bvID === video._id
+          );
+          const videoComments = comments.filter(
+            (comment) => comment.bvID === video._id
+          );
+          const videoShares = shares.filter(
+            (share) => share.bvID === video._id
+          );
+
+          total.hearts += videoHearts.length;
+          total.comments += videoComments.length;
+          total.shares += videoShares.length;
+        }
+      });
+
+      return total;
+    });
+
+  // Chuyển đổi totalDataByDay thành dạng mảng series để cung cấp cho biểu đồ
+  const series = [
+    { name: 'Hearts', data: totalDataByDay.map((data) => data.hearts || 0) },
+    {
+      name: 'Comments',
+      data: totalDataByDay.map((data) => data.comments || 0),
+    },
+    { name: 'Shares', data: totalDataByDay.map((data) => data.shares || 0) },
+  ];
 
   const options = {
     chart: {
@@ -61,6 +148,16 @@ const VideoTab = () => {
     },
   };
 
+  const totalViews = videoFilterByUserID?.reduce(
+    (accumulator, currentValue) => {
+      if (currentValue.view) {
+        return accumulator + currentValue.view;
+      } else {
+        return accumulator;
+      }
+    },
+    0
+  );
 
   return (
     <Box>
@@ -81,6 +178,34 @@ const VideoTab = () => {
         <Grid item md={4}>
           <Card sx={{ mx: '0.5rem' }}>
             <CardContent>
+              <Box>
+                <Typography variant="subtitle1">Real Time</Typography>
+                <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      width: '1rem',
+                      height: '1rem',
+                      borderRadius: '50%',
+                      backgroundColor: 'primary.main',
+                      my: '0.5rem',
+                      mr: '0.5rem',
+                    }}
+                  ></Box>
+                  <Typography variant="body2">Real Time</Typography>
+                </Stack>
+              </Box>
+              <Divider />
+              <Box sx={{ p: '0.5rem' }}>
+                <Stack gap="0.5rem">
+                  <Typography variant="subtitle1">
+                    {fShortenNumber(totalViews)}
+                  </Typography>
+                  <Typography variant="body2">
+                    {totalViews > 1 ? 'Views' : 'View'}
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
               <Box sx={{ p: '0.5rem' }}>
                 <Box sx={{ mt: '-5rem' }}>
                   <VideoHot />

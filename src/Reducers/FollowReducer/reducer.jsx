@@ -19,11 +19,11 @@ export const reducer = (state, action) => {
         ...state,
         follows: [...state.follows, payload],
       };
-      case DELETE_FOLLOW:
-        return {
-          ...state,
-          follows: state.follows.filter((follow) => follow._id !== payload?._id),
-        };
+    case DELETE_FOLLOW:
+      return {
+        ...state,
+        follows: state.follows.filter((follow) => follow._id !== payload?._id),
+      };
     default:
       return {
         ...state,

@@ -6,6 +6,7 @@ import {
 } from '../Reducers/ShareReducer/reducer';
 import {
   getAll,
+  addShare
 } from '../Reducers/ShareReducer/action';
 //api
 import shareApi from '../Service/shareApi';
@@ -33,10 +34,23 @@ export const ShareProvider = (prop) => {
         return handleError(error);
       }
     }, []);
+
+    const handleCreateShare = useCallback(async (share) => {
+      try {
+        const response = await shareApi.createShare(share);
+        if (response.data.success) {
+          dispatch(addShare(response.data.share));
+        }
+        return response.data;
+      } catch (error) {
+        return handleError(error);
+      }
+    }, []);
   
     const shareData = {
       shareState,
       handleGetAllShares,
+      handleCreateShare,
     };
   
     return (

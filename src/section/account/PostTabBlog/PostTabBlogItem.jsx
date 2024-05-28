@@ -1,5 +1,7 @@
 //react
 import { useState, useEffect, useCallback } from 'react';
+//react-router-dom
+import { useNavigate } from 'react-router-dom';
 //prop-type
 import PropTypes from 'prop-types';
 //@mui
@@ -50,6 +52,7 @@ const PostTabBlogItem = ({ blog }) => {
   const toggleExpand = () => setExpanded(!expanded);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const updateHeartIcon = () => {
@@ -93,6 +96,10 @@ const PostTabBlogItem = ({ blog }) => {
   );
 
   const handleClickHeart = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
     const data = { userID: authState.user._id, bvID: _id };
     try {
       if (heartIcon.props.sx) {

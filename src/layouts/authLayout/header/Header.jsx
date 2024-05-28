@@ -56,8 +56,8 @@ const Header = () => {
       <NavLinkStyled to="/dashboard/document" onClick={toggleDrawer(false)}>
         Document
       </NavLinkStyled>
-      <NavLinkStyled to="/dashboard/contact" onClick={toggleDrawer(false)}>
-        Contact
+      <NavLinkStyled to="/dashboard/donate" onClick={toggleDrawer(false)}>
+        Donate
       </NavLinkStyled>
 
       <Stack

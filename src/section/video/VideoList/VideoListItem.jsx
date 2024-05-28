@@ -5,21 +5,22 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 //propType
 import PropTypes from 'prop-types';
 //utils
-import {fShortenNumber} from '../../../utils/formatNumber';
+import { fShortenNumber } from '../../../utils/formatNumber';
 //----------------------------------------------------
 
 const VideoListItem = (props) => {
   const { _id, imageUrl, title, view } = props.video;
+  const toggleDrawer = props.toggleDrawer;
   const navigate = useNavigate();
-  const {courseId} = useParams();
+  const { courseId } = useParams();
 
-  const handleNavigate = ()=> {
+  const handleNavigate = () => {
     navigate(`/course/${courseId}?videoId=${_id}`);
-  }
+    toggleDrawer();
+  };
 
   const truncatedTitle =
     title && title.length > 30 ? `${title.slice(0, 30)}...` : title;
-
 
   return (
     <Card
@@ -29,6 +30,8 @@ const VideoListItem = (props) => {
         flexDirection: 'row',
         alignItems: 'center',
         cursor: 'pointer',
+        px: '0.25rem',
+        gap: '1rem'
       }}
       onClick={handleNavigate}
     >
@@ -37,21 +40,27 @@ const VideoListItem = (props) => {
         image={imageUrl}
         sx={{
           width: '5rem',
-          height: '3rem',
-          p: '0.25rem',
+          height: '5rem',
           borderRadius: '0.4rem',
-          objectFit: 'contain'
+          objectFit: 'contain',
         }}
         alt="Paella dish"
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          padding: '0px !important', // Ensure all padding is removed
+          '&:last-child': {
+            paddingBottom: '0px !important' // Ensure paddingBottom is also removed
+          }
+        }}
+      >
         <Typography variant="body1" color="text.primary">
           {truncatedTitle}
         </Typography>
         <Box sx={{ display: 'flex', my: '0.2rem', alignItems: 'center' }}>
           <VisibilityIcon sx={{ width: '1rem', mr: '0.5rem' }} />
           <Typography variant="body2" color="text.secondary">
-            {fShortenNumber(view)}
+            {fShortenNumber(view)} views
           </Typography>
         </Box>
       </CardContent>
@@ -66,6 +75,7 @@ VideoListItem.propTypes = {
     imageUrl: PropTypes.string.isRequired,
     view: PropTypes.number.isRequired,
   }).isRequired,
+  toggleDrawer: PropTypes.func.isRequired
 };
 
 export default VideoListItem;

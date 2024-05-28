@@ -67,6 +67,7 @@ const SearchDocument = () => {
                     <SearchIcon />
                   </InputAdornment>
                 ),
+                placeholder: "Search for documents"
               }}
               value={searchTerm}
               onChange={handleChange}

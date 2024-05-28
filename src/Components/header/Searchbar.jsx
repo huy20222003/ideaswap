@@ -10,15 +10,12 @@ const Searchbar = () => {
         sx={{ flexDirection: 'row', alignItems: 'center', height: '4rem' }}
       >
         <Box
-          sx={{
-            color: 'white',
-            fontStyle: 'oblique',
-            m: '0 0.5rem',
-            fontSize: '1rem',
-          }}
-        >
-          Idea Swap
-        </Box>
+          component='img'
+          src='/assets/logos/logo_IdeaSwap_White_v2.png'
+          width='5rem'
+          height='5rem'
+          sx={{mx: '1rem'}}
+        />
         <Box>
           <TextField
             variant="outlined"
@@ -29,6 +26,7 @@ const Searchbar = () => {
                   <SearchIcon />
                 </InputAdornment>
               ),
+              placeholder: "Search on ideaswap"
             }}
             sx={{ bgcolor: 'white', borderRadius: '0.5rem', width: '18rem' }}
           />

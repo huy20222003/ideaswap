@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 //mui
 import { Box, Typography, Button, styled, Stack } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
@@ -6,7 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 //propTypes
 import PropTypes from 'prop-types';
 //context
-import { useDocument } from '../../../hooks/context';
+import { useDocument, useAuth } from '../../../hooks/context';
 //----------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -22,14 +23,20 @@ const LightTooltip = styled(({ className, ...props }) => (
 
 const DocumentItem = ({ document }) => {
   const { _id, title, imageUrl, user, countDownload, fileUrl } = document;
+  const {authState: {isAuthenticated}} = useAuth();
+  const navigate = useNavigate();
   const { handleUpdateCountDownloadDocument } = useDocument();
   const shortenedTitle =
-    title.length > 70 ? title.substring(0, 70) + '...' : title;
+    title.length > 50 ? title.substring(0, 50) + '...' : title;
 
   const handleUpdateCountDownload = async () => {
-    await handleUpdateCountDownloadDocument(_id, {
-      countDownload: countDownload + 1,
-    });
+    if(isAuthenticated) {
+      await handleUpdateCountDownloadDocument(_id, {
+        countDownload: countDownload + 1,
+      });
+    } else {
+      navigate("/auth/login");
+    }
   };
 
   return (
@@ -42,6 +49,13 @@ const DocumentItem = ({ document }) => {
         borderRadius: '0.4rem',
         p: '0.5rem',
         my: '0.5rem',
+        flexDirection: {
+          xs: 'column',
+          sm: 'column',
+          md: 'row',
+          xl: 'row',
+          lg: 'row',
+        },
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -88,7 +102,7 @@ const DocumentItem = ({ document }) => {
             variant="contained"
             size="small"
             startIcon={<FileDownloadIcon sx={{ color: 'white' }} />}
-            href={fileUrl}
+            href={isAuthenticated ? fileUrl : null}
             target="_blank"
             onClick={handleUpdateCountDownload}
           >

@@ -10,8 +10,14 @@ import {
 } from '@mui/material';
 import Chart from 'react-apexcharts';
 import { fShortenNumber } from '../../../utils/formatNumber';
-import { useVideo, useFollow, useAuth } from '../../../hooks/context';
-import VideoHot from '../dashboard/VideoHot';
+import {
+  useVideo,
+  useFollow,
+  useAuth,
+  useBlog,
+  useDocument,
+} from '../../../hooks/context';
+import VideoHot from './VideoHot';
 
 const OverviewTab = () => {
   const {
@@ -26,10 +32,17 @@ const OverviewTab = () => {
     authState: { user },
   } = useAuth();
 
+  const {
+    blogState: { blogs },
+    handleGetAllBlog,
+  } = useBlog();
+  const {
+    documentState: { documents },
+    handleGetAllDocuments,
+  } = useDocument();
+
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
-
-  const [series, setSeries] = useState([]);
 
   const getDaysFromStartOfMonth = useCallback(() => {
     const daysArray = [];
@@ -41,53 +54,75 @@ const OverviewTab = () => {
 
   const followData = follows.filter((follow) => follow?.userID === user?._id);
 
-  const getFollowDataByDay = useCallback(() => {
-    const followDataByDay = new Array(currentDay).fill(0);
-    followData.forEach((follow) => {
-      const followDate = new Date(follow.createdAt);
-      const followDay = followDate.getDate();
-      followDataByDay[followDay - 1]++;
-    });
-    return followDataByDay;
-  }, [currentDay, followData]);
-
-  useEffect(() => {
-    const downloadDataFake = [];
-    const viewDataFake = [];
-
-    for (let i = 1; i <= currentDay; i++) {
-      const downloadValue = Math.sin((i / currentDay) * Math.PI * 2) * 50 + 50;
-      const viewValue = Math.cos((i / currentDay) * Math.PI * 2) * 50 + 50;
-
-      downloadDataFake.push(Math.round(downloadValue));
-      viewDataFake.push(Math.round(viewValue));
-    }
-
-    const followDataByDay = getFollowDataByDay();
-    setSeries([
-      {
-        name: 'Count Downloads',
-        data: downloadDataFake,
-      },
-      {
-        name: 'View',
-        data: viewDataFake,
-      },
-      {
-        name: 'Follower',
-        data: followDataByDay,
-      },
-    ]);
-  }, [currentDay, getFollowDataByDay]);
+  const [series, setSeries] = useState([
+    {
+      name: 'Blogs',
+      data: [],
+    },
+    {
+      name: 'Documents',
+      data: [],
+    },
+    {
+      name: 'Videos',
+      data: [],
+    },
+  ]);
 
   useEffect(() => {
     handleGetAllFollows();
     handleGetAllVideo();
-  }, [handleGetAllFollows, handleGetAllVideo]);
+    handleGetAllBlog();
+    handleGetAllDocuments();
+  }, [
+    handleGetAllBlog,
+    handleGetAllDocuments,
+    handleGetAllFollows,
+    handleGetAllVideo,
+  ]);
 
   const videosFilterByUserID = videos.filter(
     (video) => video?.userID === user?._id
   );
+
+  const blogsFilterByUserID = blogs.filter(
+    (blog) => blog?.userID === user?._id
+  );
+
+  const documentsFilterByUserID = documents.filter(
+    (document) => document?.userID === user?._id
+  );
+
+  const countItemsByDay = useCallback((items) => {
+    const daysArray = getDaysFromStartOfMonth();
+    return daysArray.map((day) => {
+      return items.filter((item) => {
+        const itemDate = new Date(item.createdAt).getDate();
+        return itemDate === day;
+      }).length;
+    });
+  }, [getDaysFromStartOfMonth]);
+
+  useEffect(() => {
+    const blogsCount = countItemsByDay(blogsFilterByUserID);
+    const documentsCount = countItemsByDay(documentsFilterByUserID);
+    const videosCount = countItemsByDay(videosFilterByUserID);
+
+    setSeries([
+      {
+        name: 'Blogs',
+        data: blogsCount,
+      },
+      {
+        name: 'Documents',
+        data: documentsCount,
+      },
+      {
+        name: 'Videos',
+        data: videosCount,
+      },
+    ]);
+  }, [blogsFilterByUserID, documentsFilterByUserID, videosFilterByUserID, countItemsByDay]);
 
   const options = {
     chart: {
@@ -118,7 +153,7 @@ const OverviewTab = () => {
               <Chart
                 options={options}
                 series={series}
-                type="line"
+                type="bar"
                 width="100%"
                 height={350}
               />
@@ -150,7 +185,9 @@ const OverviewTab = () => {
                   <Typography variant="subtitle1">
                     {fShortenNumber(followData?.length)}
                   </Typography>
-                  <Typography variant="body2">Followers</Typography>
+                  <Typography variant="body2">
+                    {followData.length > 1 ? 'Followers' : 'Follower'}
+                  </Typography>
                 </Stack>
               </Box>
               <Divider />

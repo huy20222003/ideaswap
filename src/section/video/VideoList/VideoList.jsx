@@ -77,6 +77,7 @@ const VideoList = () => {
           '& .MuiDrawer-paper': {
             width: '100%',
             maxWidth: '360px',
+            maxHeight: '80%',
           },
         }}
       >
@@ -86,7 +87,7 @@ const VideoList = () => {
         <List>
           {videoApproveds.map((video) => (
             <>
-              <VideoListItem key={video._id} video={video} />
+              <VideoListItem key={video._id} video={video} toggleDrawer={toggleDrawer} />
             </>
           ))}
         </List>

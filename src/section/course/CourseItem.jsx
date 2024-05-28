@@ -74,8 +74,8 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
         m: '1rem 1rem 1rem 0',
         p: '0.5rem',
         width: {
-          xs: '24rem',
-          sm: '24rem',
+          xs: '20rem',
+          sm: '20rem',
           md: '14rem',
           xl: '14rem',
           lg: '14rem',

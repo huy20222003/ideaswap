@@ -12,7 +12,7 @@ const FooterInfo = ()=> {
             </Box>
             <Box>
             <Typography sx={{fontSize: '0.8rem', color: 'white'}}>Phone: 0999999999</Typography>
-            <Typography sx={{fontSize: '0.8rem', color: 'white'}}>Email: IdeaSwap@isp.edu.vn</Typography>
+            <Typography sx={{fontSize: '0.8rem', color: 'white'}}>Email: ideaswapsp@gmail.com</Typography>
             <Typography sx={{fontSize: '0.8rem', color: 'white'}}>Address: Ha Noi, Viet Nam</Typography>
             </Box>
         </Stack>

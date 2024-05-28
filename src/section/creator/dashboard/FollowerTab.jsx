@@ -17,7 +17,7 @@ import { fShortenNumber } from '../../../utils/formatNumber';
 //context
 import { useVideo, useFollow, useAuth } from '../../../hooks/context';
 //component
-import VideoHot from '../../dashboard/VideoHot';
+import VideoHot from './VideoHot';
 //--------------------------------------------------------
 
 const FollowerTab = () => {

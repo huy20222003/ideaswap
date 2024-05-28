@@ -69,6 +69,7 @@ const CoursePage = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
+            placeholder: "Search for courses"
           }}
           value={searchTerm}
           onChange={handleChange}

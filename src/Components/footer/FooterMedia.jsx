@@ -12,22 +12,29 @@ const FooterMedia = () => {
   return (
     <Stack
       sx={{
-        flexDirection: {xs: 'column', sm: 'column'},
+        flexDirection: { xs: 'column', sm: 'column' },
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
-      <Box sx={{mx: '4rem'}}>
+      <Box sx={{ mx: '4rem' }}>
         <Typography sx={{ fontSize: '0.8rem', color: 'white' }}>
           © 2024 - Ecosystem IdeaSwap, All rights reserved
         </Typography>
       </Box>
-      <Stack sx={{mx: '5rem', flexDirection: 'row', gap: '0.5rem', pb: '0.5rem'}}>
-        <FacebookIcon sx={{color: 'white'}} />
-        <LinkedInIcon sx={{color: 'white'}} />
-        <XIcon sx={{color: 'white'}} />
-        <TelegramIcon sx={{color: 'white'}} />
-        <YouTubeIcon sx={{color: 'white'}} />
+      <Stack
+        sx={{ mx: '5rem', flexDirection: 'row', gap: '0.5rem', pb: '0.5rem' }}
+      >
+        <Box
+          component="a"
+          href="https://www.facebook.com/groups/724644672792538/"
+        >
+          <FacebookIcon sx={{ color: 'white' }} />
+        </Box>
+        <LinkedInIcon sx={{ color: 'white' }} />
+        <XIcon sx={{ color: 'white' }} />
+        <TelegramIcon sx={{ color: 'white' }} />
+        <YouTubeIcon sx={{ color: 'white' }} />
       </Stack>
     </Stack>
   );

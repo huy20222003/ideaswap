@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 //mui
-import { Box, Typography, Stack, Avatar, Button } from '@mui/material';
+import { Box, Typography, Stack, Avatar, Button, styled } from '@mui/material';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FlagIcon from '@mui/icons-material/Flag';
+import LinkIcon from '@mui/icons-material/Link';
 //context
 import {
   useUser,
@@ -11,9 +14,10 @@ import {
   useVideo,
   useAuth,
   useHeart,
+  useShare,
 } from '../../../hooks/context';
 //utils
-import { fDateTime } from '../../../utils/formatTime';
+import { fToNow, fDateTime } from '../../../utils/formatTime';
 //prop-types
 import PropTypes from 'prop-types';
 //ultils
@@ -21,7 +25,19 @@ import { fShortenNumber } from '../../../utils/formatNumber';
 //sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
-//---------------------------------------------
+//dayjs
+import dayjs from 'dayjs';
+
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  },
+}));
 
 const VideoDescription = ({ video }) => {
   const {
@@ -32,10 +48,21 @@ const VideoDescription = ({ video }) => {
   const {
     heartState: { hearts },
     handleGetAllHearts,
+    handleCreateHeart,
+    handleDeleteHeart,
   } = useHeart();
+
+  const [heartIcon, setHeartIcon] = useState(<FavoriteBorderIcon />);
+
+  const {
+    shareState: { shares },
+    handleCreateShare,
+    handleGetAllShares,
+  } = useShare();
 
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const {
     followState: { follows },
@@ -54,7 +81,6 @@ const VideoDescription = ({ video }) => {
 
   useEffect(() => {
     const timer = setInterval(async () => {
-      // Check if viewCount is not null before updating
       if (viewCount !== null) {
         const response = await handleUpdateView(video?._id, {
           view: viewCount + 1,
@@ -63,7 +89,7 @@ const VideoDescription = ({ video }) => {
           setViewCount((prevViewCount) => prevViewCount + 1); // Update state
         }
       }
-    }, 180000); // Thời gian cập nhật là 5 giây (5000ms)
+    }, 180000); // Thời gian cập nhật là 3 phút (180000ms)
 
     // Xóa bộ đếm khi component unmount
     return () => clearInterval(timer);
@@ -73,7 +99,24 @@ const VideoDescription = ({ video }) => {
     handleGetAllUsers();
     handleGetAllFollows();
     handleGetAllHearts();
-  }, [handleGetAllFollows, handleGetAllHearts, handleGetAllUsers]);
+    handleGetAllShares();
+  }, [
+    handleGetAllFollows,
+    handleGetAllHearts,
+    handleGetAllShares,
+    handleGetAllUsers,
+  ]);
+
+  useEffect(() => {
+    const heartsFilter = hearts.filter((heart) => heart?.bvID === video?._id);
+    setHeartLength(heartsFilter.length);
+
+    const heartFind = heartsFilter.find(
+      (heart) =>
+        heart?.userID === authState.user?._id && heart.bvID === video?._id
+    );
+    setHeartIcon(heartFind ? <FavoriteIcon /> : <FavoriteBorderIcon />);
+  }, [hearts, video?._id, authState.user]);
 
   const followFind = follows.find(
     (follow) =>
@@ -81,11 +124,38 @@ const VideoDescription = ({ video }) => {
       follow?.followerID === authState?.user?._id
   );
 
+  const sharesFilter = shares.filter((share) => share?.bvID === video?._id);
+
+  const [heartLength, setHeartLength] = useState(0);
+
+  const handleClickHeart = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    const data = { userID: authState.user._id, bvID: video?._id };
+    try {
+      if (heartIcon.type === FavoriteIcon) {
+        await handleDeleteHeart(data);
+        setHeartLength((prevHeartLength) => prevHeartLength - 1);
+        setHeartIcon(<FavoriteBorderIcon />);
+      } else {
+        await handleCreateHeart(data);
+        setHeartLength((prevHeartLength) => prevHeartLength + 1);
+        setHeartIcon(<FavoriteIcon />);
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while processing your action. Please try again later.',
+        icon: 'error',
+      });
+    }
+  };
+
   const followsFilter = follows.filter(
     (follow) => follow?.userID === video?.userID
   );
-
-  const heartsFilter = hearts.filter((heart) => heart?.bvID === video?._id);
 
   const truncatedDescription = expanded
     ? video?.description
@@ -97,6 +167,10 @@ const VideoDescription = ({ video }) => {
   };
 
   const handleAddFollow = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
     try {
       const response = await handleCreateFollow({
         followerID: authState?.user?._id,
@@ -138,14 +212,56 @@ const VideoDescription = ({ video }) => {
     navigate(`/account/${userID}`);
   };
 
+  const handleShare = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    await handleCreateShare({
+      userID: authState?.user?._id,
+      bvID: video?._id,
+    });
+  };
+
+  const handleCopyToClipboard = () => {
+    const fullUrl = window.location.href;
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        setTooltipOpen(true);
+        setTimeout(() => {
+          setTooltipOpen(false);
+        }, 2000); // Show tooltip for 2 seconds
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+    handleShare();
+  };
+
+  const formatDate = (date) => {
+    const now = dayjs();
+    const videoDate = dayjs(date);
+    const oneMonthAgo = now.subtract(1, 'month');
+
+    return videoDate.isBefore(oneMonthAgo)
+      ? fDateTime(videoDate)
+      : fToNow(videoDate);
+  };
+
   return (
     <Box sx={{ mt: '0.5rem' }}>
       <Typography variant="h6">{video?.title}</Typography>
       <Stack
         sx={{
           justifyContent: 'space-between',
-          flexDirection: { xs: 'column', sm: 'column', md: 'row', xl: 'row' },
-          mt: '1rem',
+          flexDirection: {
+            xs: 'column-reverse',
+            sm: 'column-reverse',
+            md: 'row',
+            xl: 'row',
+          },
+          mt: { md: '1rem', xl: '1rem', lg: '1rem' },
         }}
       >
         <Stack
@@ -172,13 +288,14 @@ const VideoDescription = ({ video }) => {
           </Stack>
           {followFind ? (
             <Button
-              size="small"
               variant="outlined"
               sx={{
-                px: '3rem',
+                px: '1.5rem', // Smaller horizontal padding
+                py: '0.25rem', // Smaller vertical padding
                 color: 'primary.main',
-                ml: '2rem',
+                ml: '1rem',
                 borderRadius: '2rem',
+                fontSize: '0.8rem', // Smaller font size
               }}
               onClick={handleDeleteFollowById}
             >
@@ -186,13 +303,14 @@ const VideoDescription = ({ video }) => {
             </Button>
           ) : (
             <Button
-              size="small"
               variant="contained"
               sx={{
-                px: '3rem',
+                px: '1.5rem', // Smaller horizontal padding
+                py: '0.25rem', // Smaller vertical padding
                 color: 'white',
-                ml: '2rem',
+                ml: '1rem',
                 borderRadius: '2rem',
+                fontSize: '0.8rem', // Smaller font size
               }}
               onClick={handleAddFollow}
             >
@@ -205,7 +323,7 @@ const VideoDescription = ({ video }) => {
             flexDirection: 'row',
             gap: '0.5rem',
             justifyContent: { xs: 'space-between', sm: 'space-between' },
-            mt: { xs: '1rem', sm: '1rem' },
+            my: { xs: '0.5rem', sm: '0.5rem' },
           }}
         >
           <Button
@@ -214,10 +332,11 @@ const VideoDescription = ({ video }) => {
               px: '2rem',
               py: '0.5rem',
             }}
-            variant="outlined"
-            startIcon={<FavoriteBorderIcon />}
+            variant="text"
+            startIcon={heartIcon}
+            onClick={handleClickHeart}
           >
-            {fShortenNumber(heartsFilter?.length)}
+            {fShortenNumber(heartLength)}
           </Button>
           <Button
             sx={{
@@ -225,19 +344,37 @@ const VideoDescription = ({ video }) => {
               px: '2rem',
               py: '0.5rem',
             }}
-            variant="outlined"
+            variant="text"
             startIcon={<FlagIcon />}
+          ></Button>
+          <LightTooltip
+            title="URL copied to clipboard!"
+            open={tooltipOpen}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
           >
-            Report
-          </Button>
+            <Button
+              sx={{
+                borderRadius: '2rem',
+                px: '2rem',
+                py: '0.5rem',
+              }}
+              variant="text"
+              startIcon={<LinkIcon />}
+              onClick={handleCopyToClipboard}
+            >
+              {fShortenNumber(sharesFilter?.length)}
+            </Button>
+          </LightTooltip>
         </Stack>
       </Stack>
       <Stack sx={{ flexDirection: 'row', gap: '1rem', my: '1rem' }}>
         <Typography variant="subtitle2">
-          {fShortenNumber(video?.view)} views
+          {fShortenNumber(viewCount)} views
         </Typography>
         <Typography variant="subtitle2">
-          {fDateTime(video?.createdAt)}
+          {formatDate(video?.createdAt)}
         </Typography>
       </Stack>
       <Typography variant="body2" color="text.primary">

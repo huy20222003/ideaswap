@@ -1,12 +1,8 @@
-//react-router-dom
 import { useNavigate } from 'react-router-dom';
-//mui
 import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-//propType
 import PropTypes from 'prop-types';
-//utils
-import {fShortenNumber} from '../../../utils/formatNumber';
+import { fShortenNumber } from '../../../utils/formatNumber';
 //----------------------------------------------------
 
 const VideoHotItem = (props) => {
@@ -14,9 +10,9 @@ const VideoHotItem = (props) => {
   const navigate = useNavigate();
 
   const truncatedTitle =
-    title && title.length > 25 ? `${title.slice(0, 25)}...` : title;
+    title && title.length > 30 ? `${title.slice(0, 30)}...` : title;
 
-  const handleNavigate = ()=> {
+  const handleNavigate = () => {
     navigate(`/course/${courseID}?videoId=${_id}`);
   }
 
@@ -28,7 +24,8 @@ const VideoHotItem = (props) => {
         flexDirection: 'row',
         alignItems: 'center',
         cursor: 'pointer',
-        p: '0.25rem'
+        px: '0.25rem',
+        gap: '1rem'
       }}
       onClick={handleNavigate}
     >
@@ -43,7 +40,14 @@ const VideoHotItem = (props) => {
         }}
         alt="Paella dish"
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          padding: '0px !important', // Ensure all padding is removed
+          '&:last-child': {
+            paddingBottom: '0px !important' // Ensure paddingBottom is also removed
+          }
+        }}
+      >
         <Typography variant="body1" color="text.primary">
           {truncatedTitle}
         </Typography>

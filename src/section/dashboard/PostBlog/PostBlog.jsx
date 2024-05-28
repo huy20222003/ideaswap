@@ -57,6 +57,7 @@ const PostBlog = () => {
                   </InputAdornment>
                 ),
                 readOnly: true,
+                placeholder: "Would you write something?"
               }}
               onClick = {handleOpenPostBlog}
             />

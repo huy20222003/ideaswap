@@ -12,7 +12,7 @@ const SliderItem = ({ image }) => {
         maxHeight: '10rem',
         width: '100%',
         borderRadius: '1rem',
-        objectFit: 'contain',
+        objectFit: 'cover',
       }}
     ></Box>
   );

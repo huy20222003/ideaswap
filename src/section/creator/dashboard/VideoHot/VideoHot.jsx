@@ -6,6 +6,9 @@ import { Box, Typography } from '@mui/material';
 import VideoHotItem from './VideoHotItem';
 //context
 import { useVideo, useCensorships } from '../../../../hooks/context';
+//swipper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 //---------------------------------------
 
 const VideoHot = () => {
@@ -33,7 +36,7 @@ const VideoHot = () => {
     })
     .filter((video) => video.status === 'approved')
     .sort((a, b) => b.view - a.view)
-    .slice(0, 1);
+    .slice(0, 5);
 
   return (
     <Box sx={{ mt: '5rem' }}>
@@ -42,9 +45,27 @@ const VideoHot = () => {
       </Box>
       <Box>
         {videosWithStatus.length > 0 ? (
-          videosWithStatus.map((video) => (
-            <VideoHotItem key={video.id} video={video} />
-          ))
+          <Swiper
+            spaceBetween={50}
+            slidesPerView={1}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+            }}
+            // navigation={true}
+            modules={[Autoplay, Pagination, Navigation]}
+          >
+            {videosWithStatus.map((video) => {
+              return (
+                <SwiperSlide key={video?._id}>
+                  <VideoHotItem key={video.id} video={video} />
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
         ) : (
           <Typography>No video reached the top</Typography>
         )}

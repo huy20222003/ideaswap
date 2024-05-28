@@ -28,7 +28,8 @@ const VideoHotItem = (props) => {
         flexDirection: 'row',
         alignItems: 'center',
         cursor: 'pointer',
-        p: '0.25rem'
+        px: '0.25rem',
+        gap: '1rem'
       }}
       onClick={handleNavigate}
     >
@@ -43,7 +44,14 @@ const VideoHotItem = (props) => {
         }}
         alt="Paella dish"
       />
-      <CardContent>
+      <CardContent
+        sx={{
+          padding: '0px !important', // Ensure all padding is removed
+          '&:last-child': {
+            paddingBottom: '0px !important' // Ensure paddingBottom is also removed
+          }
+        }}
+      >
         <Typography variant="body1" color="text.primary">
           {truncatedTitle}
         </Typography>

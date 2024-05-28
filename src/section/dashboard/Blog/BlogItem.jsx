@@ -144,6 +144,10 @@ const BlogItem = ({ blog }) => {
   );
 
   const handleClickHeart = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
     const data = { userID: authState.user._id, bvID: _id };
     try {
       if (heartIcon.props.sx) {
