@@ -65,8 +65,6 @@ const VideoReplyComment = (props) => {
     },
   });
 
-  console.log(formik.values);
-
   return (
     <Box sx={{ mt: '1rem', mb: '0.5rem' }}>
       <Stack sx={{ flexDirection: 'row', gap: '0.5rem', my: '0.5rem' }}>
