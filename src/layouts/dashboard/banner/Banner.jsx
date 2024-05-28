@@ -37,7 +37,7 @@ const Banner = () => {
           component={'img'}
           src={dashboardLeft1Banner.imageUrl} // Thay thế bằng trường chứa đường dẫn hình ảnh của banner
           width="400"
-          sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'contain' }}
+          sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'cover' }}
         ></CardMedia>
       )}
       {dashboardLeft2Banner && (
@@ -45,7 +45,7 @@ const Banner = () => {
           component={'img'}
           src={dashboardLeft2Banner.imageUrl} // Thay thế bằng trường chứa đường dẫn hình ảnh của banner
           width="400"
-          sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'contain' }}
+          sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'cover' }}
         ></CardMedia>
       )}
     </Card>

@@ -371,7 +371,7 @@ const VideoDescription = ({ video }) => {
       </Stack>
       <Stack sx={{ flexDirection: 'row', gap: '1rem', my: '1rem' }}>
         <Typography variant="subtitle2">
-          {fShortenNumber(viewCount)} views
+          {fShortenNumber(video?.view)} views
         </Typography>
         <Typography variant="subtitle2">
           {formatDate(video?.createdAt)}
