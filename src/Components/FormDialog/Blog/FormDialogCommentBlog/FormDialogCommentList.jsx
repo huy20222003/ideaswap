@@ -19,7 +19,7 @@ const FormDialogCommentList = ({
           <FormDialogCommentList
             comments={comments}
             parentCommentID={comment._id}
-            marginLeft={marginLeft + 2}
+            marginLeft={marginLeft + 3}
           />
         </Box>
       ))}
