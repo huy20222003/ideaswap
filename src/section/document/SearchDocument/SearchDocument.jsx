@@ -51,7 +51,7 @@ const SearchDocument = () => {
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box>
+          <Box sx={{width: '100%'}}>
             <TextField
               variant="outlined"
               fullWidth
@@ -59,7 +59,6 @@ const SearchDocument = () => {
               sx={{
                 bgcolor: 'white',
                 borderRadius: '0.5rem',
-                width: {xs: '80%', sm: '80%', md: '80%', xl: '80%', lg: '90%'}
               }}
               InputProps={{
                 startAdornment: (

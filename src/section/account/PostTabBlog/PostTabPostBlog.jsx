@@ -46,7 +46,7 @@ const PostTabPostBlog = () => {
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box sx={{ width: { xl: '28rem', md: '26rem', sm: '25rem' } }}>
+          <Box sx={{width: '100%'}}>
             <TextField
               variant="outlined"
               fullWidth
@@ -54,7 +54,6 @@ const PostTabPostBlog = () => {
               sx={{
                 bgcolor: 'white',
                 borderRadius: '0.5rem',
-                width: { xl: '80%', md: '80%', sm: '80%', xs: '80%' },
               }}
               InputProps={{
                 startAdornment: (
