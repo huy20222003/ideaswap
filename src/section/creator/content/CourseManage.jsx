@@ -15,7 +15,6 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   MoreVert as MoreVertIcon,
-  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 //context
 import { useCourse, useAuth } from '../../../hooks/context';
@@ -131,10 +130,6 @@ const CourseManage = () => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={() => handleView(params.row.id)}>
-              <VisibilityIcon sx={{ paddingRight: '0.5rem' }} />
-              View
-            </MenuItem>
             <MenuItem onClick={() => handleEdit(params.row.id)}>
               <EditIcon sx={{ paddingRight: '0.5rem' }} />
               Edit
@@ -161,10 +156,6 @@ const CourseManage = () => {
         createdAt: fDateTime(course?.createdAt),
       };
     });
-
-  const handleView = useCallback((courseId) => {
-    console.log(courseId);
-  }, []);
 
   const handleEdit = useCallback(
     async (courseId) => {

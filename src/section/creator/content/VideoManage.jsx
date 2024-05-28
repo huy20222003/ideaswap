@@ -15,7 +15,6 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   MoreVert as MoreVertIcon,
-  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 //react-player
 import ReactPlayer from 'react-player/youtube';
@@ -149,10 +148,6 @@ const VideoManage = () => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={() => handleView(params.row.id)}>
-              <VisibilityIcon sx={{ paddingRight: '0.5rem' }} />
-              View
-            </MenuItem>
             <MenuItem onClick={() => handleEdit(params.row.id)}>
               <EditIcon sx={{ paddingRight: '0.5rem' }} />
               Edit
@@ -180,10 +175,6 @@ const VideoManage = () => {
         comment: fShortenNumber(0),
       };
     });
-
-  const handleView = useCallback((videoId) => {
-    console.log(videoId);
-  }, []);
 
   const handleEdit = useCallback(
     async (videoId) => {
