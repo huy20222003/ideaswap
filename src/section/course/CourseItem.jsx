@@ -14,6 +14,7 @@ import { fShortenNumber } from '../../utils/formatNumber';
 import { useVideo, useCensorships, useCourse } from '../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
+import HTMLReactParser from 'html-react-parser';
 //-------------------------------------------------
 
 const CourseItem = ({ _id, imageUrl, title, description, view }) => {
@@ -121,7 +122,7 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
         <Box sx={{ mt: '0.5rem' }}>
           <Typography variant="subtitle2">{truncatedTitle}</Typography>
           <Typography variant="body2" color="text.secondary">
-            {truncatedDescription}
+            {HTMLReactParser(truncatedDescription)}
           </Typography>
         </Box>
       </CardContent>
