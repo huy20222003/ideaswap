@@ -1,5 +1,7 @@
 //mui
 import { Box, Typography, Divider } from '@mui/material';
+//component
+import Slider from './slider/Slider';
 //-----------------------------------------------------
 
 const DonateAbout = () => {
@@ -14,7 +16,7 @@ const DonateAbout = () => {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          flexDirection: 'column',
           my: '1rem',
         }}
       >
@@ -23,7 +25,7 @@ const DonateAbout = () => {
             sx={{
               bgcolor: 'primary.main',
               borderRadius: '0.4rem',
-              display: 'inline-block',
+              display: 'block',
               my: '1rem',
             }}
           >
@@ -35,39 +37,15 @@ const DonateAbout = () => {
               IdeaSwap Team Member
             </Typography>
           </Box>
-          <Box sx={{ ml: '2rem' }}>
-            <Typography variant="subtitle2">Nguyễn Quang Huy</Typography>
-            <Typography variant="subtitle2">Phùng Văn Dũng</Typography>
-            <Typography variant="subtitle2">Lê Hoàng Anh</Typography>
-            <Typography variant="subtitle2">Lại Hùng Mạnh</Typography>
-            <Typography variant="subtitle2">Nguyễn Thị Huyền Trang</Typography>
-          </Box>
         </Box>
-        <Divider orientation="vertical" flexItem />
-        <Box
-          sx={{
-            display: {
-              xs: 'none',
-              sm: 'none',
-              md: 'block',
-              xl: 'block',
-              lg: 'block',
-            },
-          }}
-        >
-          <Box
-            component={'img'}
-            sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}
-            src="/assets/images/banners/anh_bia.png"
-          ></Box>
-        </Box>
+        <Slider />
       </Box>
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          my: '1rem',
+          my: '2rem',
         }}
       >
         <Box>
@@ -108,7 +86,7 @@ const DonateAbout = () => {
           <Box
             component={'img'}
             sx={{ width: '15rem', height: '10rem', borderRadius: '0.4rem' }}
-            src="/assets/images/banners/anh_bia_fb.png"
+            src="/assets/images/banners/anh_bia.png"
           ></Box>
         </Box>
       </Box>
