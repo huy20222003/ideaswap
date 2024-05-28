@@ -53,6 +53,7 @@ function NavItem({ item, isOpen }) {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         '&.active': {
           color: 'text.primary',
         },
