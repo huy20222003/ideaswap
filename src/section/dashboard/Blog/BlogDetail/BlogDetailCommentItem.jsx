@@ -5,10 +5,17 @@ import { styled, Box, Avatar, Stack, Typography, Card } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CommentIcon from '@mui/icons-material/Comment';
 //context
-import { useUser, useRole, useAuth } from '../../../../hooks/context';
+import {
+  useUser,
+  useRole,
+  useAuth,
+  useComment,
+} from '../../../../hooks/context';
 //utils
 import { fToNow } from '../../../../utils/formatTime';
+import BlogReplyComment from './BlogReplyComment';
 //-------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -36,12 +43,16 @@ const BlogDetailCommentItem = ({ comment }) => {
     authState: { isAuthenticated },
   } = useAuth();
 
+  const { handleGetAllComments } = useComment();
+
   useEffect(() => {
     handleGetAllUsers();
   }, [handleGetAllUsers]);
 
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
+  const [showReplyComment, setShowReplyComment] = useState(false); // Trạng thái để kiểm soát hiển thị VideoReplyComment
+  const [selectedCommentId, setSelectedCommentId] = useState(null); // Trạng thái lưu trữ _id của comment được chọn
 
   const userComment = users?.find((user) => user?._id === comment?.userID);
   useEffect(() => {
@@ -53,6 +64,15 @@ const BlogDetailCommentItem = ({ comment }) => {
     roleName: roles.find((role) => role?._id === userComment?.roleID),
   };
 
+  const handleToggleReplyComment = (commentId) => {
+    if (selectedCommentId === commentId) {
+      setSelectedCommentId(null); // Nếu comment đã được chọn trước đó, xoá _id
+    } else {
+      setSelectedCommentId(commentId); // Nếu comment chưa được chọn hoặc là một comment khác, cập nhật _id
+    }
+    setShowReplyComment((prev) => !prev); // Đảo ngược trạng thái hiển thị
+  };
+
   const truncatedContent =
     comment.content.length > 30
       ? expanded
@@ -60,57 +80,82 @@ const BlogDetailCommentItem = ({ comment }) => {
         : `${comment.content.slice(0, 30)}...`
       : comment.content;
 
+  useEffect(() => {
+    // Listen for changes in comments and update the UI when new comments are added
+    handleGetAllComments();
+  }, [handleGetAllComments]);
+
   return (
-    <Card sx={{ p: '0.5rem', my: '0.5rem' }}>
-      <Box sx={{ display: 'flex' }}>
-        <Box>
-          <Avatar alt="Avatar" src={userComment?.avatar} />
-        </Box>
-        <Box sx={{ flex: 1, ml: '1rem' }}>
-          <Stack>
-            <Stack
-              sx={{ flexDirection: 'row', gap: '0.25rem', alignItems: 'center' }}
-            >
-              <Typography variant="subtitle1">
-                {userComment?.firstName + userComment?.lastName}
+      <Card sx={{ p: '0.5rem', my: '0.5rem' }}>
+        <Box sx={{ display: 'flex' }}>
+          <Box>
+            <Avatar alt="Avatar" src={userComment?.avatar} />
+          </Box>
+          <Box sx={{ flex: 1, ml: '1rem' }}>
+            <Stack>
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  gap: '0.25rem',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="subtitle1">
+                  {userComment?.firstName + userComment?.lastName}
+                </Typography>
+                {newUser?.roleName?.name === 'creator' && (
+                  <LightTooltip title="Creator" placement="right">
+                    <CheckCircleIcon
+                      sx={{ color: '#3366FF', fontSize: '1rem' }}
+                    />
+                  </LightTooltip>
+                )}
+                <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                  {fToNow(comment?.createdAt)}
+                </Typography>
+              </Stack>
+              <Typography variant="body2">
+                {truncatedContent}
+                {comment.content.length > 300 && (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    onClick={toggleExpand}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    {expanded ? 'Short' : 'Show more'}
+                  </Typography>
+                )}
               </Typography>
-              {newUser?.roleName?.name === 'creator' && (
-                <LightTooltip title="Creator" placement="right">
-                  <CheckCircleIcon
-                    sx={{ color: '#3366FF', fontSize: '1rem' }}
+              <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
+                <LightTooltip title="Report" placement="right">
+                  <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
+                </LightTooltip>
+                <LightTooltip title="Reply" placement="right">
+                  <CommentIcon
+                    color="primary"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
                   />
                 </LightTooltip>
+              </Stack>
+              {showReplyComment && selectedCommentId === comment._id && (
+                <BlogReplyComment
+                  commentId={comment._id}
+                  handleToggleReplyComment={handleToggleReplyComment}
+                />
               )}
-              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {fToNow(comment?.createdAt)}
-              </Typography>
             </Stack>
-            <Typography variant="body2">
-              {truncatedContent}
-              {comment.content.length > 300 && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  onClick={toggleExpand}
-                  sx={{ cursor: 'pointer' }}
-                >
-                  {expanded ? 'Short' : 'Show more'}
-                </Typography>
-              )}
-            </Typography>
-            <LightTooltip title="Report" placement="right">
-              <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
-            </LightTooltip>
-          </Stack>
+          </Box>
         </Box>
-      </Box>
-    </Card>
+      </Card>
   );
 };
 
 // Define PropTypes for props validation
 BlogDetailCommentItem.propTypes = {
   comment: PropTypes.shape({
+    _id: PropTypes.func,
     content: PropTypes.string.isRequired,
     userID: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,

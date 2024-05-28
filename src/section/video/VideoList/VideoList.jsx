@@ -87,7 +87,7 @@ const VideoList = () => {
         <List>
           {videoApproveds.map((video) => (
             <>
-              <VideoListItem key={video._id} video={video} toggleDrawer={toggleDrawer} />
+              <VideoListItem key={video?._id} video={video} toggleDrawer={toggleDrawer} />
             </>
           ))}
         </List>
@@ -119,7 +119,7 @@ const VideoList = () => {
         }}
       >
         {videoApproveds.map((video) => (
-          <VideoListItem key={video._id} video={video} />
+          <VideoListItem key={video?._id} video={video} />
         ))}
       </Box>
     </Box>

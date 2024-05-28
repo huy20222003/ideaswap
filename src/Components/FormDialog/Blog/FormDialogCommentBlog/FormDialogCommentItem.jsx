@@ -5,10 +5,18 @@ import { styled, Box, Avatar, Stack, Typography, Card } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CommentIcon from '@mui/icons-material/Comment';
 //context
-import { useUser, useRole, useAuth } from '../../../../hooks/context';
+import {
+  useUser,
+  useRole,
+  useAuth,
+  useComment,
+} from '../../../../hooks/context';
 //utils
 import { fToNow } from '../../../../utils/formatTime';
+//component
+import FormDialogReplyComment from './FormDialogReplyComment';
 //-------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -36,12 +44,25 @@ const FormDialogCommentItem = ({ comment }) => {
     authState: { isAuthenticated },
   } = useAuth();
 
+  const { handleGetAllComments } = useComment();
+
   useEffect(() => {
     handleGetAllUsers();
   }, [handleGetAllUsers]);
 
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
+  const [showReplyComment, setShowReplyComment] = useState(false); // Trạng thái để kiểm soát hiển thị VideoReplyComment
+  const [selectedCommentId, setSelectedCommentId] = useState(null); // Trạng thái lưu trữ _id của comment được chọn
+
+  const handleToggleReplyComment = (commentId) => {
+    if (selectedCommentId === commentId) {
+      setSelectedCommentId(null); // Nếu comment đã được chọn trước đó, xoá _id
+    } else {
+      setSelectedCommentId(commentId); // Nếu comment chưa được chọn hoặc là một comment khác, cập nhật _id
+    }
+    setShowReplyComment((prev) => !prev); // Đảo ngược trạng thái hiển thị
+  };
 
   const userComment = users?.find((user) => user?._id === comment?.userID);
   useEffect(() => {
@@ -52,6 +73,11 @@ const FormDialogCommentItem = ({ comment }) => {
     ...userComment,
     roleName: roles.find((role) => role?._id === userComment?.roleID),
   };
+
+  useEffect(() => {
+    // Listen for changes in comments and update the UI when new comments are added
+    handleGetAllComments();
+  }, [handleGetAllComments]);
 
   const truncatedContent =
     comment.content.length > 30
@@ -69,7 +95,11 @@ const FormDialogCommentItem = ({ comment }) => {
         <Box sx={{ flex: 1, ml: '1rem' }}>
           <Stack>
             <Stack
-              sx={{ flexDirection: 'row', gap: '0.25rem', alignItems: 'center' }}
+              sx={{
+                flexDirection: 'row',
+                gap: '0.25rem',
+                alignItems: 'center',
+              }}
             >
               <Typography variant="subtitle1">
                 {userComment?.firstName + userComment?.lastName}
@@ -98,9 +128,25 @@ const FormDialogCommentItem = ({ comment }) => {
                 </Typography>
               )}
             </Typography>
-            <LightTooltip title="Report" placement="right">
-              <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
-            </LightTooltip>
+            <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
+              <LightTooltip title="Report" placement="right">
+                <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
+              </LightTooltip>
+              <LightTooltip title="Reply" placement="right">
+                <CommentIcon
+                  color="primary"
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
+                />
+              </LightTooltip>
+            </Stack>
+            {showReplyComment && selectedCommentId === comment._id && (
+              <FormDialogReplyComment
+                commentId={comment._id}
+                bvID={comment?.bvID}
+                handleToggleReplyComment={handleToggleReplyComment}
+              />
+            )}
           </Stack>
         </Box>
       </Box>
@@ -111,8 +157,10 @@ const FormDialogCommentItem = ({ comment }) => {
 // Define PropTypes for props validation
 FormDialogCommentItem.propTypes = {
   comment: PropTypes.shape({
+    _id: PropTypes.string,
     content: PropTypes.string.isRequired,
     userID: PropTypes.string.isRequired,
+    bvID: PropTypes.string,
     createdAt: PropTypes.string.isRequired,
   }).isRequired,
 };

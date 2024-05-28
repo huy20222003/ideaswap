@@ -95,9 +95,12 @@ const FormDialogCommentBlog = () => {
   const { shares } = shareState;
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
 
-  const commentsFilter = comments.filter(
-    (comment) => comment?.bvID === blog?._id
-  );
+  const commentsFilter = comments
+    .filter((comment) => comment?.bvID === blog?._id)
+    .map((comment) => ({
+      ...comment,
+      bvID: blog?._id, // Thay đổi giá trị của trường bvID thành _id của blog
+    }));
 
   useEffect(() => {
     handleGetAllHearts();

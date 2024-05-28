@@ -1,22 +1,9 @@
-//react
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 //mui
-import {
-  Box,
-  Typography,
-  Stack,
-  Avatar,
-  TextField,
-  Button,
-} from '@mui/material';
-//component
-import VideoCommentList from '../VideoCommentList';
+import { Box, Stack, Avatar, TextField, Button } from '@mui/material';
 //context
-import { useComment, useAuth } from '../../../hooks/context';
-//react-router-dom
-import { useLocation } from 'react-router-dom';
-import queryString from 'query-string';
+import { useComment, useAuth } from '../../../../hooks/context';
 //formik
 import { useFormik } from 'formik';
 //yup
@@ -25,59 +12,47 @@ import * as yup from 'yup';
 import Swal from 'sweetalert2';
 //-------------------------------------------------------------------------
 
-const VideoComment = () => {
+const VideoReplyComment = (props) => {
   const {
-    commentState: { comments },
     handleGetAllComments,
     handleCreateComment,
   } = useComment();
   const {
-    authState: { user, isAuthenticated },
+    authState: { user },
   } = useAuth();
-  const location = useLocation();
-  const queryParams = queryString.parse(location.search);
-  const [id, setId] = useState('');
-  const navigate = useNavigate();
+  const { commentId, bvID, handleToggleReplyComment } = props; // Fix typo here
 
-  const videoId = queryParams.videoId;
 
   useEffect(() => {
     const fetchComments = async () => {
       await handleGetAllComments();
-      setId(videoId);
-      formik.setFieldValue('bvID', id);
+      formik.setFieldValue('bvID', bvID);
     };
     fetchComments();
-  }, [handleGetAllComments, id, videoId]);
-
-  const commentsFilter = comments.filter(
-    (comment) => comment?.bvID === videoId
-  );
+  }, [handleGetAllComments, bvID]);
 
   const validationSchema = yup.object({
     content: yup.string().required('Content is required'),
     userID: yup.string(),
     bvID: yup.string().required('Bv ID is required'),
+    parentCommentID: yup.string().required('ParentCommentID is required'),
   });
 
   const formik = useFormik({
     initialValues: {
       content: '',
-      bvID: id,
+      bvID: bvID,
       userID: user?._id,
-      parentCommentID: null,
+      parentCommentID: commentId,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        if (!isAuthenticated) {
-          navigate('/auth/login');
-          return;
-        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();
           formik.setFieldValue('content', '');
+          handleToggleReplyComment(); // Call handleToggleReplyComment to close the reply comment box after submitting
         }
       } catch (error) {
         Swal.fire({
@@ -90,12 +65,10 @@ const VideoComment = () => {
     },
   });
 
+  console.log(formik.values);
+
   return (
     <Box sx={{ mt: '1rem', mb: '0.5rem' }}>
-      <Typography variant="subtitle2">
-        {commentsFilter && commentsFilter.length}
-        {commentsFilter.length > 1 ? ' comments' : ' comment'}
-      </Typography>
       <Stack sx={{ flexDirection: 'row', gap: '0.5rem', my: '0.5rem' }}>
         <Avatar alt={user?.firstName + user?.lastName} src={user?.avatar} />
         <TextField
@@ -121,11 +94,15 @@ const VideoComment = () => {
           Comment
         </Button>
       </Stack>
-      <Box sx={{ mt: '1rem', mb: '2rem' }}>
-        <VideoCommentList comments={commentsFilter} />
-      </Box>
     </Box>
   );
 };
 
-export default VideoComment;
+// Define PropTypes for props validation
+VideoReplyComment.propTypes = {
+  commentId: PropTypes.string.isRequired,
+  bvID: PropTypes.string.isRequired, // Add PropTypes for commentId
+  handleToggleReplyComment: PropTypes.func,
+};
+
+export default VideoReplyComment;

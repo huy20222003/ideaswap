@@ -1,4 +1,3 @@
-//react
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
 import { styled, Box, Avatar, Stack, Typography } from '@mui/material';
@@ -7,9 +6,11 @@ import FlagIcon from '@mui/icons-material/Flag';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CommentIcon from '@mui/icons-material/Comment';
 //context
-import { useUser, useRole, useAuth } from '../../../hooks/context';
+import { useUser, useRole, useAuth, useComment } from '../../../hooks/context';
 //utils
 import { fToNow } from '../../../utils/formatTime';
+//component
+import VideoReplyComment from './VideoReplyComment';
 //-------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -24,6 +25,19 @@ const LightTooltip = styled(({ className, ...props }) => (
 }));
 
 const VideoCommentItem = ({ comment }) => {
+  const [showReplyComment, setShowReplyComment] = useState(false); // Trạng thái để kiểm soát hiển thị VideoReplyComment
+  const [selectedCommentId, setSelectedCommentId] = useState(null); // Trạng thái lưu trữ _id của comment được chọn
+  const { handleGetAllComments } = useComment();
+
+  const handleToggleReplyComment = (commentId) => {
+    if (selectedCommentId === commentId) {
+      setSelectedCommentId(null); // Nếu comment đã được chọn trước đó, xoá _id
+    } else {
+      setSelectedCommentId(commentId); // Nếu comment chưa được chọn hoặc là một comment khác, cập nhật _id
+    }
+    setShowReplyComment((prev) => !prev); // Đảo ngược trạng thái hiển thị
+  };
+
   const {
     userState: { users },
     handleGetAllUsers,
@@ -62,6 +76,11 @@ const VideoCommentItem = ({ comment }) => {
     }
   }, [newUser?.roleName, roleLoaded]);
 
+  useEffect(() => {
+    // Listen for changes in comments and update the UI when new comments are added
+    handleGetAllComments();
+  }, [handleGetAllComments]);
+
   return (
     <Box sx={{ p: '0.5rem', my: '0.5rem' }}>
       <Box sx={{ display: 'flex' }}>
@@ -98,9 +117,17 @@ const VideoCommentItem = ({ comment }) => {
                 <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
               </LightTooltip>
               <LightTooltip title="Reply" placement="right">
-                <CommentIcon color="primary" sx={{ cursor: 'pointer' }} />
+                <CommentIcon
+                  color="primary"
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
+                />
               </LightTooltip>
             </Stack>
+            {/* Hiển thị VideoReplyComment khi showReplyComment là true và selectedCommentId trùng với _id của comment */}
+            {showReplyComment && selectedCommentId === comment._id && (
+              <VideoReplyComment commentId={comment._id} handleToggleReplyComment={handleToggleReplyComment} />
+            )}
           </Stack>
         </Box>
       </Box>
@@ -111,6 +138,7 @@ const VideoCommentItem = ({ comment }) => {
 // Define PropTypes for props validation
 VideoCommentItem.propTypes = {
   comment: PropTypes.shape({
+    _id: PropTypes.string.isRequired, // Thêm PropTypes cho _id
     content: PropTypes.string.isRequired,
     userID: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,
