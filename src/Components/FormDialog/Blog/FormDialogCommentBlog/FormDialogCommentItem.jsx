@@ -80,7 +80,7 @@ const FormDialogCommentItem = ({ comment }) => {
   }, [handleGetAllComments]);
 
   const truncatedContent =
-    comment.content.length > 30
+    comment.content.length > 300
       ? expanded
         ? comment.content
         : `${comment.content.slice(0, 300)}...`

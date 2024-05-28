@@ -74,10 +74,10 @@ const BlogDetailCommentItem = ({ comment }) => {
   };
 
   const truncatedContent =
-    comment.content.length > 30
+    comment?.content.length > 300
       ? expanded
         ? comment.content
-        : `${comment.content.slice(0, 30)}...`
+        : `${comment.content.slice(0, 300)}...`
       : comment.content;
 
   useEffect(() => {
@@ -116,7 +116,7 @@ const BlogDetailCommentItem = ({ comment }) => {
               </Stack>
               <Typography variant="body2">
                 {truncatedContent}
-                {comment.content.length > 300 && (
+                {comment?.content.length > 300 && (
                   <Typography
                     variant="body2"
                     color="text.secondary"
