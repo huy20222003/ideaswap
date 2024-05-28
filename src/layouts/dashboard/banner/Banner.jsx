@@ -37,7 +37,6 @@ const Banner = () => {
           component={'img'}
           src={dashboardLeft1Banner.imageUrl} // Thay thế bằng trường chứa đường dẫn hình ảnh của banner
           width="400"
-          height="300"
           sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'contain' }}
         ></CardMedia>
       )}
@@ -46,7 +45,6 @@ const Banner = () => {
           component={'img'}
           src={dashboardLeft2Banner.imageUrl} // Thay thế bằng trường chứa đường dẫn hình ảnh của banner
           width="400"
-          height="300"
           sx={{ borderRadius: '1rem', mb: '1rem', objectFit: 'contain' }}
         ></CardMedia>
       )}
