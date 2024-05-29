@@ -89,7 +89,7 @@ const VideoDescription = ({ video }) => {
           setViewCount((prevViewCount) => prevViewCount + 1); // Update state
         }
       }
-    }, 180000); // Thời gian cập nhật là 3 phút (180000ms)
+    }, 60000); // Thời gian cập nhật là 1 phút (60000ms)
 
     // Xóa bộ đếm khi component unmount
     return () => clearInterval(timer);
