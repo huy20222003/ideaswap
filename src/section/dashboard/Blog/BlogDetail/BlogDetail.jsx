@@ -243,7 +243,7 @@ const BlogDetail = () => {
   return (
     <Box sx={{ p: '1rem', mt: '4rem' }}>
       <Box>
-        <Card sx={{ my: '1rem' }}>
+        <Card sx={{ my: '1rem', p: '1rem' }}>
           <CardHeader
             avatar={<Avatar src={user?.avatar} />}
             title={`${user?.firstName} ${user?.lastName}`}

@@ -220,13 +220,13 @@ const PostTabBlogItem = ({ blog }) => {
       >
         {authState?.user?._id === user?._id && (
           <Box>
-            <MenuItem onClick={() => handleEditBlogClick(blog)}>
+            <MenuItem onClick={() => handleEditBlogClick(blog?._id)}>
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
               <ListItemText primary="Sửa bài viết" />
             </MenuItem>
-            <MenuItem onClick={handleDeleteBlog}>
+            <MenuItem onClick={()=>handleDeleteBlog(blog?._id)}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
