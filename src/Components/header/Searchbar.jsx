@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Searchbar = () => {
   const navigate = useNavigate();
   const handleNavigate = async () => {
-    navigate(`/dashboard/app}`);
+    navigate(`/dashboard/app`);
   };
   return (
     <Box>
@@ -19,7 +19,7 @@ const Searchbar = () => {
           src="/assets/logos/logo_IdeaSwap_nbg.png"
           width="3rem"
           height="3rem"
-          sx={{ mx: '1rem' }}
+          sx={{ mx: '1rem', cursor: 'pointer' }}
           onClick={handleNavigate}
         />
         <Box>

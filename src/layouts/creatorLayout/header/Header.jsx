@@ -13,7 +13,7 @@ const Header = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const navigate = useNavigate();
   const handleNavigate = async () => {
-    navigate(`/dashboard/app}`);
+    navigate(`/dashboard/app`);
   };
 
   // Lắng nghe sự kiện cuộn trang và cập nhật scrollPosition
@@ -55,7 +55,7 @@ const Header = () => {
           src="/assets/logos/logo_IdeaSwap_nbg.png"
           width="3rem"
           height="3rem"
-          sx={{ mx: '1rem' }}
+          sx={{ mx: '1rem', cursor: 'pointer' }}
           onClick={handleNavigate}
         />
         <Box display={{ xs: 'none', md: 'block' }}>
