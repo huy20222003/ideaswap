@@ -50,8 +50,21 @@ const LoginForm = () => {
       password: '',
     },
     validationSchema: yup.object({
-      username: yup.string().required('Invalid username'),
-      password: yup.string().required('Invalid password'),
+      username: yup
+        .string()
+        .required('Username is required')
+        .matches(
+          /^[a-zA-Z0-9]*$/,
+          'Username must not contain special characters'
+        ),
+      password: yup
+        .string()
+        .required('Password is required')
+        .min(7)
+        .matches(
+          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
+          'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
+        ),
     }),
     onSubmit: async (values) => {
       try {
@@ -83,15 +96,17 @@ const LoginForm = () => {
         Login
       </Typography>
       <Typography variant="body2" sx={{ color: 'grey', textAlign: 'center' }}>
-        {isMobile ? 'Welcome back! Enter your credentials to access your account' : 'Wellcome back, Enter your credentials to access your account'}
+        {isMobile
+          ? 'Welcome back! Enter your credentials to access your account'
+          : 'Wellcome back, Enter your credentials to access your account'}
       </Typography>
       <Box sx={{ mt: '0.5rem', my: '1rem' }}>
         <Stack sx={{ gap: '1.5rem' }}>
           <Box sx={{ width: '100%' }}>
             <TextField
               label="Username"
-              name='username'
-              id='username'
+              name="username"
+              id="username"
               required
               variant="outlined"
               fullWidth
@@ -121,8 +136,8 @@ const LoginForm = () => {
           <Box sx={{ width: '100%' }}>
             <TextField
               label="Password"
-              name='password'
-              id='password'
+              name="password"
+              id="password"
               required
               variant="outlined"
               fullWidth
@@ -165,7 +180,7 @@ const LoginForm = () => {
                   color: 'primary.main',
                   fontSize: '0.75rem',
                   mt: '0.25rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
               >
                 Forget password?
@@ -181,7 +196,7 @@ const LoginForm = () => {
               color: 'primary.main',
               fontSize: '0.75rem',
               mt: '0.25rem',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Forget password?
@@ -199,69 +214,68 @@ const LoginForm = () => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            >
-              <CircularProgress size={30} />
-            </Stack>
-          ) : (
-            <LoadingButton
-              fullWidth
-              size="medium"
-              type="submit"
-              variant="contained"
-              sx={{color: 'white', py: '0.5rem', my: '1rem'}}
-              loadingIndicator={<CircularProgress size={16} />}
-              onClick={formik.handleSubmit}
-            >
-              Login
-            </LoadingButton>
-          )}
-        </Box>
-        <Divider sx={{ fontSize: '0.8rem' }}>OR</Divider>
-        <Stack
-          sx={{
-            flexDirection: 'row',
-            gap: '1rem',
-            mt: '1rem',
-            justifyContent: 'center',
-          }}
-        >
-         
-         <Button
-            variant="outlined"
-            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
-            startIcon={<GoogleIcon />}
           >
-            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
-              Google
-            </Typography>
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
-            startIcon={<FacebookIcon />}
+            <CircularProgress size={30} />
+          </Stack>
+        ) : (
+          <LoadingButton
+            fullWidth
+            size="medium"
+            type="submit"
+            variant="contained"
+            sx={{ color: 'white', py: '0.5rem', my: '1rem' }}
+            loadingIndicator={<CircularProgress size={16} />}
+            onClick={formik.handleSubmit}
           >
-            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
-              Facebook
-            </Typography>
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
-            startIcon={<TelegramIcon />}
-          >
-            <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
-              Telegram
-            </Typography>
-          </Button>
-        </Stack>
-        <Stack
-          sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}
-        >
-          <Typography variant="body2">Do not have an account?</Typography>
-          <LinkStyled to="/auth/register">Register here</LinkStyled>
-        </Stack>
+            Login
+          </LoadingButton>
+        )}
       </Box>
-    );
-  };
-  
-  export default LoginForm;
+      <Divider sx={{ fontSize: '0.8rem' }}>OR</Divider>
+      <Stack
+        sx={{
+          flexDirection: 'row',
+          gap: '1rem',
+          mt: '1rem',
+          justifyContent: 'center',
+        }}
+      >
+        <Button
+          variant="outlined"
+          sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+          startIcon={<GoogleIcon />}
+        >
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+            Google
+          </Typography>
+        </Button>
+        <Button
+          variant="outlined"
+          sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+          startIcon={<FacebookIcon />}
+        >
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+            Facebook
+          </Typography>
+        </Button>
+        <Button
+          variant="outlined"
+          sx={{ px: '1.5rem', mx: '0.2rem', width: 'auto' }}
+          startIcon={<TelegramIcon />}
+        >
+          <Typography sx={{ color: 'black', ml: '0.2rem', fontSize: '0.8rem' }}>
+            Telegram
+          </Typography>
+        </Button>
+      </Stack>
+      <Stack
+        sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}
+      >
+        <Typography variant="body2">Do not have an account?</Typography>
+        <LinkStyled to="/auth/register">Register here</LinkStyled>
+      </Stack>
+    </Box>
+  );
+};
+
+export default LoginForm;

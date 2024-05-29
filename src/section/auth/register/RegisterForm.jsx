@@ -68,10 +68,11 @@ const RegisterForm = () => {
         .string()
         .required('LastName is required')
         .max(200, 'LastName maximum 200 characters'),
-      username: yup
+        username: yup
         .string()
         .required('Username is required')
-        .max(100, 'Username maximum 100 characters'),
+        .min(8, 'Username must be at least 8 characters long')
+        .matches(/^[a-zA-Z0-9]*$/, 'Username must not contain special characters'),
       email: yup
         .string()
         .required('Email is required')
