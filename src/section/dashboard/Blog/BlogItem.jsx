@@ -75,7 +75,7 @@ const BlogItem = ({ blog }) => {
   } = useBlog();
   const navigate = useNavigate();
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
-  const { handleCreateHeart, handleDeleteHeart } = useHeart();
+  const { handleCreateHeart, handleDeleteHeart, handleGetAllHearts } = useHeart();
   const [anchorEl, setAnchorEl] = useState(null);
   const [heartLength, setHeartLength] = useState(heartArrays.length);
 
@@ -175,10 +175,12 @@ const BlogItem = ({ blog }) => {
         await handleDeleteHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength - 1);
         setHeartIcon(<FavoriteIcon />);
+        handleGetAllHearts();
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
         setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
+        handleGetAllHearts();
       }
     } catch (error) {
       Swal.fire({

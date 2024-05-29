@@ -216,6 +216,10 @@ const BlogDetail = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        if (!authState?.isAuthenticated) {
+          navigate('/auth/login');
+          return;
+        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();

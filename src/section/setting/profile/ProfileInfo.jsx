@@ -28,7 +28,7 @@ import Swal from 'sweetalert2';
 //--------------------------------------
 
 const ProfileInfo = () => {
-  document.title = "Setting";
+  document.title = 'Setting';
   const [datimeValue, setDateTimeValue] = useState(dayjs(Date.now()));
   const [gender, setGender] = useState('Male');
   const {
@@ -95,7 +95,7 @@ const ProfileInfo = () => {
     }
   }, [user.birthday]);
 
-  useEffect(()=>{
+  useEffect(() => {
     formik.setFieldValue('birthday', datimeValue);
   }, [datimeValue]);
 
@@ -144,10 +144,16 @@ const ProfileInfo = () => {
       </Stack>
       <Stack
         sx={{
-          flexDirection: 'row',
+          flexDirection: {
+            xs: 'column',
+            sm: 'column',
+            md: 'row',
+            xl: 'row',
+            lg: 'row',
+          },
           gap: '0.5rem',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: 'end',
           mb: '1rem',
         }}
       >
@@ -257,17 +263,17 @@ const ProfileInfo = () => {
           />
         </Box>
         <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <Box>
-          <Button
-            variant="contained"
-            size="medium"
-            sx={{ px: '1.5rem', color: '#fff' }}
-            onClick={formik.handleSubmit}
-          >
-            Change
-          </Button>
-        </Box>
-      </Stack>
+          <Box>
+            <Button
+              variant="contained"
+              size="medium"
+              sx={{ px: '1.5rem', color: '#fff' }}
+              onClick={formik.handleSubmit}
+            >
+              Change
+            </Button>
+          </Box>
+        </Stack>
       </Stack>
     </Box>
   );

@@ -175,10 +175,12 @@ const FormDialogCommentBlog = () => {
         await handleDeleteHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength - 1);
         setHeartIcon(<FavoriteIcon />);
+        handleGetAllHearts();
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
         setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
+        handleGetAllHearts();
       }
     } catch (error) {
       Swal.fire({
@@ -208,6 +210,10 @@ const FormDialogCommentBlog = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        if (!authState?.isAuthenticated) {
+          navigate('/auth/login');
+          return;
+        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();
@@ -327,7 +333,7 @@ const FormDialogCommentBlog = () => {
                 color="text.secondary"
                 sx={{ mx: '0.2rem' }}
               >
-                {heartLength}
+                {heartArrays?.length}
               </Typography>
             </Stack>
             <Stack sx={{ flexDirection: 'row' }}>

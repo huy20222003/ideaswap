@@ -25,6 +25,7 @@ import { fDateTime } from '../../../utils/formatTime';
 //component
 import FormDialogEditDocument from '../../../Components/FormDialog/document/FormDialogEditDocument';
 import FormDialogDeleteDocument from '../../../Components/FormDialog/document/FormDialogDeleteDocument';
+import HTMLReactParser from 'html-react-parser';
 //--------------------------------------------------
 
 const DocumentManage = () => {
@@ -83,13 +84,14 @@ const DocumentManage = () => {
       headerName: 'Description',
       type: 'String',
       width: 250,
+      renderCell: (params) => HTMLReactParser(params.value),
     },
     {
-        field: 'status',
-        headerName: 'Status',
-        type: 'String',
-        width: 100,
-      },
+      field: 'status',
+      headerName: 'Status',
+      type: 'String',
+      width: 100,
+    },
     {
       field: 'download',
       headerName: 'Download',
@@ -185,26 +187,26 @@ const DocumentManage = () => {
       };
     });
 
-    const handleView = useCallback((rowValue) => {
-      const newTab = window.open(rowValue?.fileUrl, '_blank');
-      if (newTab) {
-        newTab.focus(); // Tự động chuyển focus vào tab mới nếu được mở thành công
-      } else {
-        console.error('Failed to open new tab'); // Xử lý khi mở tab mới thất bại
+  const handleView = useCallback((rowValue) => {
+    const newTab = window.open(rowValue?.fileUrl, '_blank');
+    if (newTab) {
+      newTab.focus(); // Tự động chuyển focus vào tab mới nếu được mở thành công
+    } else {
+      console.error('Failed to open new tab'); // Xử lý khi mở tab mới thất bại
+    }
+  }, []);
+
+  const handleEdit = useCallback(
+    async (documentId) => {
+      const response = await handleGetDocumentById(documentId);
+      if (response.success) {
+        setOpenFormDialogEditDocument(true);
       }
-    }, []);    
+    },
+    [handleGetDocumentById, setOpenFormDialogEditDocument]
+  );
 
-    const handleEdit = useCallback(
-      async (documentId) => {
-        const response = await handleGetDocumentById(documentId);
-        if (response.success) {
-          setOpenFormDialogEditDocument(true);
-        }
-      },
-      [handleGetDocumentById, setOpenFormDialogEditDocument]
-    );
-
-    const handleDelete = (documentId) => {
+  const handleDelete = (documentId) => {
     setDocumentId(documentId);
     setOpenFormDialogDeleteDocument(true);
   };

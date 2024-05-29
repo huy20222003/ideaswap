@@ -47,16 +47,12 @@ const Header = () => {
         }}
       >
         <Box
-          sx={{
-            color: 'white',
-            fontStyle: 'oblique',
-            m: '0 0.5rem',
-            fontSize: '1rem',
-          }}
-          display={{ xs: 'none', md: 'block' }}
-        >
-          Idea Swap
-        </Box>
+          component="img"
+          src="/assets/logos/logo_IdeaSwap_nbg.png"
+          width="3rem"
+          height="3rem"
+          sx={{ mx: '1rem' }}
+        />
         <Box display={{ xs: 'none', md: 'block' }}>
           <Searchbar />
         </Box>

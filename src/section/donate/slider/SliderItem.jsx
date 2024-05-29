@@ -24,7 +24,7 @@ const StyledPaper = styled(Card)`
 `;
 
 const SliderItem = ({ item }) => {
-  const { name, position, image } = item;
+  const { name, position, image, facebookUrl } = item;
   return (
     <Box sx={{ width: '120%', display: 'block' }}>
       <StyledPaper>
@@ -48,10 +48,16 @@ const SliderItem = ({ item }) => {
             verticalAlign: 'bottom',
             display: 'inline-block',
             width: '100%',
-            borderRadius: '16px',
+            borderRadius: '16px', // Đảm bảo border-radius được áp dụng
             px: '1rem',
             height: '240px',
-            objectFit: 'cover',
+            objectFit: {
+              xs: 'contain',
+              sm: 'contain',
+              md: 'cover',
+              xl: 'cover',
+              lg: 'cover',
+            },
           }}
         ></Box>
         <Stack
@@ -62,7 +68,7 @@ const SliderItem = ({ item }) => {
             pb: '1rem',
           }}
         >
-          <ButtonBase sx={{ p: '8px' }}>
+          <ButtonBase sx={{ p: '8px' }} href={facebookUrl} target="_blank">
             <Iconify icon="logos:facebook" />
           </ButtonBase>
           <ButtonBase sx={{ p: '8px' }}>
@@ -85,6 +91,7 @@ SliderItem.propTypes = {
     name: PropTypes.string.isRequired,
     position: PropTypes.string.isRequired,
     image: PropTypes.string.isRequired,
+    facebookUrl: PropTypes.string.isRequired,
   }).isRequired,
 };
 

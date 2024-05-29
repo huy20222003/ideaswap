@@ -82,55 +82,59 @@ const VideoCommentItem = ({ comment }) => {
   }, [handleGetAllComments]);
 
   return (
-    <Box sx={{ p: '0.5rem', my: '0.5rem' }}>
-      <Box sx={{ display: 'flex' }}>
-        <Box>
-          <Avatar alt="Avatar" src={userComment?.avatar} />
-        </Box>
-        <Box sx={{ flex: 1, ml: '1rem' }}>
-          <Stack>
-            <Stack
-              sx={{
-                flexDirection: 'row',
-                gap: '0.25rem',
-                alignItems: 'center',
-              }}
-            >
-              <Typography variant="subtitle1">
-                {userComment?.firstName} {userComment?.lastName}
-              </Typography>
-              {roleLoaded && newUser?.roleName?.name === 'creator' && (
-                <LightTooltip title="Creator" placement="right">
-                  <CheckCircleIcon
-                    sx={{ color: '#3366FF', fontSize: '1rem' }}
+    <Box>
+      <Box sx={{ p: '0.5rem', my: '0.5rem' }}>
+        <Box sx={{ display: 'flex' }}>
+          <Box>
+            <Avatar alt="Avatar" src={userComment?.avatar} />
+          </Box>
+          <Box sx={{ flex: 1, ml: '1rem' }}>
+            <Stack>
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  gap: '0.25rem',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="subtitle1">
+                  {userComment?.firstName} {userComment?.lastName}
+                </Typography>
+                {roleLoaded && newUser?.roleName?.name === 'creator' && (
+                  <LightTooltip title="Creator" placement="right">
+                    <CheckCircleIcon
+                      sx={{ color: '#3366FF', fontSize: '1rem' }}
+                    />
+                  </LightTooltip>
+                )}
+                <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                  {fToNow(comment?.createdAt)}
+                </Typography>
+              </Stack>
+              <Typography variant="body2">{comment.content}</Typography>
+              <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
+                <LightTooltip title="Report" placement="right">
+                  <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
+                </LightTooltip>
+                <LightTooltip title="Reply" placement="right">
+                  <CommentIcon
+                    color="primary"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
                   />
                 </LightTooltip>
-              )}
-              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {fToNow(comment?.createdAt)}
-              </Typography>
+              </Stack>
             </Stack>
-
-            <Typography variant="body2">{comment.content}</Typography>
-            <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
-              <LightTooltip title="Report" placement="right">
-                <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
-              </LightTooltip>
-              <LightTooltip title="Reply" placement="right">
-                <CommentIcon
-                  color="primary"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
-                />
-              </LightTooltip>
-            </Stack>
-            {/* Hiển thị VideoReplyComment khi showReplyComment là true và selectedCommentId trùng với _id của comment */}
-            {showReplyComment && selectedCommentId === comment._id && (
-              <VideoReplyComment commentId={comment._id} handleToggleReplyComment={handleToggleReplyComment} />
-            )}
-          </Stack>
+          </Box>
         </Box>
       </Box>
+      {/* Hiển thị VideoReplyComment khi showReplyComment là true và selectedCommentId trùng với _id của comment */}
+      {showReplyComment && selectedCommentId === comment._id && (
+        <VideoReplyComment
+          commentId={comment._id}
+          handleToggleReplyComment={handleToggleReplyComment}
+        />
+      )}
     </Box>
   );
 };

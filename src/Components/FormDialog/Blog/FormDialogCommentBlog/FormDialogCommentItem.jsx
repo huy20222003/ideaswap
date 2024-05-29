@@ -87,70 +87,72 @@ const FormDialogCommentItem = ({ comment }) => {
       : comment.content;
 
   return (
-    <Card sx={{ p: '0.5rem', my: '0.5rem' }}>
-      <Box sx={{ display: 'flex' }}>
-        <Box>
-          <Avatar alt="Avatar" src={userComment?.avatar} />
-        </Box>
-        <Box sx={{ flex: 1, ml: '1rem' }}>
-          <Stack>
-            <Stack
-              sx={{
-                flexDirection: 'row',
-                gap: '0.25rem',
-                alignItems: 'center',
-              }}
-            >
-              <Typography variant="subtitle1">
-                {userComment?.firstName + userComment?.lastName}
+    <Box>
+      <Card sx={{ p: '0.5rem', my: '0.5rem' }}>
+        <Box sx={{ display: 'flex' }}>
+          <Box>
+            <Avatar alt="Avatar" src={userComment?.avatar} />
+          </Box>
+          <Box sx={{ flex: 1, ml: '1rem' }}>
+            <Stack>
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  gap: '0.25rem',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="subtitle1">
+                  {userComment?.firstName + userComment?.lastName}
+                </Typography>
+                {newUser?.roleName?.name === 'creator' && (
+                  <LightTooltip title="Creator" placement="right">
+                    <CheckCircleIcon
+                      sx={{ color: '#3366FF', fontSize: '1rem' }}
+                    />
+                  </LightTooltip>
+                )}
+                <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                  {fToNow(comment?.createdAt)}
+                </Typography>
+              </Stack>
+              <Typography variant="body2">
+                {truncatedContent}
+                {comment.content.length > 300 && (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    onClick={toggleExpand}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    {expanded ? 'Short' : 'Show more'}
+                  </Typography>
+                )}
               </Typography>
-              {newUser?.roleName?.name === 'creator' && (
-                <LightTooltip title="Creator" placement="right">
-                  <CheckCircleIcon
-                    sx={{ color: '#3366FF', fontSize: '1rem' }}
+              <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
+                <LightTooltip title="Report" placement="right">
+                  <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
+                </LightTooltip>
+                <LightTooltip title="Reply" placement="right">
+                  <CommentIcon
+                    color="primary"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
                   />
                 </LightTooltip>
-              )}
-              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
-                {fToNow(comment?.createdAt)}
-              </Typography>
+              </Stack>
             </Stack>
-            <Typography variant="body2">
-              {truncatedContent}
-              {comment.content.length > 300 && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  onClick={toggleExpand}
-                  sx={{ cursor: 'pointer' }}
-                >
-                  {expanded ? 'Short' : 'Show more'}
-                </Typography>
-              )}
-            </Typography>
-            <Stack sx={{ flexDirection: 'row', gap: '2rem' }}>
-              <LightTooltip title="Report" placement="right">
-                <FlagIcon color="primary" sx={{ cursor: 'pointer' }} />
-              </LightTooltip>
-              <LightTooltip title="Reply" placement="right">
-                <CommentIcon
-                  color="primary"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleToggleReplyComment(comment._id)} // Khi click vào icon "Reply", truyền _id của comment
-                />
-              </LightTooltip>
-            </Stack>
-            {showReplyComment && selectedCommentId === comment._id && (
-              <FormDialogReplyComment
-                commentId={comment._id}
-                bvID={comment?.bvID}
-                handleToggleReplyComment={handleToggleReplyComment}
-              />
-            )}
-          </Stack>
+          </Box>
         </Box>
-      </Box>
-    </Card>
+      </Card>
+      {showReplyComment && selectedCommentId === comment._id && (
+        <FormDialogReplyComment
+          commentId={comment._id}
+          bvID={comment?.bvID}
+          handleToggleReplyComment={handleToggleReplyComment}
+        />
+      )}
+    </Box>
   );
 };
 

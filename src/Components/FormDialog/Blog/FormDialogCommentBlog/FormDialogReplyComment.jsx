@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types'; // Import PropTypes
 //mui
 import { Box, Stack, Avatar, TextField, Button } from '@mui/material';
@@ -13,15 +14,13 @@ import Swal from 'sweetalert2';
 //-------------------------------------------------------------------------
 
 const VideoReplyComment = (props) => {
+  const { handleGetAllComments, handleCreateComment } = useComment();
   const {
-    handleGetAllComments,
-    handleCreateComment,
-  } = useComment();
-  const {
-    authState: { user },
+    authState: { user, isAuthenticated },
   } = useAuth();
   const { commentId, bvID, handleToggleReplyComment } = props; // Fix typo here
 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -48,6 +47,10 @@ const VideoReplyComment = (props) => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        if (!isAuthenticated) {
+          navigate('/auth/login');
+          return;
+        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();

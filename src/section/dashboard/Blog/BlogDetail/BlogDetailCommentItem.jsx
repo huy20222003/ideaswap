@@ -86,6 +86,7 @@ const BlogDetailCommentItem = ({ comment }) => {
   }, [handleGetAllComments]);
 
   return (
+    <Box>
       <Card sx={{ p: '0.5rem', my: '0.5rem' }}>
         <Box sx={{ display: 'flex' }}>
           <Box>
@@ -139,16 +140,17 @@ const BlogDetailCommentItem = ({ comment }) => {
                   />
                 </LightTooltip>
               </Stack>
-              {showReplyComment && selectedCommentId === comment._id && (
-                <BlogReplyComment
-                  commentId={comment._id}
-                  handleToggleReplyComment={handleToggleReplyComment}
-                />
-              )}
             </Stack>
           </Box>
         </Box>
       </Card>
+      {showReplyComment && selectedCommentId === comment._id && (
+        <BlogReplyComment
+          commentId={comment._id}
+          handleToggleReplyComment={handleToggleReplyComment}
+        />
+      )}
+    </Box>
   );
 };
 

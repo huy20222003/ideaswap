@@ -11,9 +11,9 @@ const Searchbar = () => {
       >
         <Box
           component='img'
-          src='/assets/logos/logo_IdeaSwap_White_v2.png'
-          width='5rem'
-          height='5rem'
+          src='/assets/logos/logo_IdeaSwap_nbg.png'
+          width='3rem'
+          height='3rem'
           sx={{mx: '1rem'}}
         />
         <Box>

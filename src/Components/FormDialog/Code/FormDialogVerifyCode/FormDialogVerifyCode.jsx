@@ -103,7 +103,7 @@ const FormDialogVerifyCode = ({ newPassword }) => {
         />
       </Stack>
       <Divider />
-      <DialogContent sx={{width: '20rem'}}>
+      <DialogContent sx={{ width: '20rem' }}>
         <DialogContentText>
           <TextField
             label="Code"
@@ -122,7 +122,9 @@ const FormDialogVerifyCode = ({ newPassword }) => {
       </DialogContent>
       <Divider />
       <DialogActions>
-        <Button variant="text">Cancel</Button>
+        <Button variant="text" onClick={handleClose}>
+          Cancel
+        </Button>
         <Button
           variant="contained"
           sx={{ color: '#fff' }}

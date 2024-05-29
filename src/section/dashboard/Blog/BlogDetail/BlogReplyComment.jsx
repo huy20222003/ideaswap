@@ -5,7 +5,7 @@ import { Box, Stack, Avatar, TextField, Button } from '@mui/material';
 //context
 import { useComment, useAuth } from '../../../../hooks/context';
 //react-router-dom
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 //formik
 import { useFormik } from 'formik';
 //yup
@@ -15,16 +15,14 @@ import Swal from 'sweetalert2';
 //-------------------------------------------------------------------------
 
 const VideoReplyComment = (props) => {
+  const { handleGetAllComments, handleCreateComment } = useComment();
   const {
-    handleGetAllComments,
-    handleCreateComment,
-  } = useComment();
-  const {
-    authState: { user },
+    authState: { user, isAuthenticated },
   } = useAuth();
   const { commentId, handleToggleReplyComment } = props; // Fix typo here
+  const navigate = useNavigate();
 
-  const {_id} = useParams();
+  const { _id } = useParams();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -51,6 +49,10 @@ const VideoReplyComment = (props) => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        if (!isAuthenticated) {
+          navigate('/auth/login');
+          return;
+        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();

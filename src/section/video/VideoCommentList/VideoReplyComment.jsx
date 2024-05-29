@@ -5,7 +5,7 @@ import { Box, Stack, Avatar, TextField, Button } from '@mui/material';
 //context
 import { useComment, useAuth } from '../../../hooks/context';
 //react-router-dom
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 //formik
 import { useFormik } from 'formik';
@@ -16,14 +16,12 @@ import Swal from 'sweetalert2';
 //-------------------------------------------------------------------------
 
 const VideoReplyComment = (props) => {
+  const { handleGetAllComments, handleCreateComment } = useComment();
   const {
-    handleGetAllComments,
-    handleCreateComment,
-  } = useComment();
-  const {
-    authState: { user },
+    authState: { user, isAuthenticated },
   } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = queryString.parse(location.search);
   const { commentId, handleToggleReplyComment } = props; // Fix typo here
 
@@ -54,6 +52,10 @@ const VideoReplyComment = (props) => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
+        if (!isAuthenticated) {
+          navigate('/auth/login');
+          return;
+        }
         const response = await handleCreateComment(values);
         if (response.success) {
           handleGetAllComments();

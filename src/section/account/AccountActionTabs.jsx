@@ -1,4 +1,3 @@
-//react
 import { useState, useEffect } from 'react';
 //react-router-dom
 import { useParams, useNavigate } from 'react-router-dom';
@@ -24,11 +23,15 @@ import PostTab from './PostTab';
 import FollowingTab from './FollowingTab';
 import VideoTab from './VideoTab';
 //context
-import { useUser, useAuth } from '../../hooks/context';
+import { useUser, useAuth, useFollow } from '../../hooks/context';
 //---------------------------------------------------
 
 const AccountActionTabs = () => {
   const [value, setValue] = useState('1');
+  const {
+    followState: { follows },
+    handleGetAllFollows,
+  } = useFollow();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -48,9 +51,15 @@ const AccountActionTabs = () => {
     _id && handleGetUserById(_id);
   }, [_id, handleGetUserById]);
 
+  useEffect(() => {
+    handleGetAllFollows();
+  }, [handleGetAllFollows]);
+
   const handleNavigate = () => {
     navigate('/setting/profile');
   };
+
+  const followFilters = follows.filter((follow) => follow?.userID == _id);
 
   return (
     <Card>
@@ -91,16 +100,17 @@ const AccountActionTabs = () => {
                   <CheckCircleIcon sx={{ color: '#3366FF' }} />
                 </Stack>
                 <Typography variant="subtitle2" sx={{ color: '#fff' }}>
-                  {fShortenNumber(200000)}
+                  {fShortenNumber(followFilters.length)}
+                  {followFilters.length > 1 ? ' Followers' : ' Follower'}
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
-          {authState?.user?._id === _id ? (
+          {authState?.user?._id === _id && (
             <Stack
               sx={{
                 justifyContent: 'flex-start',
-                display: { xs: 'none', sm: 'none' },
+                display: 'flex', // Luôn hiển thị Stack
               }}
             >
               <Button
@@ -113,8 +123,6 @@ const AccountActionTabs = () => {
                 Update Profile
               </Button>
             </Stack>
-          ) : (
-            ''
           )}
         </Stack>
         <Box sx={{ width: '100%', typography: 'body1' }}>

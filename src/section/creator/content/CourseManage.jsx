@@ -24,6 +24,7 @@ import { fDateTime } from '../../../utils/formatTime';
 //component
 import FormDialogDeleteCourse from '../../../Components/FormDialog/creator/FormDialogDeleteCourse';
 import FormDialogEditCourse from '../../../Components/FormDialog/creator/FormDialogEditCourse';
+import HTMLReactParser from 'html-react-parser';
 //--------------------------------------------------
 
 const CourseManage = () => {
@@ -67,6 +68,7 @@ const CourseManage = () => {
       headerName: 'Description',
       type: 'String',
       width: 250,
+      renderCell: (params) => HTMLReactParser(params.value),
     },
     {
       field: 'view',
