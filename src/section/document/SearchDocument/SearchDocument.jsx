@@ -46,6 +46,7 @@ const SearchDocument = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            gap: '1rem'
           }}
         >
           <Box>
