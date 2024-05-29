@@ -5,12 +5,16 @@ import Searchbar from './Searchbar';
 import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 import AccountPopover from './AccountPopover';
-
+import { useNavigate } from 'react-router-dom';
 //--------------------------------------------------------------------
 
 const Header = () => {
   // State để lưu trạng thái của cuộn trang
   const [scrollPosition, setScrollPosition] = useState(0);
+  const navigate = useNavigate();
+  const handleNavigate = async () => {
+    navigate(`/dashboard/app}`);
+  };
 
   // Lắng nghe sự kiện cuộn trang và cập nhật scrollPosition
   useEffect(() => {
@@ -52,6 +56,7 @@ const Header = () => {
           width="3rem"
           height="3rem"
           sx={{ mx: '1rem' }}
+          onClick={handleNavigate}
         />
         <Box display={{ xs: 'none', md: 'block' }}>
           <Searchbar />
