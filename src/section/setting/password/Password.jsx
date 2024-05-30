@@ -45,12 +45,8 @@ const Password = () => {
           const response = await handleSendCode({ email: user?.email });
           if (response.success) {
             setOpenFormDialogVerifyCode(true);
-            formik.setFieldValue('newPassword', '');
-            formik.setFieldValue('confirmPassword', '');
           } else {
             Swal.fire('Failed', 'Email has not been sent!', 'error');
-            formik.setFieldValue('newPassword', '');
-            formik.setFieldValue('confirmPassword', '');
           }
         } catch (error) {
           Swal.fire('Error', 'Server Error', 'error');
