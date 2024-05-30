@@ -60,11 +60,7 @@ const LoginForm = () => {
       password: yup
         .string()
         .required('Password is required')
-        .min(7)
-        .matches(
-          /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
-          'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
-        ),
+        .min(7),
     }),
     onSubmit: async (values) => {
       try {
