@@ -3,14 +3,13 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { Box, List, ListItemText } from '@mui/material';
 import { StyledNavItem, StyledNavItemIcon } from './styles';
 
-// ----------------------------------------------------------------------
-
 NavSection.propTypes = {
   data: PropTypes.array,
   isOpen: PropTypes.bool,
+  onClose: PropTypes.func, // Add onClose prop for handling drawer close
 };
 
-export default function NavSection({ data = [], isOpen, ...other }) {
+export default function NavSection({ data = [], isOpen, onClose, ...other }) {
   return (
     <Box {...other}>
       <List
@@ -21,69 +20,54 @@ export default function NavSection({ data = [], isOpen, ...other }) {
           alignItems: 'center',
           justifyContent: { xs: 'center', md: 'flex-start' },
           m: { md: '0 8rem' },
-          flexDirection: 'row',
+          flexDirection: { xs: 'column', md: 'row' }, // Changed to column on small screens
         }}
       >
         {data.map((item, index) => (
-          <NavItem key={index} item={item} isOpen={isOpen} />
+          <NavItem key={index} item={item} isOpen={isOpen} onClose={onClose} />
         ))}
       </List>
     </Box>
   );
 }
 
-// ----------------------------------------------------------------------
-
 NavItem.propTypes = {
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   isOpen: PropTypes.bool,
+  onClose: PropTypes.func, // Add onClose prop for handling drawer close
 };
 
-function NavItem({ item, isOpen }) {
+function NavItem({ item, isOpen, onClose }) {
   const { path, icon, info, title } = item;
 
   return (
     <StyledNavItem
       component={RouterLink}
       to={path}
+      onClick={onClose} // Close drawer on item click
       sx={{
-        position: 'relative',
         textDecoration: 'none',
         color: 'text.secondary',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        '&.active': {
-          color: 'text.primary',
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '0%',
-          height: 3,
-          backgroundColor: 'white',
-          borderRadius: '10%',
-          transition: 'width 0.3s ease',
-        },
-        '&.active::after': {
-          width: '80%',
-        },
+        justifyContent: 'flex-start', // Ensure items are aligned to the start
         mx: { xs: 1, md: 2 },
-        my: { xs: 0.5, md: 0 },
+        my: { xs: 1, md: 0 }, // Add margin for vertical spacing
+        width: '100%',
       }}
+      activeClassName="active" // Ensure active class is applied
     >
       <StyledNavItemIcon>{icon && icon}</StyledNavItemIcon>
       {isOpen && (
         <ListItemText
           primary={title}
-          sx={{ ml: 2, display: { md: 'none', xl: 'none', lg: 'none' } }}
+          sx={{
+            ml: 2,
+            display: { md: 'none', xl: 'none', lg: 'none' },
+          }}
         />
-      )}{' '}
-      {/* Display title if menu is open */}
+      )}
       {info && info}
     </StyledNavItem>
   );

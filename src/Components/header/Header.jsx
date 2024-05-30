@@ -1,25 +1,76 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Drawer, IconButton, Typography } from '@mui/material';
+import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material'; // Import CloseIcon
 import { useState, useEffect } from 'react';
+import { useTheme, useMediaQuery } from '@mui/material';
 import Searchbar from './Searchbar';
 import Navigation from './nav';
 import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
 import AccountPopover from './AccountPopover';
+import SvgColor from '../svg-color';
+import NavSection from '../nav-section';
+import { useAuth } from '../../hooks/context';
+
+const icon = (name) => (
+  <SvgColor
+    src={`/assets/icons/navbar/${name}.svg`}
+    sx={{ width: 1, height: 1 }}
+  />
+);
 
 const Header = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleScroll = () => {
+    const position = window.pageYOffset;
+    setScrollPosition(position);
+  };
 
   useEffect(() => {
-    const handleScroll = () => {
-      const position = window.pageYOffset;
-      setScrollPosition(position);
-    };
     window.addEventListener('scroll', handleScroll, { passive: true });
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const toggleDrawer = () => {
+    setDrawerOpen((prev) => !prev);
+  };
+
+  const {
+    authState: { user },
+  } = useAuth();
+
+  const navConfig = [
+    {
+      path: '/dashboard/app',
+      icon: icon('ic_home'),
+      title: 'Dashboard',
+    },
+    {
+      path: '/dashboard/course',
+      icon: icon('ic_play-alt'),
+      title: 'Courses',
+    },
+    {
+      path: '/dashboard/document',
+      icon: icon('ic_folder-download'),
+      title: 'Documents',
+    },
+    {
+      path: user ? `/account/${user._id}` : '/',
+      icon: icon('ic_portrait'),
+      title: 'Account',
+    },
+    {
+      path: '/dashboard/donate',
+      icon: icon('ic_hands-heart'),
+      title: 'Donate',
+    },
+  ];
 
   return (
     <Box
@@ -41,10 +92,22 @@ const Header = () => {
         <Grid item xs={0} md={3} display={{ xs: 'none', md: 'block' }}>
           <Searchbar />
         </Grid>
-        <Grid item xl={6} md={6} xs={12}>
-          <Navigation />
+        <Grid item xl={6} md={6} xs={6}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent={{ xs: 'flex-start', md: 'center' }}
+          >
+            {isSmallScreen ? (
+              <IconButton onClick={toggleDrawer}>
+                <MenuIcon sx={{ color: 'white' }} />
+              </IconButton>
+            ) : (
+              <Navigation />
+            )}
+          </Box>
         </Grid>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={6} md={3}>
           <Box
             sx={{
               display: 'flex',
@@ -53,19 +116,55 @@ const Header = () => {
               height: '4rem',
             }}
           >
-            {/* LanguagePopover sẽ không hiển thị trên màn hình nhỏ (xs) */}
-            <Box sx={{ m: '0 1rem 0 1rem' }} display={{ xs: 'none', md: 'block' }}>
+            {/* LanguagePopover will not be displayed on small screens */}
+            <Box sx={{ m: '0 1rem' }} display={{ xs: 'none', md: 'block' }}>
               <LanguagePopover />
             </Box>
-            <Box sx={{ m: '0 1rem 0 1rem' }}>
+            <Box sx={{ m: '0 1rem' }}>
               <NotificationsPopover />
             </Box>
-            <Box sx={{ m: '0 1rem 0 1rem' }}>
+            <Box sx={{ m: '0 1rem' }}>
               <AccountPopover />
             </Box>
           </Box>
         </Grid>
       </Grid>
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        sx={{
+          width: '15rem', // Thiết lập chiều rộng mong muốn
+          '& .MuiDrawer-paper': {
+            width: '15rem', // Đảm bảo nội dung trong drawer cũng có chiều rộng tương tự
+          },
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            padding: '1rem',
+          }}
+        >
+          <IconButton
+            onClick={toggleDrawer} // Close drawer when button is clicked
+            sx={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              color: 'black',
+              zIndex: theme.zIndex.modal,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Box sx={{ mb: '1rem' }}>
+            <Typography variant="h6">Menu</Typography>
+          </Box>
+          <NavSection data={navConfig} isOpen={true} onClose={toggleDrawer} />
+        </Box>
+      </Drawer>
     </Box>
   );
 };

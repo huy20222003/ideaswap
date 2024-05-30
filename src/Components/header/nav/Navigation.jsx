@@ -1,12 +1,7 @@
-//mui
 import { Box } from '@mui/material';
-//SvgColor
 import SvgColor from '../../svg-color';
-//component
 import NavSection from '../../nav-section';
-//context
 import { useAuth } from '../../../hooks/context';
-//------------------------------------------------------------
 
 const icon = (name) => (
   <SvgColor
