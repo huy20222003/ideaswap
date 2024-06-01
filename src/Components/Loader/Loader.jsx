@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-import styles from './Loader.module.css';
 
 const Loader = () => {
   return (
@@ -12,13 +11,7 @@ const Loader = () => {
         alignItems: 'center',
       }}
     >
-      <div className={styles.spinner}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      <Box component='img' src='/assets/loader/loader.gif'></Box>
     </Box>
   );
 };
