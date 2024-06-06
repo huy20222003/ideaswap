@@ -17,8 +17,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useBlog } from '../../../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
-//proptype
-import PropTypes from 'prop-types';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -36,6 +36,7 @@ const FormDialogDeleteCourse = () => {
   const handleClose = () => {
     setOpenFormDialogDeleteBlog(false);
   };
+  const {t} = useTranslation('blogs');
 
   const handleDeleteBlogById = async () => {
     try {
@@ -43,13 +44,13 @@ const FormDialogDeleteCourse = () => {
       if (response.success) {
         handleGetAllBlog();
         setOpenFormDialogDeleteBlog(false);
-        Swal.fire('', 'Delete Successful!', 'success');
+        Swal.fire(t("Success"), t("Delete Successful!"), 'success');
       } else {
         setOpenFormDialogDeleteBlog(false);
-        Swal.fire('', 'Delete failed!', 'error');
+        Swal.fire(t("Error"), t("Delete failed!"), 'error');
       }
     } catch (error) {
-      Swal.fire('', 'Server error!', 'error');
+      Swal.fire(t("Error"), t("Server Error"), 'error');
     }
   };
 
@@ -77,26 +78,23 @@ const FormDialogDeleteCourse = () => {
       <Divider />
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete this blog?
+          {t("Are you sure you want to delete this blog?")}
         </DialogContentText>
       </DialogContent>
       <Divider />
       <DialogActions>
-        <Button variant="text">Cancel</Button>
+        <Button variant="text">{t("Cancel")}</Button>
         <Button
           variant="contained"
           sx={{ color: '#fff' }}
           onClick={handleDeleteBlogById}
         >
-          Delete
+          {t("Delete")}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-FormDialogDeleteCourse.propTypes = {
-    blogId: PropTypes.string.isRequired, 
-  };
 
 export default FormDialogDeleteCourse;

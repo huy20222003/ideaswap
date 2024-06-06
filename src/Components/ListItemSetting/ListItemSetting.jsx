@@ -1,6 +1,9 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Tooltip, ListItemButton, ListItemText } from '@mui/material';
 import styled from '@emotion/styled';
+//i18n
+import { useTranslation } from 'react-i18next';
+//-------------------------------------------------------------
 
 const NavLinkCustom = styled(NavLink)`
   && {
@@ -18,27 +21,28 @@ const NavLinkCustom = styled(NavLink)`
 
 const ListItemSetting = () => {
   const location = useLocation();
+  const {t} = useTranslation('setting');
 
   return (
     <>
-      <Tooltip title="Profile" placement="right">
+      <Tooltip title={t("Profile")} placement="right">
         <NavLinkCustom to="/setting/profile" active={location.pathname === '/setting/profile'}>
           <ListItemButton>
-            <ListItemText sx={{ fontSize: '0.5rem' }} primary="Profile" />
+            <ListItemText sx={{ fontSize: '0.5rem' }} primary={t("Profile")} />
           </ListItemButton>
         </NavLinkCustom>
       </Tooltip>
-      <Tooltip title="Password" placement="right">
+      <Tooltip title={t("Password")} placement="right">
         <NavLinkCustom to="/setting/password" active={location.pathname === '/setting/password'}>
           <ListItemButton>
-            <ListItemText sx={{ fontSize: '0.5rem' }} primary="Password" />
+            <ListItemText sx={{ fontSize: '0.5rem' }} primary={t("Password")} />
           </ListItemButton>
         </NavLinkCustom>
       </Tooltip>
-      <Tooltip title="Language" placement="right">
+      <Tooltip title={t("Language")} placement="right">
         <NavLinkCustom to="/setting/language" active={location.pathname === '/setting/language'}>
           <ListItemButton>
-            <ListItemText sx={{ fontSize: '0.5rem' }} primary="Language" />
+            <ListItemText sx={{ fontSize: '0.5rem' }} primary={t("Language")} />
           </ListItemButton>
         </NavLinkCustom>
       </Tooltip>

@@ -39,11 +39,11 @@ export const NotificationProvider = (prop) => {
   }, [handleError]);
 
   const handleUpdateNotifications = useCallback(
-    async (notificationId, data) => {
+    async (data) => {
       try {
-        const response = await notificationApi.update(notificationId, data);
+        const response = await notificationApi.update(data);
         if (response.data.success) {
-          dispatch(updateNotification(response.data.notification));
+          dispatch(updateNotification(response.data.notifications));
         }
       } catch (error) {
         return handleError(error);

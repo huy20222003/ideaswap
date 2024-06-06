@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 //
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-
+import i18n from './i18n/i18n';
 // ----------------------------------------------------------------------
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

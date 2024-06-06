@@ -4,9 +4,12 @@ import { Box, Card, Typography, Grid } from '@mui/material';
 import CourseItem from './CourseItem';
 //propType
 import PropTypes from 'prop-types';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------------
 
 const CourseNew = ({ courseNewFilter }) => {
+  const { t } = useTranslation('courses');
   return (
     <Box sx={{ mb: '1rem' }}>
       {courseNewFilter.length > 0 ? (
@@ -18,7 +21,7 @@ const CourseNew = ({ courseNewFilter }) => {
           }}
         >
           <Typography variant="subtitle1" sx={{ color: 'white' }}>
-            Course New
+            {t('Course New')}
           </Typography>
         </Card>
       ) : (

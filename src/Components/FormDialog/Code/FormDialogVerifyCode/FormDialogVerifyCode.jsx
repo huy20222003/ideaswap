@@ -24,6 +24,8 @@ import PropTypes from 'prop-types';
 import * as yup from 'yup';
 //formik
 import { useFormik } from 'formik';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -41,6 +43,7 @@ const FormDialogVerifyCode = ({ newPassword }) => {
   const {
     authState: { user },
   } = useAuth();
+  const {t} = useTranslation('setting');
 
   const handleClose = () => {
     setOpenFormDialogVerifyCode(false);
@@ -52,7 +55,7 @@ const FormDialogVerifyCode = ({ newPassword }) => {
       email: user?.email,
     },
     validationSchema: yup.object({
-      code: yup.string().required('Code is required'),
+      code: yup.string().required(t("Code is required")),
       email: yup.string().required('Email is required'),
     }),
     onSubmit: async (values) => {
@@ -66,17 +69,17 @@ const FormDialogVerifyCode = ({ newPassword }) => {
             password: newPassword,
           });
           if (response.success) {
-            Swal.fire('Success', 'Updated password successfully!', 'success');
+            Swal.fire(t("Success"), t("Updated password successfully!"), 'success');
             formik.setFieldValue('code', '');
             handleClose();
           } else {
-            Swal.fire('Failed', 'Password update failed!', 'error');
+            Swal.fire(t("Failed"), t("Password update failed!"), 'error');
           }
         } else {
-          Swal.fire('Failed', 'Verification code is incorrect!', 'error');
+          Swal.fire(t("Failed"), t("Verification code is incorrect!"), 'error');
         }
       } catch (error) {
-        Swal.fire('Error', 'Server Error', 'error');
+        Swal.fire(t("Error"), t("Server Error"), 'error');
       }
     },
   });
@@ -96,7 +99,7 @@ const FormDialogVerifyCode = ({ newPassword }) => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Verify Code</DialogTitle>
+        <DialogTitle>{t("Verify Code")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -106,7 +109,7 @@ const FormDialogVerifyCode = ({ newPassword }) => {
       <DialogContent sx={{ width: '20rem' }}>
         <DialogContentText>
           <TextField
-            label="Code"
+            label={t("Code")}
             name="code"
             id="code"
             required
@@ -123,14 +126,14 @@ const FormDialogVerifyCode = ({ newPassword }) => {
       <Divider />
       <DialogActions>
         <Button variant="text" onClick={handleClose}>
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           variant="contained"
           sx={{ color: '#fff' }}
           onClick={formik.handleSubmit}
         >
-          Verify
+          {t("Verify")}
         </Button>
       </DialogActions>
     </Dialog>

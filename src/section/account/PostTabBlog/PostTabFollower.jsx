@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 //context
 import { useFollow, useUser } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------
 
 const PostTabFollower = () => {
@@ -20,6 +22,7 @@ const PostTabFollower = () => {
     followState: { follows },
     handleGetAllFollows,
   } = useFollow();
+  const {t} = useTranslation('account');
 
   const {
     userState: { users },
@@ -97,7 +100,7 @@ const PostTabFollower = () => {
             }}
           >
             <Typography variant="body2">
-              This user has no followers yet
+              {t("This user has no followers yet")}
             </Typography>
           </Box>
         )}

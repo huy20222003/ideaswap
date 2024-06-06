@@ -44,6 +44,8 @@ import {
 //sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -69,6 +71,7 @@ const PostTabBlogItem = ({ blog }) => {
     user,
   } = blog;
   const [expanded, setExpanded] = useState(false);
+  const { t } = useTranslation(['blogs', 'account']);
   const { authState } = useAuth();
   const { setOpenFormDialogEditBlog } = useCommon();
   const {
@@ -96,7 +99,7 @@ const PostTabBlogItem = ({ blog }) => {
         (heart) => heart?.userID === authState.user?._id && heart.bvID == _id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -179,12 +182,14 @@ const PostTabBlogItem = ({ blog }) => {
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
-        setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
+        setHeartIcon(<FavoriteIcon sx={{ color: '#54D62C' }} />);
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: 'An error occurred while processing your action. Please try again later.',
+        title: t('Error'),
+        text: t(
+          'An error occurred while processing your action. Please try again later.'
+        ),
         icon: 'error',
       });
     }
@@ -220,17 +225,17 @@ const PostTabBlogItem = ({ blog }) => {
       >
         {authState?.user?._id === user?._id && (
           <Box>
-            <MenuItem onClick={() => handleEditBlogClick(blog?._id)}>
+            <MenuItem onClick={() => handleEditBlogClick(_id)}>
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
-              <ListItemText primary="Sửa bài viết" />
+              <ListItemText primary={t('Edit Blog')} />
             </MenuItem>
-            <MenuItem onClick={()=>handleDeleteBlog(blog?._id)}>
+            <MenuItem onClick={() => handleDeleteBlog(_id)}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
-              <ListItemText primary="Xoá bài viết" />
+              <ListItemText primary={t('Delete Blog')} />
             </MenuItem>
           </Box>
         )}
@@ -238,20 +243,20 @@ const PostTabBlogItem = ({ blog }) => {
           <ListItemIcon>
             <FlagCircleIcon />
           </ListItemIcon>
-          <ListItemText primary="Báo cáo bài viết" />
+          <ListItemText primary={t('Report Blog')} />
         </MenuItem>
       </Menu>
       <CardContent sx={{ pb: '0.2rem' }}>
         <Typography variant="body2" color="text.primary">
           {HTMLReactParser(truncatedContent)}
-          {content.length > 50 && (
+          {content.length > 100 && (
             <Typography
               variant="body2"
               color="text.secondary"
               onClick={toggleExpand}
               sx={{ cursor: 'pointer', display: 'inline' }}
             >
-              {expanded ? ' Show less' : '... Show more'}
+              {expanded ? t('Show less') : '...' + t('Show more')}
             </Typography>
           )}
         </Typography>
@@ -294,14 +299,16 @@ const PostTabBlogItem = ({ blog }) => {
             color="text.secondary"
             sx={{ mx: '0.4rem' }}
           >
-            {commentArrays.length} comments
+            {commentArrays.length}{' '}
+            {commentArrays.length > 1 ? t('comments') : t('comment')}
           </Typography>
           <Typography
             variant="body1"
             color="text.secondary"
             sx={{ mx: '0.4rem' }}
           >
-            {shareArrays.length} shares
+            {shareArrays.length}{' '}
+            {shareArrays.length > 1 ? t('shares') : t('share')}
           </Typography>
         </Stack>
       </Box>
@@ -317,7 +324,7 @@ const PostTabBlogItem = ({ blog }) => {
           <CommentIcon />
         </IconButton>
         <LightTooltip
-          title="URL copied to clipboard!"
+          title={t('URL copied to clipboard!')}
           open={tooltipOpen}
           disableFocusListener
           disableHoverListener

@@ -2,10 +2,12 @@ import { Box } from '@mui/material';
 import { useState, useEffect } from 'react'; // Import useState và useEffect
 //component
 import Searchbar from './Searchbar';
-import LanguagePopover from './LanguagePopover';
-import NotificationsPopover from './NotificationsPopover';
-import AccountPopover from './AccountPopover';
+import LanguagePopover from '../../../Components/language-popover';
+import NotificationsPopover from '../../../Components/notifications-popover';
+import AccountPopover from '../../../Components/account-poover';
 import { useNavigate } from 'react-router-dom';
+//context
+import { useAuth } from '../../../hooks/context';
 //--------------------------------------------------------------------
 
 const Header = () => {
@@ -15,6 +17,9 @@ const Header = () => {
   const handleNavigate = async () => {
     navigate(`/dashboard/app`);
   };
+  const {
+    authState: { isAuthenticated },
+  } = useAuth();
 
   // Lắng nghe sự kiện cuộn trang và cập nhật scrollPosition
   useEffect(() => {
@@ -77,9 +82,11 @@ const Header = () => {
             >
               <LanguagePopover />
             </Box>
-            <Box sx={{ m: '0 1rem 0 1rem' }}>
-              <NotificationsPopover />
-            </Box>
+            {isAuthenticated && (
+              <Box sx={{ m: '0 1rem 0 1rem' }}>
+                <NotificationsPopover />
+              </Box>
+            )}
             <Box sx={{ m: '0 1rem 0 1rem' }}>
               <AccountPopover />
             </Box>

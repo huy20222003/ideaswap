@@ -28,6 +28,9 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { useAuth } from '../../../hooks/context';
 import Cookies from 'js-cookie';
+//i18n
+import { useTranslation } from 'react-i18next';
+//--------------------------------------------------------------------------
 
 const LinkStyled = styled(Link)`
   text-decoration: none;
@@ -43,6 +46,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const {t} = useTranslation('auth');
 
   const formik = useFormik({
     initialValues: {
@@ -52,18 +56,18 @@ const LoginForm = () => {
     validationSchema: yup.object({
       username: yup
         .string()
-        .required('Username is required')
+        .required(t("Username is required"))
         .matches(
           /^[a-zA-Z0-9]*$/,
-          'Username must not contain special characters'
+          t("Username must not contain special characters")
         ),
       password: yup
         .string()
-        .required('Password is required')
+        .required(t("Password is required"))
         .min(7)
         .matches(
           /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
-          'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
+          t("Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters")
         ),
     }),
     onSubmit: async (values) => {
@@ -71,7 +75,7 @@ const LoginForm = () => {
         setLoading(true);
         const loginData = await loginUser(values);
         if (!loginData.success) {
-          Swal.fire('Failed', 'Login Failed', 'error');
+          Swal.fire(t("Failed"), t("Login Failed"), 'error');
           setLoading(false);
         } else {
           const expiration = new Date();
@@ -79,11 +83,11 @@ const LoginForm = () => {
           Cookies.set('user', loginData.accessToken, { expires: expiration });
           Cookies.set('refresh', loginData.refreshToken, { expires: 365 });
           await loadUser();
-          Swal.fire('Success', 'Login Success!', 'success');
+          Swal.fire(t("Success"), t("Login Success!"), 'success');
           navigate('/dashboard/app');
         }
       } catch (error) {
-        Swal.fire('Error', 'Server Error', 'error');
+        Swal.fire(t("Error"), t("Server Error"), 'error');
       }
     },
   });
@@ -97,14 +101,14 @@ const LoginForm = () => {
       </Typography>
       <Typography variant="body2" sx={{ color: 'grey', textAlign: 'center' }}>
         {isMobile
-          ? 'Welcome back! Enter your credentials to access your account'
-          : 'Wellcome back, Enter your credentials to access your account'}
+          ? t("Welcome back! Enter your credentials to access your account")
+          : t("Wellcome back, Enter your credentials to access your account")}
       </Typography>
       <Box sx={{ mt: '0.5rem', my: '1rem' }}>
         <Stack sx={{ gap: '1.5rem' }}>
           <Box sx={{ width: '100%' }}>
             <TextField
-              label="Username"
+              label={t("Username")}
               name="username"
               id="username"
               required
@@ -135,7 +139,7 @@ const LoginForm = () => {
           </Box>
           <Box sx={{ width: '100%' }}>
             <TextField
-              label="Password"
+              label={t("Password")}
               name="password"
               id="password"
               required
@@ -183,7 +187,7 @@ const LoginForm = () => {
                   cursor: 'pointer',
                 }}
               >
-                Forget password?
+                {t("Forget password?")}
               </Typography>
             )}
           </Box>
@@ -199,12 +203,12 @@ const LoginForm = () => {
               cursor: 'pointer',
             }}
           >
-            Forget password?
+            {t("Forget password?")}
           </Typography>
         )}
         <FormControlLabel
           control={<Checkbox defaultChecked />}
-          label="Remember me"
+          label={t("Remember me")}
           sx={{ mt: '0.5rem' }}
         />
         {loading ? (
@@ -227,7 +231,7 @@ const LoginForm = () => {
             loadingIndicator={<CircularProgress size={16} />}
             onClick={formik.handleSubmit}
           >
-            Login
+           {t("Login")}
           </LoadingButton>
         )}
       </Box>
@@ -271,8 +275,8 @@ const LoginForm = () => {
       <Stack
         sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}
       >
-        <Typography variant="body2">Do not have an account?</Typography>
-        <LinkStyled to="/auth/register">Register here</LinkStyled>
+        <Typography variant="body2">{t("Do not have an account?")}</Typography>
+        <LinkStyled to="/auth/register">{t("Register here")}</LinkStyled>
       </Stack>
     </Box>
   );

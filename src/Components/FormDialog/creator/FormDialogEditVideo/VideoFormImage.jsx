@@ -5,11 +5,14 @@ import PropTypes from 'prop-types'; // Import PropTypes
 //------------------------------------------------------
 
 import VideoFormImageItem from './VideoFormImageItem';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------------
 
 const VideoFormImage = ({ formik }) => {
   const [imageUrl, setImageUrl] = useState(formik.values.imageUrl);
   const [imageSelected, setImageSelected] = useState(false);
+  const {t} = useTranslation('videos');
 
   useEffect(()=>{
     setImageUrl(formik.values.imageBase64);
@@ -66,9 +69,9 @@ const VideoFormImage = ({ formik }) => {
                 src="/assets/images/chooseFile.svg"
               ></Box>
               <Stack sx={{ textAlign: 'center' }}>
-                <Typography variant="h6">Drop or Select file</Typography>
+                <Typography variant="h6">{t("Drop or Select file")}</Typography>
                 <Typography variant="body2">
-                  Drop files here or click browse through your machine
+                  {t("Drop files here or click browse through your machine")}
                 </Typography>
               </Stack>
             </Stack>
@@ -91,7 +94,7 @@ const VideoFormImage = ({ formik }) => {
           )}
           {!imageSelected && ( // Hiển thị thông báo dưới phần chọn ảnh
             <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'red' }}>
-              Please select an image.
+              {t("Please select an image")}
             </Typography>
           )}
         </Box>

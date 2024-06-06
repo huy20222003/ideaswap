@@ -25,10 +25,13 @@ import { useFormik } from 'formik';
 import { useAuth, useUser } from '../../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------
 
 const ProfileInfo = () => {
   document.title = 'Setting';
+  const {t} = useTranslation('setting');
   const [datimeValue, setDateTimeValue] = useState(dayjs(Date.now()));
   const [gender, setGender] = useState('Male');
   const {
@@ -56,34 +59,34 @@ const ProfileInfo = () => {
     validationSchema: yup.object({
       firstName: yup
         .string()
-        .required('FirstName is required')
-        .max(200, 'FirstName maximum 200 characters'),
+        .required(t("FirstName is required"))
+        .max(200, t("FirstName maximum 200 characters")),
       lastName: yup
         .string()
-        .required('LastName is required')
-        .max(200, 'LastName maximum 200 characters'),
+        .required(t("LastName is required"))
+        .max(200, t("LastName maximum 200 characters")),
       username: yup
         .string()
-        .required('Username is required')
-        .max(100, 'Username maximum 100 characters'),
+        .required(t("Username is required"))
+        .max(100, t("Username maximum 100 characters")),
       gender: yup.string(),
       email: yup
         .string()
-        .required('Email is required')
-        .matches(/^\S+@\S+\.\S+$/, 'Invalid email'),
-      phoneNumber: yup.string().max(10, 'PhoneNuber maximum 10 characters'),
-      address: yup.string().max(500, 'Address maximum 500 characters'),
+        .required(t("Email is required"))
+        .matches(/^\S+@\S+\.\S+$/, t("Invalid email")),
+      phoneNumber: yup.string().max(10, t("PhoneNumber maximum 10 characters")),
+      address: yup.string().max(500, t("Address maximum 500 characters")),
     }),
     onSubmit: async (values) => {
       try {
         const response = await handleUpdateUser(values._id, values);
         if (response.success) {
-          Swal.fire('Success', 'Successfully updated', 'success');
+          Swal.fire(t("Success"), t("Successfully updated"), 'success');
         } else {
-          Swal.fire('Failed', 'Update information failed', 'error');
+          Swal.fire(t("Error"), t("Update information failed"), 'error');
         }
       } catch (error) {
-        Swal.fire('Error', 'Server Error', 'error');
+        Swal.fire(t("Error"), t("Server Error"), 'error');
       }
     },
   });
@@ -111,7 +114,7 @@ const ProfileInfo = () => {
       >
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="FirstName"
+            label={t("FirstName")}
             name="firstName"
             id="firstName"
             required
@@ -127,7 +130,7 @@ const ProfileInfo = () => {
         </Box>
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="LastName"
+            label={t("LastName")}
             name="lastName"
             id="lastName"
             required
@@ -164,7 +167,7 @@ const ProfileInfo = () => {
               sx={{ alignItems: 'flex-end' }}
             >
               <DatePicker
-                label="BirthDay"
+                label={t("BirthDay")}
                 value={datimeValue}
                 sx={{ maxWidth: '5rem' }}
                 slotProps={{
@@ -184,17 +187,17 @@ const ProfileInfo = () => {
         </Box>
         <Box sx={{ width: '100%' }}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+            <InputLabel id="demo-simple-select-label">{t("Gender")}</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={formik.values.gender}
-              label="Gender"
+              label={t("Gender")}
               onChange={handleChange}
             >
-              <MenuItem value={'Male'}>Nam</MenuItem>
-              <MenuItem value={'Female'}>Nữ</MenuItem>
-              <MenuItem value={'Unknow'}>Unknow</MenuItem>
+              <MenuItem value={'Male'}>{t("Male")}</MenuItem>
+              <MenuItem value={'Female'}>{t("Female")}</MenuItem>
+              <MenuItem value={'Unknow'}>{t("Unknow")}</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -202,7 +205,7 @@ const ProfileInfo = () => {
       <Stack gap="1rem">
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="Username"
+            label={t("Username")}
             name="username"
             id="username"
             required
@@ -218,7 +221,7 @@ const ProfileInfo = () => {
         </Box>
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="Email"
+            label={t("Email")}
             name="email"
             id="email"
             required
@@ -234,7 +237,7 @@ const ProfileInfo = () => {
         </Box>
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="PhoneNumber"
+            label={t("PhoneNumber")}
             name="phoneNumber"
             id="phoneNumber"
             variant="outlined"
@@ -249,7 +252,7 @@ const ProfileInfo = () => {
         </Box>
         <Box sx={{ width: '100%' }}>
           <TextField
-            label="Address"
+            label={t("Address")}
             name="address"
             id="address"
             variant="outlined"
@@ -270,7 +273,7 @@ const ProfileInfo = () => {
               sx={{ px: '1.5rem', color: '#fff' }}
               onClick={formik.handleSubmit}
             >
-              Change
+              {t("Change")}
             </Button>
           </Box>
         </Stack>

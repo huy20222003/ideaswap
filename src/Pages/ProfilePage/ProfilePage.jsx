@@ -3,13 +3,16 @@ import { Box, Typography, Divider } from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
 //component
 import { ProfileAvatar, ProfileInfo } from '../../section/setting/profile';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------
 
 const ProfilePage = () => {
+  const {t} = useTranslation('setting');
   return (
     <Box sx={{p: '1rem'}}>
       <Typography variant="h6" sx={{ my: '1rem', color: 'primary.main' }}>
-        Profile
+        {t("Profile")}
       </Typography>
       <Box
         sx={{
@@ -21,7 +24,7 @@ const ProfilePage = () => {
       >
         <ErrorIcon sx={{ color: 'primary.main', mr: '0.5rem' }} />
         <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
-          Change personal information
+          {t("Change personal information")}
         </Typography>
       </Box>
       <Divider sx={{bgColor: 'primary.main', my: '1rem'}}/>

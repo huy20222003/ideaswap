@@ -18,10 +18,14 @@ import {
   useAuth,
 } from '../../../hooks/context';
 import { fShortenNumber } from '../../../utils/formatNumber';
+//i18n
+import { useTranslation } from 'react-i18next';
+//-------------------------------------------------------------------------
 
 const VideoTab = () => {
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
+  const {t} = useTranslation('dashboardCreator');
 
   const {
     heartState: { hearts },
@@ -131,12 +135,12 @@ const VideoTab = () => {
 
   // Chuyển đổi totalDataByDay thành dạng mảng series để cung cấp cho biểu đồ
   const series = [
-    { name: 'Hearts', data: totalDataByDay.map((data) => data.hearts || 0) },
+    { name: t("Hearts"), data: totalDataByDay.map((data) => data.hearts || 0) },
     {
-      name: 'Comments',
+      name: t("Comments"),
       data: totalDataByDay.map((data) => data.comments || 0),
     },
-    { name: 'Shares', data: totalDataByDay.map((data) => data.shares || 0) },
+    { name: t("Shares"), data: totalDataByDay.map((data) => data.shares || 0) },
   ];
 
   const options = {
@@ -179,7 +183,7 @@ const VideoTab = () => {
           <Card sx={{ mx: '0.5rem' }}>
             <CardContent>
               <Box>
-                <Typography variant="subtitle1">Real Time</Typography>
+                <Typography variant="subtitle1">{t("Real Time")}</Typography>
                 <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Box
                     sx={{
@@ -191,7 +195,7 @@ const VideoTab = () => {
                       mr: '0.5rem',
                     }}
                   ></Box>
-                  <Typography variant="body2">Real Time</Typography>
+                  <Typography variant="body2">{t("Real Time")}</Typography>
                 </Stack>
               </Box>
               <Divider />

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 // prop-type
 import PropTypes from 'prop-types';
@@ -39,7 +39,7 @@ import {
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // component
-import FormDialogCommentList from './FormDialogCommentList';
+import CommentList from '../../../comments/CommentList';
 // formik
 import { useFormik } from 'formik';
 // yup
@@ -47,6 +47,8 @@ import * as yup from 'yup';
 // sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -79,6 +81,7 @@ const FormDialogCommentBlog = () => {
     handleGetAllComments,
     handleCreateComment,
   } = useComment();
+  const { t } = useTranslation('blogs');
   const {
     userState: { user },
     handleGetUserById,
@@ -95,12 +98,32 @@ const FormDialogCommentBlog = () => {
   const { shares } = shareState;
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
 
-  const commentsFilter = comments
-    .filter((comment) => comment?.bvID === blog?._id)
-    .map((comment) => ({
-      ...comment,
-      bvID: blog?._id, // Thay đổi giá trị của trường bvID thành _id của blog
-    }));
+  const commentsFilter = useMemo(() => {
+    // Lọc ra tất cả các comment có bvID trùng khớp với blog?._id
+    const commentsForBlog = comments.filter(
+      (comment) => comment?.bvID === blog?._id
+    );
+
+    // Lấy ra những comment có parentCommentID = null
+    const topLevelComments = commentsForBlog.filter(
+      (comment) => comment.parentCommentID === null
+    );
+
+    // Sắp xếp các comment có parentCommentID = null theo trường createdAt
+    topLevelComments.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    // Lấy ra những comment có parentCommentID khác null
+    const childComments = commentsForBlog.filter(
+      (comment) => comment.parentCommentID !== null
+    );
+
+    // Kết hợp những comment có parentCommentID = null và các comment con
+    const sortedComments = [...topLevelComments, ...childComments];
+
+    return sortedComments;
+  }, [comments, blog?._id]);
 
   useEffect(() => {
     handleGetAllHearts();
@@ -179,13 +202,15 @@ const FormDialogCommentBlog = () => {
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
-        setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
+        setHeartIcon(<FavoriteIcon sx={{ color: '#54D62C' }} />);
         handleGetAllHearts();
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: 'An error occurred while processing your action. Please try again later.',
+        title: t('Error'),
+        text: t(
+          'An error occurred while processing your action. Please try again later.'
+        ),
         icon: 'error',
       });
     }
@@ -221,7 +246,7 @@ const FormDialogCommentBlog = () => {
         }
       } catch (error) {
         Swal.fire({
-          title: 'Server Error',
+          title: t('Server Error'),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -256,7 +281,7 @@ const FormDialogCommentBlog = () => {
         }}
       >
         <DialogTitle>
-          Blog of {user?.firstName + ' ' + user?.lastName}
+          {t('Blog of')} {user?.firstName + ' ' + user?.lastName}
         </DialogTitle>
         <CloseIcon
           onClick={handleClose}
@@ -300,7 +325,7 @@ const FormDialogCommentBlog = () => {
                   onClick={toggleExpand}
                   sx={{ cursor: 'pointer', display: 'inline' }}
                 >
-                  {expanded ? ' Show less' : '... Show more'}
+                  {expanded ? t('Show less') : '...' + t('Show more')}
                 </Typography>
               )}
             </Typography>
@@ -327,7 +352,7 @@ const FormDialogCommentBlog = () => {
             }}
           >
             <Stack sx={{ flexDirection: 'row' }}>
-              <FavoriteIcon sx={{ color: 'red' }} />
+              <FavoriteIcon sx={{ color: '#54D62C' }} />
               <Typography
                 variant="body1"
                 color="text.secondary"
@@ -342,14 +367,16 @@ const FormDialogCommentBlog = () => {
                 color="text.secondary"
                 sx={{ mx: '0.4rem' }}
               >
-                {commentsFilter?.length} comments
+                {commentsFilter.length}{' '}
+                {commentsFilter.length > 1 ? t('comments') : t('comment')}
               </Typography>
               <Typography
                 variant="body1"
                 color="text.secondary"
                 sx={{ mx: '0.4rem' }}
               >
-                {shareArrays?.length} shares
+                {shareArrays.length}{' '}
+                {shareArrays.length > 1 ? t('shares') : t('share')}
               </Typography>
             </Stack>
           </Box>
@@ -365,7 +392,7 @@ const FormDialogCommentBlog = () => {
               <CommentIcon />
             </IconButton>
             <LightTooltip
-              title="URL copied to clipboard!"
+              title={t('URL copied to clipboard!')}
               open={tooltipOpen}
               disableFocusListener
               disableHoverListener
@@ -380,7 +407,7 @@ const FormDialogCommentBlog = () => {
         <Box sx={{ m: '1rem' }}>
           <TextField
             fullWidth
-            label="Comment"
+            label={t('Comment')}
             variant="outlined"
             size="medium"
             id="content"
@@ -397,20 +424,20 @@ const FormDialogCommentBlog = () => {
               sx={{ color: '#fff', my: '1rem' }}
               onClick={formik.handleSubmit}
             >
-              Comment
+              {t('Comment')}
             </Button>
           </Stack>
         </Box>
         <Box sx={{ my: '1rem' }}>
           <Typography variant="subtitle1" sx={{ ml: '1rem' }}>
-            Comments
+            {t('Comments')}
           </Typography>
           {commentsFilter.length > 0 ? (
             <Box>
-              <FormDialogCommentList comments={commentsFilter} />
+              <CommentList comments={commentsFilter} />
             </Box>
           ) : (
-            'Chưa có bình luận nào'
+            t('No comments yet')
           )}
         </Box>
       </Box>

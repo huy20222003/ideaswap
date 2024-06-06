@@ -18,6 +18,9 @@ import {
   useDocument,
 } from '../../../hooks/context';
 import VideoHot from './VideoHot';
+//i18n
+import { useTranslation } from 'react-i18next';
+//---------------------------------------------------
 
 const OverviewTab = () => {
   const {
@@ -31,6 +34,7 @@ const OverviewTab = () => {
   const {
     authState: { user },
   } = useAuth();
+  const {t} = useTranslation('dashboardCreator');
 
   const {
     blogState: { blogs },
@@ -56,15 +60,15 @@ const OverviewTab = () => {
 
   const [series, setSeries] = useState([
     {
-      name: 'Blogs',
+      name: t("Blogs"),
       data: [],
     },
     {
-      name: 'Documents',
+      name: t("Documents"),
       data: [],
     },
     {
-      name: 'Videos',
+      name: t("Videos"),
       data: [],
     },
   ]);
@@ -107,22 +111,22 @@ const OverviewTab = () => {
     const blogsCount = countItemsByDay(blogsFilterByUserID);
     const documentsCount = countItemsByDay(documentsFilterByUserID);
     const videosCount = countItemsByDay(videosFilterByUserID);
-
+  
     setSeries([
       {
-        name: 'Blogs',
+        name: t("Blogs"),
         data: blogsCount,
       },
       {
-        name: 'Documents',
+        name: t("Documents"),
         data: documentsCount,
       },
       {
-        name: 'Videos',
+        name: t("Videos"),
         data: videosCount,
       },
     ]);
-  }, [blogsFilterByUserID, documentsFilterByUserID, videosFilterByUserID, countItemsByDay]);
+  }, [blogsFilterByUserID, documentsFilterByUserID, videosFilterByUserID, countItemsByDay, t]);  
 
   const options = {
     chart: {
@@ -164,7 +168,7 @@ const OverviewTab = () => {
           <Card sx={{ mx: '0.5rem' }}>
             <CardContent>
               <Box>
-                <Typography variant="subtitle1">Real Time</Typography>
+                <Typography variant="subtitle1">{t("Real Time")}</Typography>
                 <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Box
                     sx={{
@@ -176,7 +180,7 @@ const OverviewTab = () => {
                       mr: '0.5rem',
                     }}
                   ></Box>
-                  <Typography variant="body2">Real Time</Typography>
+                  <Typography variant="body2">{t("Real Time")}</Typography>
                 </Stack>
               </Box>
               <Divider />
@@ -196,7 +200,7 @@ const OverviewTab = () => {
                   <Typography variant="subtitle1">
                     {fShortenNumber(totalViews)}
                   </Typography>
-                  <Typography variant="body2">Views</Typography>
+                  <Typography variant="body2">{t("Views")}</Typography>
                 </Stack>
               </Box>
               <Divider />

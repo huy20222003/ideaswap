@@ -26,6 +26,9 @@ import Cookies from 'js-cookie';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
+//i18n
+import { useTranslation } from 'react-i18next';
+//-----------------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,9 +48,11 @@ const FormDialogEditDocument = () => {
   const handleClose = () => {
     setOpenFormDialogEditDocument(false);
   };
+  const {t} = useTranslation('documents');
 
   const fileInput = useRef(null);
   const [selectedFileName, setSelectedFileName] = useState('');
+  const [fileError, setFileError] = useState('');
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
 
@@ -62,13 +67,13 @@ const FormDialogEditDocument = () => {
     validationSchema: yup.object({
       title: yup
         .string()
-        .required('Title is required')
-        .max(100, 'The maximum number of characters is 100'),
+        .required(t("Title is required"))
+        .max(100, t("The maximum number of characters is 100")),
       description: yup
         .string()
-        .required('Description is required')
-        .max(5000, 'The maximum number of characters is 5000'),
-      file: yup.mixed().required('File is required'),
+        .required(t("Description is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
+      file: yup.mixed().required(t("File is required")),
       userID: yup.string().required('User ID is required'),
     }),
     onSubmit: async (values) => {
@@ -103,7 +108,7 @@ const FormDialogEditDocument = () => {
         if (response.data.success) {
           setOpenFormDialogEditDocument(false);
           Swal.fire({
-            title: 'Update document successful!',
+            title: t("Update document successful!"),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -111,7 +116,7 @@ const FormDialogEditDocument = () => {
           handleGetAllDocuments();
         } else {
           Swal.fire({
-            title: 'Update document failed!',
+            title: t("Update document failed!"),
             icon: 'error',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -120,7 +125,7 @@ const FormDialogEditDocument = () => {
       } catch (error) {
         setOpenFormDialogEditDocument(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -134,8 +139,32 @@ const FormDialogEditDocument = () => {
 
   const handleFileSelect = (event) => {
     const selectedFile = event.target.files[0];
-    formik.setFieldValue('file', selectedFile);
-    setSelectedFileName(selectedFile.name);
+
+    if (selectedFile) {
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/x-rar-compressed',
+        'application/zip',
+        'application/x-zip-compressed',
+        'multipart/x-zip'
+      ];
+
+      const validExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'rar', 'zip'];
+
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+      if (validTypes.includes(selectedFile.type) || validExtensions.includes(fileExtension)) {
+        setFileError('');
+        formik.setFieldValue('file', selectedFile);
+        setSelectedFileName(selectedFile.name);
+      } else {
+        setFileError(t("Invalid file type. Only PDF, Word, Excel, RAR, and ZIP files are allowed."));
+      }
+    }
   };
 
   useEffect(() => {
@@ -168,7 +197,7 @@ const FormDialogEditDocument = () => {
             alignItems: 'center',
           }}
         >
-          <DialogTitle>Edit Document</DialogTitle>
+          <DialogTitle>{t("Edit Document")}</DialogTitle>
           <CloseIcon
             onClick={handleClose}
             sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -179,7 +208,7 @@ const FormDialogEditDocument = () => {
           <Box sx={{ mb: '1rem' }}>
             <TextField
               variant="outlined"
-              label="Title"
+              label={t("Title")}
               id="title"
               name="title"
               fullWidth
@@ -224,11 +253,16 @@ const FormDialogEditDocument = () => {
             startIcon={<UploadIcon />}
             onClick={() => fileInput.current.click()}
           >
-            Select File
+            {t("Select File")}
           </Button>
           {selectedFileName && (
             <Typography variant="body1" sx={{ mb: '1rem' }}>
-              Selected File: {selectedFileName}
+              {t("Selected File:")} {selectedFileName}
+            </Typography>
+          )}
+          {fileError && (
+            <Typography variant="body1" sx={{ color: 'red', mb: '1rem' }}>
+              {fileError}
             </Typography>
           )}
           <DocumentFormImage formik={formik} />
@@ -250,7 +284,7 @@ const FormDialogEditDocument = () => {
             sx={{ px: '1rem', mx: '0.5rem' }}
             onClick={handleClose}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             type="submit"
@@ -258,7 +292,7 @@ const FormDialogEditDocument = () => {
             startIcon={<UploadIcon />}
             sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
           >
-            Edit
+            {t("Edit")}
           </Button>
         </DialogActions>
       </form>

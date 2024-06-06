@@ -25,6 +25,8 @@ import { fDateTime } from '../../../utils/formatTime';
 import FormDialogDeleteCourse from '../../../Components/FormDialog/creator/FormDialogDeleteCourse';
 import FormDialogEditCourse from '../../../Components/FormDialog/creator/FormDialogEditCourse';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------
 
 const CourseManage = () => {
@@ -35,6 +37,7 @@ const CourseManage = () => {
     setOpenFormDialogEditCourse,
     handleGetCourseById,
   } = useCourse();
+  const {t} = useTranslation('dashboardCreator');
   const {
     authState: { user },
   } = useAuth();
@@ -51,40 +54,40 @@ const CourseManage = () => {
   const columns = [
     {
       field: 'imageUrl',
-      headerName: 'Image',
+      headerName: t("Image"),
       type: 'String',
       width: 150,
       renderCell: (params) => (
         <img
           src={params.value}
-          alt="Category"
+          alt="Image"
           style={{ width: '60%', height: '100%' }}
         />
       ),
     },
-    { field: 'title', headerName: 'Title', type: 'String', width: 300 },
+    { field: 'title', headerName: t("Title"), type: 'String', width: 300 },
     {
       field: 'description',
-      headerName: 'Description',
+      headerName: t("Description"),
       type: 'String',
       width: 250,
       renderCell: (params) => HTMLReactParser(params.value),
     },
     {
       field: 'view',
-      headerName: 'Views',
+      headerName: t("Views"),
       type: 'String',
       width: 150,
     },
     {
       field: 'createdAt',
-      headerName: 'CreatedAt',
+      headerName: t("CreatedAt"),
       type: 'String',
       width: 150,
     },
     {
       field: 'actions',
-      headerName: 'Actions',
+      headerName: t("Actions"),
       width: 90,
       renderCell: ActionsCell,
     },
@@ -134,11 +137,11 @@ const CourseManage = () => {
           >
             <MenuItem onClick={() => handleEdit(params.row.id)}>
               <EditIcon sx={{ paddingRight: '0.5rem' }} />
-              Edit
+              {t("Edit")}
             </MenuItem>
             <MenuItem onClick={() => handleDelete(params.row.id)}>
               <DeleteIcon sx={{ paddingRight: '0.5rem' }} />
-              Delete
+              {t("Delete")}
             </MenuItem>
           </Menu>
         </Popover>

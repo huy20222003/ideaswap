@@ -1,11 +1,16 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, startTransition } from 'react';
 import { Container, Box, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import MicIcon from '@mui/icons-material/Mic';
 import { CourseNew, CourseTop, Courses } from '../../section/course';
 import { useCourse } from '../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
+//--------------------------------------------------------------
 
 const CoursePage = () => {
   document.title = 'Course';
+  const {t} = useTranslation('courses');
   const {
     courseState: { courses },
     handleSearchCourses,
@@ -55,6 +60,17 @@ const CoursePage = () => {
     setSearchTerm(event.target.value);
   };
 
+  const startSpeechRecognition = () => {
+    var recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+    recognition.onresult = function (event) {
+      var result = event.results[0][0].transcript;
+      startTransition(() => setSearchTerm(result));
+    };
+
+    recognition.start();
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: '5rem' }}>
       <Box sx={{ width: '100%', mb: '2rem' }}>
@@ -69,7 +85,15 @@ const CoursePage = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
-            placeholder: "Search for courses"
+            endAdornment: (
+              <InputAdornment position="end">
+                <MicIcon
+                  sx={{ cursor: 'pointer' }}
+                  onClick={startSpeechRecognition}
+                />
+              </InputAdornment>
+            ),
+            placeholder: t("Search for courses")
           }}
           value={searchTerm}
           onChange={handleChange}

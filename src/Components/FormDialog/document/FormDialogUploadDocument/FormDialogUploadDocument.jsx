@@ -30,6 +30,9 @@ import Cookies from 'js-cookie';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
+//i18n
+import { useTranslation } from 'react-i18next';
+//-----------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -44,6 +47,7 @@ const FormDialogUploadDocument = () => {
   const {
     authState: { user },
   } = useAuth();
+  const { t } = useTranslation('documents');
 
   const handleClose = () => {
     setOpenFormDialogAddDocument(false);
@@ -56,6 +60,7 @@ const FormDialogUploadDocument = () => {
 
   const fileInput = useRef(null);
   const [selectedFileName, setSelectedFileName] = useState('');
+  const [fileError, setFileError] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -68,13 +73,13 @@ const FormDialogUploadDocument = () => {
     validationSchema: yup.object({
       title: yup
         .string()
-        .required('Title is required')
-        .max(100, 'The maximum number of characters is 100'),
+        .required(t("Title is required"))
+        .max(100, t("The maximum number of characters is 100")),
       description: yup
         .string()
-        .required('Description is required')
-        .max(5000, 'The maximum number of characters is 5000'),
-      file: yup.mixed().required('File is required'),
+        .required(t("Description is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
+      file: yup.mixed().required(t("File is required")),
       userID: yup.string().required('User ID is required'),
     }),
     onSubmit: async (values) => {
@@ -109,7 +114,7 @@ const FormDialogUploadDocument = () => {
         if (response.data.success) {
           setOpenFormDialogAddDocument(false);
           Swal.fire({
-            title: 'Add document successful!',
+            title: t("Add document successful!"),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -118,7 +123,7 @@ const FormDialogUploadDocument = () => {
           handleGetAllNotifications();
         } else {
           Swal.fire({
-            title: 'Add document failed!',
+            title: t("Add document failed!"),
             icon: 'error',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -127,7 +132,7 @@ const FormDialogUploadDocument = () => {
       } catch (error) {
         setOpenFormDialogAddDocument(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -144,8 +149,32 @@ const FormDialogUploadDocument = () => {
 
   const handleFileSelect = (event) => {
     const selectedFile = event.target.files[0];
-    formik.setFieldValue('file', selectedFile);
-    setSelectedFileName(selectedFile.name);
+
+    if (selectedFile) {
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/x-rar-compressed',
+        'application/zip',
+        'application/x-zip-compressed',
+        'multipart/x-zip'
+      ];
+
+      const validExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'rar', 'zip'];
+
+      const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+
+      if (validTypes.includes(selectedFile.type) || validExtensions.includes(fileExtension)) {
+        setFileError('');
+        formik.setFieldValue('file', selectedFile);
+        setSelectedFileName(selectedFile.name);
+      } else {
+        setFileError(t("Invalid file type. Only PDF, Word, Excel, RAR, and ZIP files are allowed."));
+      }
+    }
   };
 
   return (
@@ -167,7 +196,7 @@ const FormDialogUploadDocument = () => {
             alignItems: 'center',
           }}
         >
-          <DialogTitle>Upload Document</DialogTitle>
+          <DialogTitle>{t("Upload Document")}</DialogTitle>
           <CloseIcon
             onClick={handleClose}
             sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -178,7 +207,7 @@ const FormDialogUploadDocument = () => {
           <Box sx={{ mb: '1rem' }}>
             <TextField
               variant="outlined"
-              label="Title"
+              label={t("Title")}
               id="title"
               name="title"
               fullWidth
@@ -224,11 +253,16 @@ const FormDialogUploadDocument = () => {
             onClick={() => fileInput.current.click()}
             sx={{ mb: '0.5rem' }}
           >
-            Select File
+            {t("Select File")}
           </Button>
           {selectedFileName && (
             <Typography variant="body1" sx={{ mb: '1rem' }}>
-              Selected File: {selectedFileName}
+              {t("Selected File:")} {selectedFileName}
+            </Typography>
+          )}
+          {fileError && (
+            <Typography variant="body2" sx={{ color: 'red', mb: '1rem' }}>
+              {fileError}
             </Typography>
           )}
           <DocumentFormImage formik={formik} />
@@ -250,7 +284,7 @@ const FormDialogUploadDocument = () => {
             sx={{ px: '1rem', mx: '0.5rem' }}
             onClick={handleClose}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             type="submit"
@@ -258,7 +292,7 @@ const FormDialogUploadDocument = () => {
             startIcon={<UploadIcon />}
             sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
           >
-            Upload
+            {t("Upload")}
           </Button>
         </DialogActions>
       </form>

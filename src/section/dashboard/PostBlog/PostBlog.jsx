@@ -15,6 +15,8 @@ import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
 import { useCommon, useAuth } from '../../../hooks/context';
 //Component
 import FormDialogPostBlog from '../../../Components/FormDialog/Blog/FormDialogPostBlog';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------------------------
 
 const PostBlog = () => {
@@ -32,6 +34,8 @@ const PostBlog = () => {
     }
   };
 
+  const { t } = useTranslation('blogs');
+
   return (
     <Card sx={{ my: '1rem', bgcolor: 'primary.main' }}>
       <CardContent>
@@ -40,13 +44,13 @@ const PostBlog = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '0.5rem'
+            gap: '0.5rem',
           }}
         >
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box sx={{width: '100%'}}>
+          <Box sx={{ width: '100%' }}>
             <TextField
               variant="outlined"
               fullWidth
@@ -62,7 +66,7 @@ const PostBlog = () => {
                   </InputAdornment>
                 ),
                 readOnly: true,
-                placeholder: 'Would you write something?',
+                placeholder: t('Would you write something?'),
               }}
               onClick={handleOpenPostBlog}
             />

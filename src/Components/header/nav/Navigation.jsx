@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import SvgColor from '../../svg-color';
 import NavSection from '../../nav-section';
 import { useAuth } from '../../../hooks/context';
+import { useTranslation } from 'react-i18next';
 
 const icon = (name) => (
   <SvgColor
@@ -12,28 +13,29 @@ const icon = (name) => (
 
 const Navigation = () => {
   const { authState: { user } } = useAuth();
+  const {t} = useTranslation('navbar');
 
   const navConfig = [
     {
       path: '/dashboard/app',
       icon: icon('ic_home'),
-      title: 'Dashboard'
+      title: t('Dashboard')
     },
     {
       path: '/dashboard/course',
       icon: icon('ic_play-alt'),
-      title: 'Courses'
+      title: t('Courses')
     },
-    { path: '/dashboard/document', icon: icon('ic_folder-download'), title: 'Documents' },
+    { path: '/dashboard/document', icon: icon('ic_folder-download'), title: t('Documents') },
     {
       path: user ? `/account/${user._id}` : '/',
       icon: icon('ic_portrait'),
-      title: 'Account'
+      title: t('Account')
     },
     {
       path: '/dashboard/donate',
       icon: icon('ic_hands-heart'),
-      title: 'Donate'
+      title: t('Donate')
     },
   ];
 

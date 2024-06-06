@@ -3,12 +3,16 @@ import { Box, Drawer, List, IconButton, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VideoListItem from './VideoListItem';
 import { useVideo, useCensorships } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
+//------------------------------------------------------------------
 
 const VideoList = () => {
   const {
     videoState: { videos },
     handleGetAllVideo,
   } = useVideo();
+  const {t} = useTranslation('videos');
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
   const [courseId, setCourseId] = useState('');
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
@@ -82,7 +86,7 @@ const VideoList = () => {
         }}
       >
         <Box sx={{ p: '0.5rem' }}>
-          <Typography variant="subtitle1">Course video</Typography>
+          <Typography variant="subtitle1">{t("Course video")}</Typography>
         </Box>
         <List>
           {videoApproveds.map((video) => (
@@ -104,7 +108,7 @@ const VideoList = () => {
         }}
       >
         <Typography variant="subtitle1" sx={{ color: 'gray' }}>
-          Course video
+        {t("Course video")}
         </Typography>
       </Box>
       <Box

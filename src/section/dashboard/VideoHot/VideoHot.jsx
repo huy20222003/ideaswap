@@ -6,6 +6,8 @@ import { Box, Typography } from '@mui/material';
 import VideoHotItem from './VideoHotItem';
 //context
 import { useVideo, useCensorships } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //---------------------------------------
 
 const VideoHot = () => {
@@ -18,6 +20,7 @@ const VideoHot = () => {
     handleGetAllVideo();
     handleGetAllCensorships();
   }, [handleGetAllCensorships, handleGetAllVideo]);
+  const {t} = useTranslation('blogs');
 
   const { censorships } = censorshipsState;
   const videosWithStatus = videos
@@ -38,7 +41,7 @@ const VideoHot = () => {
   return (
     <Box sx={{ mt: '5rem' }}>
       <Box sx={{ ml: { xs: '2rem', sm: '2rem' } }}>
-        <Typography variant="subtitle1">Top video</Typography>
+        <Typography variant="subtitle1">{t("Top video")}</Typography>
       </Box>
       <Box>
         {videosWithStatus.length > 0 ? (
@@ -46,7 +49,7 @@ const VideoHot = () => {
             <VideoHotItem key={video._id} video={video} />
           ))
         ) : (
-          <Typography>No video reached the top</Typography>
+          <Typography>{t("No video reached the top")}</Typography>
         )}
       </Box>
     </Box>

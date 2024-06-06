@@ -7,11 +7,14 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import PropTypes from 'prop-types';
 //utils
 import {fShortenNumber} from '../../../../utils/formatNumber';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------------
 
 const VideoHotItem = (props) => {
   const { _id, imageUrl, title, view, courseID } = props.video;
   const navigate = useNavigate();
+  const {t} = useTranslation('dashboardCreator');
 
   const truncatedTitle =
     title && title.length > 25 ? `${title.slice(0, 25)}...` : title;
@@ -58,7 +61,7 @@ const VideoHotItem = (props) => {
         <Box sx={{ display: 'flex', my: '0.2rem', alignItems: 'center' }}>
           <VisibilityIcon sx={{ width: '1rem', mr: '0.5rem' }} />
           <Typography variant="body2" color="text.secondary">
-            {fShortenNumber(view)} views
+            {fShortenNumber(view)} {view > 1 ? t("views"): t("view")}
           </Typography>
         </Box>
       </CardContent>

@@ -31,7 +31,9 @@ const VideoInfo = () => {
   }, [handleGetVideoById, videoId]);
 
   const truncatedTitle =
-    video?.title && video?.title.length > 120 ? `${video?.title.slice(0, 120)}...` : video?.title;
+    video?.title && video?.title.length > 120
+      ? `${video?.title.slice(0, 120)}...`
+      : video?.title;
 
   return (
     <Box sx={{ mt: '5rem' }}>
@@ -47,8 +49,24 @@ const VideoInfo = () => {
           {truncatedTitle}
         </Typography>
       </Card>
-      <Box sx={{ width: '100%' }}>
-        <ReactPlayer url={video?.videoUrl} width="100%" height="30rem" controls />
+      <Box
+        sx={{
+          width: '100%',
+          height: {
+            xs: '15rem', // extra-small screens
+            sm: '20rem', // small screens
+            md: '25rem', // medium screens
+            lg: '30rem', // large screens
+            xl: '30rem', // extra-large screens
+          },
+        }}
+      >
+        <ReactPlayer
+          url={video?.videoUrl}
+          width="100%"
+          height="100%"
+          controls
+        />
       </Box>
       <VideoDescription video={video} />
       <VideoComment video={video} />

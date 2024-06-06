@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 import PropTypes from 'prop-types'; // Import PropTypes
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 import BlogFormImageItem from './BlogFormImageItem';
 
 const BlogFormImage = ({ formik }) => {
   const [imageUrl, setImageUrl] = useState('');
+  const [imageSelected, setImageSelected] = useState(false);
+  const {t} = useTranslation('blogs');
 
   const onDrop = async (acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -15,8 +19,9 @@ const BlogFormImage = ({ formik }) => {
 
     const reader = new FileReader();
     reader.onload = () => {
-      formik.setFieldValue('url', reader.result);
+      formik.setFieldValue('imageBase64', reader.result);
       setImageUrl(URL.createObjectURL(file));
+      setImageSelected(true);
     };
     reader.onerror = () => {
       console.error('Error occurred while reading the file.');
@@ -24,9 +29,14 @@ const BlogFormImage = ({ formik }) => {
     reader.readAsDataURL(file);
   };
 
+  useEffect(()=> {
+    formik.values.url && setImageUrl(formik.values.url);
+  }, [formik.values.url]);
+
   const handleDeleteImage = () => {
     setImageUrl('');
-    formik.setFieldValue('url', '');
+    setImageSelected(false);
+    formik.setFieldValue('imageBase64', '');
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -52,18 +62,18 @@ const BlogFormImage = ({ formik }) => {
             >
               <Box
                 component={'img'}
-                sx={{ width: '100%', height: '100%', maxHeight: '2rem' }}
+                sx={{ width: '100%', height: '100%', maxHeight: '4rem' }}
                 src="/assets/images/chooseFile.svg"
               ></Box>
               <Stack sx={{ textAlign: 'center' }}>
-                <Typography variant="h6">Drop or Select file</Typography>
+                <Typography variant="h6">{t("Drop or Select file")}</Typography>
                 <Typography variant="body2">
-                  Drop files here or click browse through your machine
+                  {t("Drop files here or click browse through your machine")}
                 </Typography>
               </Stack>
             </Stack>
           </div>
-          {imageUrl && (
+          {imageSelected && imageUrl && (
             <Box
               sx={{
                 display: 'flex',
@@ -79,6 +89,11 @@ const BlogFormImage = ({ formik }) => {
               />
             </Box>
           )}
+          {!imageSelected && ( // Hiển thị thông báo dưới phần chọn ảnh
+            <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'red' }}>
+              {t("Please select an image")}
+            </Typography>
+          )}
         </Box>
       </Stack>
     </>
@@ -93,9 +108,8 @@ BlogFormImage.propTypes = {
 const dropzoneStyle = {
   border: '2px dashed #cccccc',
   borderRadius: '8px',
+  padding: '40px',
   outline: 'none',
-  paddingLeft: '20px',
-  paddingRight: '20px',
   cursor: 'pointer',
   backgroundColor: 'rgba(145, 158, 171, 0.08)',
   transition:

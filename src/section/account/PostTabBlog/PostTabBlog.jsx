@@ -14,6 +14,9 @@ import {
 import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
 import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
 import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
+//i18n
+import { useTranslation } from 'react-i18next';
+//-------------------------------------------------------------------------------------------------
 
 const PostTabBlog = () => {
   const { blogState, handleGetAllBlog } = useBlog();
@@ -22,6 +25,7 @@ const PostTabBlog = () => {
   const { shareState, handleGetAllShares } = useShare();
   const { userState, handleGetAllUsers } = useUser();
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
+  const {t} = useTranslation('blogs');
 
   useEffect(() => {
     handleGetAllBlog();
@@ -82,7 +86,7 @@ const PostTabBlog = () => {
       ) : (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Typography variant="body2">
-            There are no posts to display yet
+            {t("There are no posts to display yet")}
           </Typography>
         </Box>
       )}

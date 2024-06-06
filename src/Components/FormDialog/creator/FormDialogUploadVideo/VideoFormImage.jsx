@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 import PropTypes from 'prop-types'; // Import PropTypes
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 import VideoFormImageItem from './VideoFormImageItem';
@@ -9,6 +11,7 @@ import VideoFormImageItem from './VideoFormImageItem';
 const VideoFormImage = ({ formik }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imageSelected, setImageSelected] = useState(false);
+  const {t} = useTranslation('videos');
 
   const onDrop = async (acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -59,9 +62,9 @@ const VideoFormImage = ({ formik }) => {
                 src="/assets/images/chooseFile.svg"
               ></Box>
               <Stack sx={{ textAlign: 'center' }}>
-                <Typography variant="h6">Drop or Select file</Typography>
+                <Typography variant="h6">{t("Drop or Select file")}</Typography>
                 <Typography variant="body2">
-                  Drop files here or click browse through your machine
+                  {t("Drop files here or click browse through your machine")}
                 </Typography>
               </Stack>
             </Stack>
@@ -87,7 +90,7 @@ const VideoFormImage = ({ formik }) => {
               variant="body2"
               sx={{ textAlign: 'center', mt: 1, color: 'red' }}
             >
-              Please select an image
+              {t("Please select an image")}
             </Typography>
           )}
         </Box>

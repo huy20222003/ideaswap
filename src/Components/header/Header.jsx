@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { useTheme, useMediaQuery } from '@mui/material';
 import Searchbar from './Searchbar';
 import Navigation from './nav';
-import LanguagePopover from './LanguagePopover';
-import NotificationsPopover from './NotificationsPopover';
-import AccountPopover from './AccountPopover';
+import LanguagePopover from '../language-popover';
+import NotificationsPopover from '../notifications-popover';
+import AccountPopover from '../account-poover';
 import SvgColor from '../svg-color';
 import NavSection from '../nav-section';
 import { useAuth } from '../../hooks/context';
+import { useTranslation } from 'react-i18next';
 
 const icon = (name) => (
   <SvgColor
@@ -28,6 +29,7 @@ const Header = () => {
     const position = window.pageYOffset;
     setScrollPosition(position);
   };
+  const { t } = useTranslation('navbar');
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -41,34 +43,34 @@ const Header = () => {
   };
 
   const {
-    authState: { user },
+    authState: { user, isAuthenticated },
   } = useAuth();
 
   const navConfig = [
     {
       path: '/dashboard/app',
       icon: icon('ic_home'),
-      title: 'Dashboard',
+      title: t('Dashboard'),
     },
     {
       path: '/dashboard/course',
       icon: icon('ic_play-alt'),
-      title: 'Courses',
+      title: t('Courses'),
     },
     {
       path: '/dashboard/document',
       icon: icon('ic_folder-download'),
-      title: 'Documents',
+      title: t('Documents'),
     },
     {
       path: user ? `/account/${user._id}` : '/',
       icon: icon('ic_portrait'),
-      title: 'Account',
+      title: t('Account'),
     },
     {
       path: '/dashboard/donate',
       icon: icon('ic_hands-heart'),
-      title: 'Donate',
+      title: t('Donate'),
     },
   ];
 
@@ -117,12 +119,14 @@ const Header = () => {
             }}
           >
             {/* LanguagePopover will not be displayed on small screens */}
-            <Box sx={{ m: '0 1rem' }} display={{ xs: 'none', md: 'block' }}>
+            <Box sx={{ m: '0 1rem' }}>
               <LanguagePopover />
             </Box>
-            <Box sx={{ m: '0 1rem' }}>
-              <NotificationsPopover />
-            </Box>
+            {isAuthenticated && (
+              <Box sx={{ m: '0 1rem' }}>
+                <NotificationsPopover />
+              </Box>
+            )}
             <Box sx={{ m: '0 1rem' }}>
               <AccountPopover />
             </Box>

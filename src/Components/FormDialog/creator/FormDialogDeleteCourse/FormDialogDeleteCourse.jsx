@@ -19,6 +19,8 @@ import { useCourse } from '../../../../hooks/context';
 import Swal from 'sweetalert2';
 //proptype
 import PropTypes from 'prop-types';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -36,19 +38,21 @@ const FormDialogDeleteCourse = ({ courseId }) => {
     setOpenFormDialogDeleteCourse(false);
   };
 
+  const {t} = useTranslation('courses');
+
   const handleDeleteVideoById = async () => {
     try {
       const response = await handleDeleteCourse(courseId);
       if (response.success) {
         handleGetAllCourses();
         setOpenFormDialogDeleteCourse(false);
-        Swal.fire('', 'Delete Successful!', 'success');
+        Swal.fire(t("Success"), t("Delete Successful!"), 'success');
       } else {
         setOpenFormDialogDeleteCourse(false);
-        Swal.fire('', 'Delete failed!', 'error');
+        Swal.fire(t("Error"), t("Delete failed!"), 'error');
       }
     } catch (error) {
-      Swal.fire('', 'Server error!', 'error');
+      Swal.fire(t("Error"), t("Server error!"), 'error');
     }
   };
 
@@ -67,7 +71,7 @@ const FormDialogDeleteCourse = ({ courseId }) => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Delete Course</DialogTitle>
+        <DialogTitle>{t("Delete Course")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -76,18 +80,18 @@ const FormDialogDeleteCourse = ({ courseId }) => {
       <Divider />
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to delete this course?
+          {t("Are you sure you want to delete this course?")}
         </DialogContentText>
       </DialogContent>
       <Divider />
       <DialogActions>
-        <Button variant="text" onClick={handleClose}>Cancel</Button>
+        <Button variant="text" onClick={handleClose}>{t("Cancel")}</Button>
         <Button
           variant="contained"
           sx={{ color: '#fff' }}
           onClick={handleDeleteVideoById}
         >
-          Delete
+          {t("Delete")}
         </Button>
       </DialogActions>
     </Dialog>

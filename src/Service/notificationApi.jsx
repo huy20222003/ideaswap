@@ -5,8 +5,8 @@ const notificationApi = {
     const url = '/notification';
     return axiosConfig.get(url);
   },
-  update: (notificationId, data) => {
-    const url = `/notification/update/${notificationId}`;
+  update: (data) => {
+    const url = `/notification/update`;
     return axiosConfig.put(url, data);
   },
 };

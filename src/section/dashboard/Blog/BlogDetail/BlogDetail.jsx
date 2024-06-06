@@ -35,7 +35,7 @@ import {
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // component
-import BlogDetailCommentList from './BlogDetailCommentList';
+import CommentList from '../../../../Components/comments/CommentList';
 // formik
 import { useFormik } from 'formik';
 // yup
@@ -43,6 +43,9 @@ import * as yup from 'yup';
 // sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
+//--------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -61,6 +64,7 @@ const BlogDetail = () => {
     handleGetOneBlog,
   } = useBlog();
   const [expanded, setExpanded] = useState(false);
+  const { t } = useTranslation('blogs');
   const toggleExpand = useCallback(() => setExpanded((prev) => !prev), []);
   const {
     commentState: { comments },
@@ -138,9 +142,30 @@ const BlogDetail = () => {
   }, [blog?.userID, handleGetAllComments, handleGetUserById]);
 
   const commentsFilter = useMemo(() => {
-    return comments.filter((comment) => comment?.bvID === blog?._id);
+    // Lọc ra tất cả các comment có bvID trùng khớp với blog?._id
+    const commentsForBlog = comments.filter(
+      (comment) => comment?.bvID === blog?._id
+    );
+  
+    // Lấy ra những comment có parentCommentID = null
+    const topLevelComments = commentsForBlog.filter(
+      (comment) => comment.parentCommentID === null
+    );
+  
+    // Sắp xếp các comment có parentCommentID = null theo trường createdAt
+    topLevelComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+    // Lấy ra những comment có parentCommentID khác null
+    const childComments = commentsForBlog.filter(
+      (comment) => comment.parentCommentID !== null
+    );
+  
+    // Kết hợp những comment có parentCommentID = null và các comment con
+    const sortedComments = [...topLevelComments, ...childComments];
+  
+    return sortedComments;
   }, [comments, blog?._id]);
-
+  
   const heartArrays = useMemo(() => {
     return hearts.filter((heart) => heart?.bvID === blog?._id);
   }, [hearts, blog?._id]);
@@ -158,7 +183,7 @@ const BlogDetail = () => {
           heart?.userID === authState.user?._id && heart.bvID === blog?._id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -182,19 +207,22 @@ const BlogDetail = () => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: 'An error occurred while processing your action. Please try again later.',
+        title: t('Error'),
+        text: t(
+          'An error occurred while processing your action. Please try again later.'
+        ),
         icon: 'error',
       });
     }
   }, [
-    authState?.isAuthenticated,
+    authState.isAuthenticated,
     authState?.user?._id,
     blog?._id,
     handleCreateHeart,
     handleDeleteHeart,
     heartIcon.props.sx,
     navigate,
+    t,
   ]);
 
   const truncatedContent = expanded
@@ -209,7 +237,7 @@ const BlogDetail = () => {
   const formik = useFormik({
     initialValues: {
       content: '',
-      bvID: blog?._id,
+      bvID: _id,
       userID: authState?.user?._id,
       parentCommentID: null,
     },
@@ -227,7 +255,7 @@ const BlogDetail = () => {
         }
       } catch (error) {
         Swal.fire({
-          title: 'Server Error',
+          title: t('Server Error'),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -241,7 +269,7 @@ const BlogDetail = () => {
   }, [blog?._id]);
 
   return (
-    <Box sx={{ p: '1rem', mt: '4rem' }}>
+    <Box sx={{ p: '0.5rem', mt: '4rem' }}>
       <Box>
         <Card sx={{ my: '1rem', p: '1rem' }}>
           <CardHeader
@@ -260,7 +288,7 @@ const BlogDetail = () => {
                   onClick={toggleExpand}
                   sx={{ cursor: 'pointer', display: 'inline' }}
                 >
-                  {expanded ? ' Show less' : '... Show more'}
+                  {expanded ? t('Show less') : '... ' + t('Show more')}
                 </Typography>
               )}
             </Typography>
@@ -287,7 +315,7 @@ const BlogDetail = () => {
             }}
           >
             <Stack sx={{ flexDirection: 'row' }}>
-              <FavoriteIcon sx={{ color: 'red' }} />
+              <FavoriteIcon sx={{ color: '#54D62C' }} />
               <Typography
                 variant="body1"
                 color="text.secondary"
@@ -302,14 +330,16 @@ const BlogDetail = () => {
                 color="text.secondary"
                 sx={{ mx: '0.4rem' }}
               >
-                {commentsFilter?.length} comments
+                {commentsFilter.length}{' '}
+                {commentsFilter.length > 1 ? t('comments') : t('comment')}
               </Typography>
               <Typography
                 variant="body1"
                 color="text.secondary"
                 sx={{ mx: '0.4rem' }}
               >
-                {shareArrays?.length} shares
+                {shareArrays.length}{' '}
+                {shareArrays.length > 1 ? t('shares') : t('share')}
               </Typography>
             </Stack>
           </Box>
@@ -325,7 +355,7 @@ const BlogDetail = () => {
               <CommentIcon />
             </IconButton>
             <LightTooltip
-              title="URL copied to clipboard!"
+              title={t('URL copied to clipboard!')}
               open={tooltipOpen}
               disableFocusListener
               disableHoverListener
@@ -340,7 +370,7 @@ const BlogDetail = () => {
         <Box sx={{ m: '1rem' }}>
           <TextField
             fullWidth
-            label="Comment"
+            label={t('comment')}
             variant="outlined"
             size="medium"
             id="content"
@@ -357,20 +387,20 @@ const BlogDetail = () => {
               sx={{ color: '#fff', my: '1rem' }}
               onClick={formik.handleSubmit}
             >
-              Comment
+              {t('comment')}
             </Button>
           </Stack>
         </Box>
         <Box sx={{ my: '1rem' }}>
           <Typography variant="subtitle1" sx={{ ml: '1rem' }}>
-            Comments
+            {t('comments')}
           </Typography>
           {commentsFilter.length > 0 ? (
             <Box>
-              <BlogDetailCommentList comments={commentsFilter} />
+              <CommentList comments={commentsFilter} />
             </Box>
           ) : (
-            'Chưa có bình luận nào'
+            t('No comments yet')
           )}
         </Box>
       </Box>

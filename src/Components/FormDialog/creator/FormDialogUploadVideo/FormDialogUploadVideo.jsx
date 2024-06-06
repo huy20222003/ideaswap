@@ -48,6 +48,8 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -59,6 +61,7 @@ const FormDialogUploadVideo = () => {
   const {
     authState: { user },
   } = useAuth();
+  const {t} = useTranslation('videos');
 
   const {
     courseState: { courses },
@@ -93,17 +96,17 @@ const FormDialogUploadVideo = () => {
     validationSchema: yup.object({
       title: yup
         .string()
-        .required('Title is required')
-        .max(100, 'The maximum number of characters is 100'),
+        .required(t("Title is required"))
+        .max(100, t("The maximum number of characters is 100")),
       description: yup
         .string()
-        .required('Description is required')
-        .max(5000, 'The maximum number of characters is 5000'),
-      imageBase64: yup.string().required('Image URL is required'),
+        .required(t("Description is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
+      imageBase64: yup.string().required(t("Image URL is required")),
       videoUrl: yup
         .string()
-        .url('Invalid video URL')
-        .required('Video URL is required'),
+        .url(t("Invalid video URL"))
+        .required(t("Video URL is required")),
       userID: yup.string().required('User ID is required'),
       courseID: yup.string().required('Course ID is required'),
     }),
@@ -115,8 +118,8 @@ const FormDialogUploadVideo = () => {
           setOpenFormDialog(false);
           handleGetAllVideo();
           Swal.fire({
-            title: 'Upload Video successful!',
-            text: 'Your video is awaiting approval',
+            title: t("Upload Video successful!"),
+            text: t("Your video is awaiting approval"),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -124,7 +127,7 @@ const FormDialogUploadVideo = () => {
           handleGetAllNotifications();
         } else {
           Swal.fire({
-            title: 'Upload Video failed!',
+            title: t("Upload Video failed!"),
             icon: 'error',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -133,7 +136,7 @@ const FormDialogUploadVideo = () => {
       } catch (error) {
         setOpenFormDialog(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -168,7 +171,7 @@ const FormDialogUploadVideo = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Upload Video</DialogTitle>
+        <DialogTitle>{t("Upload Video")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -181,7 +184,7 @@ const FormDialogUploadVideo = () => {
             <Box sx={{ mb: '1.5rem' }}>
               <TextField
                 variant="outlined"
-                label="Title"
+                label={t("Title")}
                 id="title"
                 name="title"
                 fullWidth
@@ -216,7 +219,7 @@ const FormDialogUploadVideo = () => {
             <Box sx={{ mb: '1.5rem' }}>
               <TextField
                 variant="outlined"
-                label="VideoUrl"
+                label={t("VideoUrl")}
                 id="videoUrl"
                 name="videoUrl"
                 fullWidth
@@ -233,12 +236,12 @@ const FormDialogUploadVideo = () => {
             <VideoFormImage formik={formik} />
             <Box sx={{ mt: '1.5rem' }}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Course</InputLabel>
+                <InputLabel id="demo-simple-select-label">{t("Course")}</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={formik.values.courseID}
-                  label="Course"
+                  label={t("Course")}
                   onChange={handleChange}
                 >
                   {coursesFilter.map((course) => (
@@ -321,7 +324,7 @@ const FormDialogUploadVideo = () => {
           startIcon={<UploadIcon />}
           sx={{ color: '#fff' }}
         >
-          Upload
+          {t("Upload")}
         </Button>
       </DialogActions>
     </Dialog>

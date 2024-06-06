@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 import PropTypes from 'prop-types'; // Import PropTypes
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 import CourseFormImageItem from './CourseFormImageItem';
@@ -9,6 +11,7 @@ import CourseFormImageItem from './CourseFormImageItem';
 const CourseFormImage = ({ formik }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imageSelected, setImageSelected] = useState(false);
+  const {t} = useTranslation('courses');
 
   useEffect(() => {
     setImageUrl(formik.values.imageBase64);
@@ -64,9 +67,9 @@ const CourseFormImage = ({ formik }) => {
                 src="/assets/images/chooseFile.svg"
               ></Box>
               <Stack sx={{ textAlign: 'center' }}>
-                <Typography variant="h6">Thả hoặc chọn file</Typography>
+                <Typography variant="h6">{t("Drop or Select file")}</Typography>
                 <Typography variant="body2">
-                  Thả file vào đây hoặc nhấp vào để chọn file
+                  {t("Drop files here or click browse through your machine")}
                 </Typography>
               </Stack>
             </Stack>
@@ -89,7 +92,7 @@ const CourseFormImage = ({ formik }) => {
           )}
           {!imageSelected && ( // Hiển thị thông báo dưới phần chọn ảnh
             <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'red' }}>
-              Please select an image
+              {t("Please select an image")}
             </Typography>
           )}
         </Box>

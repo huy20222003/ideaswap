@@ -9,11 +9,13 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
-
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 const Language = () => {
-  const [language, setLanguage] = useState('en-US');
+  const [language, setLanguage] = useState('en');
+  const {t} = useTranslation(['setting']);
 
   const handleChange = (event) => {
     setLanguage(event.target.value);
@@ -29,9 +31,9 @@ const Language = () => {
         borderRadius: '0.4rem',
       }}
     >
-      <Typography variant="h6" sx={{color: 'primary.main'}}>Language</Typography>
+      <Typography variant="h6" sx={{color: 'primary.main'}}>{t("Language")}</Typography>
       <FormControl sx={{ minWidth: '10rem' }}>
-        <InputLabel id="demo-simple-select-label">Language</InputLabel>
+        <InputLabel id="demo-simple-select-label">{t("Language")}</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -40,8 +42,8 @@ const Language = () => {
           size="small"
           onChange={handleChange}
         >
-          <MenuItem value={'en-US'}>English</MenuItem>
-          <MenuItem value={'vn-VN'}>Vietnamese</MenuItem>
+          <MenuItem value={'en'}>English</MenuItem>
+          <MenuItem value={'vn'}>Tiếng Việt</MenuItem>
         </Select>
       </FormControl>
     </Box>

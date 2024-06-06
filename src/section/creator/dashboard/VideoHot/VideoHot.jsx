@@ -9,6 +9,8 @@ import { useVideo, useCensorships } from '../../../../hooks/context';
 //swipper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+//i18n
+import { useTranslation } from 'react-i18next';
 //---------------------------------------
 
 const VideoHot = () => {
@@ -17,6 +19,7 @@ const VideoHot = () => {
     handleGetAllVideo,
   } = useVideo();
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
+  const {t} = useTranslation('dashboardCreator');
   useEffect(() => {
     handleGetAllVideo();
     handleGetAllCensorships();
@@ -41,7 +44,7 @@ const VideoHot = () => {
   return (
     <Box sx={{ mt: '5rem' }}>
       <Box>
-        <Typography variant="subtitle1">Top video</Typography>
+        <Typography variant="subtitle1">{t("Top video")}</Typography>
       </Box>
       <Box>
         {videosWithStatus.length > 0 ? (
@@ -67,7 +70,7 @@ const VideoHot = () => {
             })}
           </Swiper>
         ) : (
-          <Typography>No video reached the top</Typography>
+          <Typography>{t("No video reached the top")}</Typography>
         )}
       </Box>
     </Box>

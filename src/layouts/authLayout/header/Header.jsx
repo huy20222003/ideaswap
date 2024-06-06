@@ -14,6 +14,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import styled from '@emotion/styled';
 import HeaderLogo from './HeaderLogo';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------
 
 const NavLinkStyled = styled(NavLink)`
@@ -33,6 +35,7 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const {t} = useTranslation('auth');
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
@@ -48,16 +51,16 @@ const Header = () => {
       }}
     >
       <NavLinkStyled to="/dashboard/app" onClick={toggleDrawer(false)}>
-        Home
+        {t("Home")}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/course" onClick={toggleDrawer(false)}>
-        Course
+        {t("Course")}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/document" onClick={toggleDrawer(false)}>
-        Document
+        {t("Document")}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/donate" onClick={toggleDrawer(false)}>
-        Donate
+        {t("Donate")}
       </NavLinkStyled>
 
       <Stack
@@ -68,10 +71,10 @@ const Header = () => {
         }}
       >
         <Button variant="text" href="/auth/login">
-          Login
+          {t("Login")}
         </Button>
         <Button variant="outlined" href="/auth/register" sx={{ px: '2rem' }}>
-          Register
+          {t("Register")}
         </Button>
       </Stack>
     </Stack>

@@ -34,6 +34,8 @@ import { useFormik } from 'formik';
 import { useAuth } from '../../../hooks/context';
 //cookie
 import Cookies from 'js-cookie';
+//i18n
+import { useTranslation } from 'react-i18next';
 //-------------------------------
 
 const LinkStyled = styled(Link)`
@@ -46,6 +48,7 @@ const LinkStyled = styled(Link)`
 const RegisterForm = () => {
   const navigate = useNavigate();
   document.title = 'Register';
+  const {t} = useTranslation('auth');
   const { registerUser } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -62,43 +65,43 @@ const RegisterForm = () => {
     validationSchema: yup.object({
       firstName: yup
         .string()
-        .required('FirstName is required')
-        .max(200, 'FirstName maximum 200 characters'),
+        .required(t("FirstName is required"))
+        .max(200, t("FirstName maximum 200 characters")),
       lastName: yup
         .string()
-        .required('LastName is required')
-        .max(200, 'LastName maximum 200 characters'),
+        .required(t("LastName is required"))
+        .max(200, t("LastName maximum 200 characters")),
         username: yup
         .string()
-        .required('Username is required')
-        .min(8, 'Username must be at least 8 characters long')
-        .matches(/^[a-zA-Z0-9]*$/, 'Username must not contain special characters'),
+        .required(t("Username is required"))
+        .min(8, t("Username must be at least 8 characters long"))
+        .matches(/^[a-zA-Z0-9]*$/, t("Username must not contain special characters")),
       email: yup
         .string()
-        .required('Email is required')
-        .matches(/^\S+@\S+\.\S+$/, 'Invalid email'),
+        .required(t("Email is required"))
+        .matches(/^\S+@\S+\.\S+$/, t("Invalid email")),
       password: yup
         .string()
-        .required('Password is required')
+        .required(t("Password is required"))
         .min(7)
         .matches(
           /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
-          'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
+          t("Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters")
         ),
       confirmPassword: yup
         .string()
-        .required('ConfirmPassword is required')
-        .oneOf([yup.ref('password')], 'Password do not match'),
+        .required(t("ConfirmPassword is required"))
+        .oneOf([yup.ref('password')], t("Password do not match")),
     }),
     onSubmit: async (values) => {
       if (formik.values.password !== formik.values.confirmPassword) {
-        Swal.fire('Error', 'Password do not match!', 'error');
+        Swal.fire(t("Error"), t("Password do not match"), 'error');
       } else {
         try {
           setLoading(true);
           const registerData = await registerUser(values);
           if (!registerData.success) {
-            Swal.fire('Failed', 'Please check the information again!', 'error');
+            Swal.fire(t("Failed"), t("Please check the information again!"), 'error');
             setLoading(false);
           } else {
             const expiration = new Date();
@@ -107,11 +110,11 @@ const RegisterForm = () => {
               expires: expiration,
             });
             Cookies.set('refresh', registerData.refreshToken, { expires: 365 });
-            Swal.fire('Success', 'Sign up Success!', 'success');
+            Swal.fire(t("Success"), t("Sign up Success!"), 'success');
             navigate('/auth/login');
           }
         } catch (error) {
-          Swal.fire('Error', 'Server Error', 'error');
+          Swal.fire(t("Error"), t("Server Error"), 'error');
         }
       }
     },
@@ -119,8 +122,8 @@ const RegisterForm = () => {
 
   const handleCheck = () => {
     Swal.fire({
-      title: 'Question',
-      text: 'Hoang Sa and Truong Sa belong to which country?',
+      title: t("Question"),
+      text: t("Hoang Sa and Truong Sa belong to which country?"),
       icon: 'question',
       showConfirmButton: true,
       showCancelButton: true,
@@ -130,7 +133,7 @@ const RegisterForm = () => {
       if (result.isConfirmed) {
         formik.handleSubmit();
       } else {
-        Swal.fire('', 'Resgister failed!', 'error');
+        Swal.fire(t("Error"), t("Resgister failed!"), 'error');
       }
     });
   };
@@ -140,7 +143,7 @@ const RegisterForm = () => {
   return (
     <Box sx={{ maxWidth: '30rem' }}>
       <Typography variant="h4" sx={{ my: '1rem' }}>
-        Register
+        {t("Register")}
       </Typography>
       <Box sx={{ mt: '0.5rem', mb: '1rem' }}>
         <Stack sx={{ gap: '1.5rem' }}>
@@ -153,7 +156,7 @@ const RegisterForm = () => {
           >
             <Box>
               <TextField
-                label="First Name"
+                label={t("First Name")}
                 name="firstName"
                 id="firstName"
                 required
@@ -184,7 +187,7 @@ const RegisterForm = () => {
             </Box>
             <Box>
               <TextField
-                label="Last Name"
+                label={t("Last Name")}
                 id="lastName"
                 name="lastName"
                 required
@@ -216,7 +219,7 @@ const RegisterForm = () => {
           </Stack>
           <Box>
             <TextField
-              label="Username"
+              label={t("Username")}
               name="username"
               id="username"
               required
@@ -247,7 +250,7 @@ const RegisterForm = () => {
           </Box>
           <Box>
             <TextField
-              label="Email"
+              label={t("Email")}
               name="email"
               id="email"
               required
@@ -278,7 +281,7 @@ const RegisterForm = () => {
           </Box>
           <Box>
             <TextField
-              label="Password"
+              label={t("Password")}
               name="password"
               id="password"
               required
@@ -324,7 +327,7 @@ const RegisterForm = () => {
           </Box>
           <Box>
             <TextField
-              label="Confirm Password"
+              label={t("Confirm Password")}
               name="confirmPassword"
               id="confirmPassword"
               required
@@ -390,7 +393,7 @@ const RegisterForm = () => {
             loadingIndicator={<CircularProgress size={16} />}
             onClick={handleCheck}
           >
-            Register
+            {t("Register")}
           </LoadingButton>
         )}
       </Box>
@@ -434,8 +437,8 @@ const RegisterForm = () => {
       <Stack
         sx={{ flexDirection: 'row', justifyContent: 'center', mt: '1rem' }}
       >
-        <Typography variant="body2">Do you already have an account?</Typography>
-        <LinkStyled to="/auth/login">Login here</LinkStyled>
+        <Typography variant="body2">{t("Do you already have an account?")}</Typography>
+        <LinkStyled to="/auth/login">{t("Login here")}</LinkStyled>
       </Stack>
     </Box>
   );

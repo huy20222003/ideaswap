@@ -15,13 +15,9 @@ export const reducer = (state, action) => {
         notifications: payload,
       };
     case UPDATE_NOTIFICATION:
-      const newNotifications = state.notifications.map((notification) =>
-        notification._id === payload._id ? payload : notification
-      );
-
       return {
         ...state,
-        notifications: newNotifications,
+        notifications: payload,
       };
     default:
       return {

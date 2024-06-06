@@ -15,6 +15,8 @@ import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined';
 import { useCommon, useAuth } from '../../../hooks/context';
 //Component
 import FormDialogPostBlog from '../../../Components/FormDialog/Blog/FormDialogPostBlog';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------------------------
 
 const PostTabPostBlog = () => {
@@ -23,6 +25,7 @@ const PostTabPostBlog = () => {
     authState: { isAuthenticated, user },
   } = useAuth();
   const navigate = useNavigate();
+  const {t} = useTranslation('blogs');
 
   const handleOpenPostBlog = () => {
     if (isAuthenticated) {
@@ -62,6 +65,7 @@ const PostTabPostBlog = () => {
                   </InputAdornment>
                 ),
                 readOnly: true,
+                placeholder: t('Would you write something?'),
               }}
               onClick={handleOpenPostBlog}
             />

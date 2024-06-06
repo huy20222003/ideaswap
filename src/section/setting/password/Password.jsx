@@ -10,10 +10,13 @@ import Swal from 'sweetalert2';
 import { useCode, useAuth } from '../../../hooks/context';
 //component
 import FormDialogVerifyCode from '../../../Components/FormDialog/Code/FormDialogVerifyCode';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------
 
 const Password = () => {
   const { handleSendCode, setOpenFormDialogVerifyCode } = useCode();
+  const {t} = useTranslation('setting');
   const {
     authState: { user },
   } = useAuth();
@@ -26,30 +29,30 @@ const Password = () => {
     validationSchema: yup.object({
       newPassword: yup
         .string()
-        .required('Password is required')
+        .required(t("Password is required"))
         .min(7)
         .matches(
           /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
-          'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
+          t("Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters")
         ),
       confirmPassword: yup
         .string()
-        .required('ConfirmPassword is required')
-        .oneOf([yup.ref('newPassword')], 'Password do not match'),
+        .required(t("ConfirmPassword is required"))
+        .oneOf([yup.ref('newPassword')], t("Password do not match")),
     }),
     onSubmit: async (values) => {
       if (values.newPassword !== values.confirmPassword) {
-        Swal.fire('Error', 'Password do not match!', 'error');
+        Swal.fire(t("Error"), t("Password do not match"), 'error');
       } else {
         try {
           const response = await handleSendCode({ email: user?.email });
           if (response.success) {
             setOpenFormDialogVerifyCode(true);
           } else {
-            Swal.fire('Failed', 'Email has not been sent!', 'error');
+            Swal.fire(t("Error"), t("Email has not been sent!"), 'error');
           }
         } catch (error) {
-          Swal.fire('Error', 'Server Error', 'error');
+          Swal.fire(t("Error"), t("Server Error"), 'error');
         }
       }
     },
@@ -59,7 +62,7 @@ const Password = () => {
     <Box>
       <Box sx={{ mb: '1.5rem' }}>
         <TextField
-          label="New Password"
+          label={t("New Password")}
           name="newPassword"
           id="newPassword"
           type="password"
@@ -77,7 +80,7 @@ const Password = () => {
       <Box sx={{ mb: '1.5rem' }}>
         <TextField
           type="password"
-          label="Confirm Password"
+          label={t("Confirm Password")}
           name="confirmPassword"
           id="confirmPassword"
           required
@@ -103,7 +106,7 @@ const Password = () => {
             sx={{ px: '1.5rem', color: '#fff' }}
             onClick={formik.handleSubmit}
           >
-            Change
+            {t("Change")}
           </Button>
         </Box>
       </Stack>

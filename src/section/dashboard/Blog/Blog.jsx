@@ -12,6 +12,8 @@ import {
 import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
 import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
 import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
+import { useTranslation } from 'react-i18next';
+//------------------------------------------------------------
 
 const Blog = () => {
   const { blogState, handleGetAllBlog } = useBlog();
@@ -20,6 +22,7 @@ const Blog = () => {
   const { shareState, handleGetAllShares } = useShare();
   const { userState, handleGetAllUsers } = useUser();
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
+  const {t} = useTranslation('blogs');
 
   useEffect(() => {
     handleGetAllBlog();
@@ -76,7 +79,7 @@ const Blog = () => {
       ) : (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Typography variant="body2">
-            There are no posts to display yet
+            {t("There are no posts to display yet")}
           </Typography>
         </Box>
       )}

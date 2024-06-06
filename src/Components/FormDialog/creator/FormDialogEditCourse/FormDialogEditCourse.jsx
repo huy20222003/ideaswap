@@ -31,7 +31,9 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
 import HTMLReactParser from 'html-react-parser';
-
+//i18n
+import { useTranslation } from 'react-i18next';
+//----------------------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,6 +47,7 @@ const FormDialogEditCourse = () => {
     handleUpdateCourse,
     handleGetAllCourses,
   } = useCourse();
+  const {t} = useTranslation('courses');
 
   const {
     authState: { user },
@@ -67,13 +70,13 @@ const FormDialogEditCourse = () => {
     validationSchema: yup.object({
       title: yup
         .string()
-        .required('Title is required')
-        .max(100, 'The maximum number of characters is 100'),
+        .required(t("Title is required"))
+        .max(100, t("The maximum number of characters is 100")),
       description: yup
         .string()
-        .required('Description is required')
-        .max(5000, 'The maximum number of characters is 5000'),
-      imageBase64: yup.string().required('Image URL is required'),
+        .required(t("Description is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
+      imageBase64: yup.string().required(t("Image URL is required")),
       userID: yup.string().required('User ID is required'),
     }),
     onSubmit: async (values) => {
@@ -85,8 +88,8 @@ const FormDialogEditCourse = () => {
           setProgressValue
         );
         const successMessage = response.success
-          ? 'Update course successful!'
-          : 'Update course failed!';
+          ? t("Update course successful!")
+          : t("Update course failed!");
         setOpenFormDialogEditCourse(false);
         handleGetAllCourses();
         Swal.fire({
@@ -98,7 +101,7 @@ const FormDialogEditCourse = () => {
       } catch (error) {
         setOpenFormDialogEditCourse(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -135,7 +138,7 @@ const FormDialogEditCourse = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Edit Course</DialogTitle>
+        <DialogTitle>{t("Edit Course")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -148,7 +151,7 @@ const FormDialogEditCourse = () => {
             <Box sx={{ mb: '1.5rem' }}>
               <TextField
                 variant="outlined"
-                label="Title"
+                label={t("Title")}
                 id="title"
                 name="title"
                 fullWidth
@@ -253,7 +256,7 @@ const FormDialogEditCourse = () => {
           startIcon={<UploadIcon />}
           sx={{ color: '#fff' }}
         >
-          Update
+          {t("Edit")}
         </Button>
       </DialogActions>
     </Dialog>

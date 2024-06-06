@@ -2,14 +2,17 @@
 import { Box, Typography, Divider } from '@mui/material';
 //component
 import Slider from './slider/Slider';
+//i18n
+import { useTranslation } from 'react-i18next';
 //-----------------------------------------------------
 
 const DonateAbout = () => {
+  const {t} = useTranslation('donate');
   return (
     <Box sx={{ my: '2rem' }}>
       <Box sx={{ bgcolor: 'primary.main', borderRadius: '0.4rem' }}>
         <Typography variant="subtitle1" sx={{ color: 'white', p: '0.5rem' }}>
-          IdeaSwap About
+          {t("IdeaSwap About")}
         </Typography>
       </Box>
       <Box
@@ -34,7 +37,7 @@ const DonateAbout = () => {
               color="text.secondary"
               sx={{ color: 'white', p: '0.5rem' }}
             >
-              IdeaSwap Team Member
+              {t("IdeaSwap Team Member")}
             </Typography>
           </Box>
         </Box>
@@ -62,13 +65,13 @@ const DonateAbout = () => {
               color="text.secondary"
               sx={{ color: 'white', p: '0.5rem' }}
             >
-              IdeaSwap Ecosystem
+              {t("IdeaSwap Ecosystem")}
             </Typography>
           </Box>
           <Box sx={{ ml: '2rem' }}>
-            <Typography variant="body2">IdeaSwap AI</Typography>
-            <Typography variant="body2">IdeaSwap Cloud</Typography>
-            <Typography variant="body2">Socail Media IdeaSwap</Typography>
+            <Typography variant="body2">{t("IdeaSwap AI")}</Typography>
+            <Typography variant="body2">{t("IdeaSwap Cloud")}</Typography>
+            <Typography variant="body2">{t("Social Media IdeaSwap")}</Typography>
           </Box>
         </Box>
         <Divider orientation="vertical" flexItem />

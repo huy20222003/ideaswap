@@ -15,9 +15,12 @@ import { useVideo, useCensorships, useCourse } from '../../hooks/context';
 //sweetalert2
 import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //-------------------------------------------------
 
 const CourseItem = ({ _id, imageUrl, title, description, view }) => {
+  const {t} = useTranslation('courses');
   const truncatedDescription =
     description && description.length > 60
       ? `${description.slice(0, 60)}...`
@@ -63,7 +66,7 @@ const CourseItem = ({ _id, imageUrl, title, description, view }) => {
       navigate(`/course/${_id}?videoId=${videosWithStatus[0]?._id}`);
     } else {
       Swal.fire({
-        text: 'This course does not have any videos yet. Please wait',
+        text: t("This course does not have any videos yet. Please wait"),
         icon: 'warning',
       });
     }

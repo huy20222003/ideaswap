@@ -18,6 +18,8 @@ import { fShortenNumber } from '../../../utils/formatNumber';
 import { useVideo, useFollow, useAuth } from '../../../hooks/context';
 //component
 import VideoHot from './VideoHot';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------------
 
 const FollowerTab = () => {
@@ -25,6 +27,8 @@ const FollowerTab = () => {
     videoState: { videos },
     handleGetAllVideo,
   } = useVideo();
+  const {t} = useTranslation('dashboardCreator');
+
   const {
     followState: { follows },
     handleGetAllFollows,
@@ -115,7 +119,7 @@ const FollowerTab = () => {
           <Card sx={{ mx: '0.5rem' }}>
             <CardContent>
               <Box>
-                <Typography variant="subtitle1">Real Time</Typography>
+                <Typography variant="subtitle1">{t("Real Time")}</Typography>
                 <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Box
                     sx={{
@@ -127,7 +131,7 @@ const FollowerTab = () => {
                       mr: '0.5rem',
                     }}
                   ></Box>
-                  <Typography variant="body2">Real Time</Typography>
+                  <Typography variant="body2">{t("Real Time")}</Typography>
                 </Stack>
               </Box>
               <Divider />
@@ -136,7 +140,7 @@ const FollowerTab = () => {
                   <Typography variant="subtitle1">
                     {fShortenNumber(followData?.length)}
                   </Typography>
-                  <Typography variant="body2">Followers</Typography>
+                  <Typography variant="body2">{t("Followers")}</Typography>
                 </Stack>
               </Box>
               <Divider />
@@ -145,7 +149,7 @@ const FollowerTab = () => {
                   <Typography variant="subtitle1">
                     {fShortenNumber(totalViews)}
                   </Typography>
-                  <Typography variant="body2">Views</Typography>
+                  <Typography variant="body2">{t("Views")}</Typography>
                 </Stack>
               </Box>
               <Divider />

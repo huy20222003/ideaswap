@@ -16,6 +16,8 @@ import FormDialogUploadVideo from '../../../Components/FormDialog/creator/FormDi
 import FormDialogUploadDocument from '../../../Components/FormDialog/document/FormDialogUploadDocument';
 //context
 import { useCourse, useCommon, useDocument } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //-------------------------------------------------
 
 const ActionTabs = () => {
@@ -23,6 +25,7 @@ const ActionTabs = () => {
   const { setOpenFormDialog } = useCommon();
   const { setOpenFormDialogAddCourse } = useCourse();
   const { setOpenFormDialogAddDocument } = useDocument();
+  const {t} = useTranslation('contentCreator');
 
   const handleOpenFormUploadVideo = () => {
     setOpenFormDialog(true);
@@ -42,7 +45,7 @@ const ActionTabs = () => {
   return (
     <Box sx={{ width: '100%', mt: '4.5rem' }}>
       <Box sx={{ my: '2rem', px: '1rem' }}>
-        <Typography variant="h3">Statistics</Typography>
+        <Typography variant="h3">{t("Statistics")}</Typography>
         <Stack
           sx={{
             flexDirection: 'row',
@@ -57,7 +60,7 @@ const ActionTabs = () => {
             startIcon={<FileUploadOutlinedIcon />}
             onClick={handleOpenFormUploadVideo}
           >
-            Upload Video
+            {t("Upload Video")}
           </Button>
           <Button
             variant="text"
@@ -65,7 +68,7 @@ const ActionTabs = () => {
             startIcon={<AddCircleOutlineOutlinedIcon />}
             onClick={handleOpenFormAddCourse}
           >
-            Add Course
+            {t("Add Course")}
           </Button>
           <Button
             variant="text"
@@ -73,7 +76,7 @@ const ActionTabs = () => {
             startIcon={<FileUploadOutlinedIcon />}
             onClick={handleOpenFormUploadDocument}
           >
-            Upload Document
+            {t("Upload Document")}
           </Button>
         </Stack>
       </Box>
@@ -86,9 +89,9 @@ const ActionTabs = () => {
                   onChange={handleChange}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="Video" value="1" />
-                  <Tab label="Course" value="2" />
-                  <Tab label="Document" value="3" />
+                  <Tab label={t("Video")} value="1" />
+                  <Tab label={t("Course")} value="2" />
+                  <Tab label={t("Document")} value="3" />
                 </TabList>
               </Box>
               <TabPanel value="1">

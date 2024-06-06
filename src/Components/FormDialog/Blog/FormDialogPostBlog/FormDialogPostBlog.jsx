@@ -32,6 +32,8 @@ import { fDateTime } from '../../../../utils/formatTime';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -45,6 +47,7 @@ const FormDialogPostBlog = () => {
   } = useAuth();
   const { handleCreateBlog } = useBlog();
   const {handleGetAllNotifications} = useNotification();
+  const {t} = useTranslation('blogs');
 
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
@@ -62,8 +65,8 @@ const FormDialogPostBlog = () => {
     validationSchema: yup.object({
       content: yup
         .string()
-        .required('Content is required')
-        .max(5000, 'The maximum number of characters is 5000'),
+        .required(t("Content is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
       userID: yup.string().required('UserID is required'),
     }),
     onSubmit: async (values) => {
@@ -74,8 +77,8 @@ const FormDialogPostBlog = () => {
         if (response.success) {
           setOpenFormDialog(false);
           Swal.fire({
-            title: 'Create Blog successful!',
-            text: ' Your blog is awaiting approval.',
+            title: t("Create Blog successful!"),
+            text: t("Your blog is awaiting approval."),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -83,7 +86,7 @@ const FormDialogPostBlog = () => {
           handleGetAllNotifications();
         } else {
           Swal.fire({
-            title: 'Create Blog failed!',
+            title: t("Create Blog failed!"),
             icon: 'error',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -92,7 +95,7 @@ const FormDialogPostBlog = () => {
       } catch (error) {
         setOpenFormDialog(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -117,7 +120,7 @@ const FormDialogPostBlog = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Post Blog</DialogTitle>
+        <DialogTitle>{t("Post Blog")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -177,7 +180,7 @@ const FormDialogPostBlog = () => {
           sx={{ px: '1rem', mx: '0.5rem' }}
           onClick={handleClose}
         >
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           variant="contained"
@@ -185,7 +188,7 @@ const FormDialogPostBlog = () => {
           sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
           onClick={formik.handleSubmit}
         >
-          Upload
+          {t("Post")}
         </Button>
       </DialogActions>
     </Dialog>

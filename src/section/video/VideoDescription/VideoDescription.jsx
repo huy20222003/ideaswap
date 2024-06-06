@@ -27,6 +27,9 @@ import Swal from 'sweetalert2';
 import HTMLReactParser from 'html-react-parser';
 //dayjs
 import dayjs from 'dayjs';
+//i18n
+import { useTranslation } from 'react-i18next';
+//----------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -44,6 +47,7 @@ const VideoDescription = ({ video }) => {
     userState: { users },
     handleGetAllUsers,
   } = useUser();
+  const { t } = useTranslation('videos');
 
   const {
     heartState: { hearts },
@@ -148,8 +152,8 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: 'An error occurred while processing your action. Please try again later.',
+        title: t("Error"),
+        text: t("An error occurred while processing your action. Please try again later."),
         icon: 'error',
       });
     }
@@ -183,7 +187,7 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Server Error!',
+        title: t("Server Error!"),
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
@@ -202,7 +206,7 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Server Error!',
+        title: t("Server Error!"),
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
@@ -284,8 +288,8 @@ const VideoDescription = ({ video }) => {
               {newVideo?.user?.firstName + newVideo?.user?.lastName}
             </Typography>
             <Typography variant="body2">
-              {fShortenNumber(followsFilter?.length)}
-              {followsFilter?.length > 1 ? ' Followers' : ' Follower'}
+              {fShortenNumber(followsFilter?.length)}{''}
+              {followsFilter?.length > 1 ? t("Followers") : t("Follower")}
             </Typography>
           </Stack>
           {followFind ? (
@@ -301,7 +305,7 @@ const VideoDescription = ({ video }) => {
               }}
               onClick={handleDeleteFollowById}
             >
-              Followed
+              {t("Followed")}
             </Button>
           ) : (
             <Button
@@ -316,7 +320,7 @@ const VideoDescription = ({ video }) => {
               }}
               onClick={handleAddFollow}
             >
-              Follow
+              {t("Follow")}
             </Button>
           )}
         </Stack>
@@ -350,7 +354,7 @@ const VideoDescription = ({ video }) => {
             startIcon={<FlagIcon />}
           ></Button>
           <LightTooltip
-            title="URL copied to clipboard!"
+            title={t("URL copied to clipboard!")}
             open={tooltipOpen}
             disableFocusListener
             disableHoverListener
@@ -373,7 +377,7 @@ const VideoDescription = ({ video }) => {
       </Stack>
       <Stack sx={{ flexDirection: 'row', gap: '1rem', my: '1rem' }}>
         <Typography variant="subtitle2">
-          {fShortenNumber(video?.view)} views
+          {fShortenNumber(video?.view)} {video?.view > 1 ? t("views") : t("view")}
         </Typography>
         <Typography variant="subtitle2">
           {formatDate(video?.createdAt)}
@@ -388,7 +392,7 @@ const VideoDescription = ({ video }) => {
             onClick={toggleExpand}
             sx={{ cursor: 'pointer', display: 'inline' }}
           >
-            {expanded ? ' Show less' : '... Show more'}
+            {expanded ? t("Show less") : '... ' + t("Show more")}
           </Typography>
         )}
       </Typography>

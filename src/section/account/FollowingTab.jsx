@@ -20,11 +20,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import { fShortenNumber } from '../../utils/formatNumber';
 //context
 import { useFollow, useUser } from '../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------------------
 
 const FollowingTab = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation('account');
 
   const {
     followState: { follows },
@@ -116,11 +119,10 @@ const FollowingTab = () => {
         }}
       >
         <Typography variant="subtitle2" sx={{ color: 'primary.main' }}>
-          Following
+          {t('Following')}
         </Typography>
         <TextField
           variant="outlined"
-          label="Search"
           size="small"
           value={searchValue}
           onChange={handleChange}
@@ -130,6 +132,7 @@ const FollowingTab = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
+            placeholder: t('Search for following'),
           }}
         />
       </Stack>
@@ -172,7 +175,10 @@ const FollowingTab = () => {
                       }}
                     >
                       <Typography variant="caption">
-                        {fShortenNumber(followsWithUser.length)}
+                        {fShortenNumber(followsWithUser.length)}{' '}
+                        {followsWithUser.length > 1
+                          ? t('Followers')
+                          : t('Follower')}
                       </Typography>
                       <PersonIcon fontSize="0.5rem" sx={{ color: 'gray' }} />
                     </Stack>
@@ -194,8 +200,8 @@ const FollowingTab = () => {
                     'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <MenuItem onClick={handleClose}>Follow</MenuItem>
-                  <MenuItem onClick={handleClose}>About</MenuItem>
+                  <MenuItem onClick={handleClose}>{t('Follow')}</MenuItem>
+                  <MenuItem onClick={handleClose}>{t('About')}</MenuItem>
                 </Menu>
               </Stack>
             </Card>
@@ -210,7 +216,7 @@ const FollowingTab = () => {
               alignItems: 'center',
             }}
           >
-            <Typography variant="body2">No users found</Typography>
+            <Typography variant="body2">{t('No users found')}</Typography>
           </Box>
         )}
       </Stack>

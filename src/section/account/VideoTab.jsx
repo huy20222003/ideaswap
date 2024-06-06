@@ -19,6 +19,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { fShortenNumber } from '../../utils/formatNumber';
 //context
 import { useVideo, useCensorships } from '../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------------------
 
 const VideoTab = () => {
@@ -26,6 +28,7 @@ const VideoTab = () => {
     videoState: { videos },
     handleGetAllVideo,
   } = useVideo();
+  const {t} = useTranslation(['account', 'videos']);
 
   const [searchValue, setSearchValue] = useState('');
   const [videoArrays, setVideoArrays] = useState([]);
@@ -108,7 +111,6 @@ const VideoTab = () => {
         </Typography>
         <TextField
           variant="outlined"
-          label="Search"
           size="small"
           value={searchValue}
           onChange={handleChange}
@@ -118,6 +120,7 @@ const VideoTab = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
+            placeholder: t("Search for video")
           }}
         />
       </Stack>
@@ -163,7 +166,7 @@ const VideoTab = () => {
                   >
                     <VisibilityIcon sx={{ width: '1rem', mr: '0.5rem' }} />
                     <Typography variant="body2" color="text.secondary">
-                      {fShortenNumber(video?.view)}
+                      {fShortenNumber(video?.view)}{' '}{video?.view > 1 ? t("views") : t("view")}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -180,7 +183,7 @@ const VideoTab = () => {
               alignItems: 'center',
             }}
           >
-            <Typography variant="body2">No videos found</Typography>
+            <Typography variant="body2">{t("No videos found")}</Typography>
           </Box>
         )}
       </Stack>

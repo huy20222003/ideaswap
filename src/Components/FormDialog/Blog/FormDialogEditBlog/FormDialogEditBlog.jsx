@@ -26,6 +26,9 @@ import { useCommon, useAuth, useBlog } from '../../../../hooks/context';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
+//i18n
+import { useTranslation } from 'react-i18next';
+//----------------------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -43,6 +46,7 @@ const FormDialogEditBlog = () => {
   } = useBlog();
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
+  const {t} = useTranslation('blogs');
 
   useEffect(() => {
     handleGetAllBlog();
@@ -61,8 +65,8 @@ const FormDialogEditBlog = () => {
     validationSchema: yup.object({
       content: yup
         .string()
-        .required('Content is required')
-        .max(5000, 'The maximum number of characters is 5000'),
+        .required(t("Content is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
       userID: yup.string().required('UserID is required'),
       imageBase64: yup.string().required('Image base64 is required'),
     }),
@@ -73,7 +77,7 @@ const FormDialogEditBlog = () => {
         if (response.success) {
           setOpenFormDialogEditBlog(false);
           Swal.fire({
-            title: 'Update Blog successful!',
+            title: t("Update Blog successful!"),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -82,7 +86,7 @@ const FormDialogEditBlog = () => {
       } catch (error) {
         setOpenFormDialogEditBlog(false);
         Swal.fire({
-          title: 'Update Blog failed!',
+          title: t("Update Blog failed!"),
           icon: 'success',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -117,7 +121,7 @@ const FormDialogEditBlog = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Edit Blog</DialogTitle>
+        <DialogTitle>{t("Edit Blog")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -173,7 +177,7 @@ const FormDialogEditBlog = () => {
           sx={{ px: '1rem', mx: '0.5rem' }}
           onClick={handleClose}
         >
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           variant="contained"
@@ -181,7 +185,7 @@ const FormDialogEditBlog = () => {
           sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
           onClick={formik.handleSubmit}
         >
-          Upload
+          {t("Post")}
         </Button>
       </DialogActions>
     </Dialog>

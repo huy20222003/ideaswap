@@ -25,6 +25,8 @@ import { fShortenNumber } from '../../../utils/formatNumber';
 //component
 import FormDialogEditVideo from '../../../Components/FormDialog/creator/FormDialogEditVideo';
 import FormDialogDeleteVideo from '../../../Components/FormDialog/creator/FormDialogDeleteVideo';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------
 
 const VideoManage = () => {
@@ -35,6 +37,7 @@ const VideoManage = () => {
     handleGetAllVideo,
     handleGetVideoById,
   } = useVideo();
+  const {t} = useTranslation('contentCreator');
   const {
     authState: { user },
   } = useAuth();
@@ -66,35 +69,35 @@ const VideoManage = () => {
   const columns = [
     {
       field: 'videoUrl',
-      headerName: 'Video',
+      headerName: t("Video"),
       type: 'String',
       width: 150,
       renderCell: (params) => (
         <ReactPlayer url={params.value} width="70%" height="3rem" controls />
       ),
     },
-    { field: 'title', headerName: 'Title', type: 'String', width: 300 },
+    { field: 'title', headerName: t("Title"), type: 'String', width: 300 },
     {
       field: 'status',
-      headerName: 'Status',
+      headerName: t("Status"),
       type: 'String',
       width: 150,
     },
     {
       field: 'view',
-      headerName: 'Views',
+      headerName: t("Views"),
       type: 'String',
       width: 150,
     },
     {
       field: 'heart',
-      headerName: 'Heart',
+      headerName: t("Hearts"),
       type: 'String',
       width: 150,
     },
     {
       field: 'comment',
-      headerName: 'Comment',
+      headerName: t("Comments"),
       type: 'String',
       width: 150,
     },
@@ -150,11 +153,11 @@ const VideoManage = () => {
           >
             <MenuItem onClick={() => handleEdit(params.row.id)}>
               <EditIcon sx={{ paddingRight: '0.5rem' }} />
-              Edit
+              {t("Edit")}
             </MenuItem>
             <MenuItem onClick={() => handleDelete(params.row.id)}>
               <DeleteIcon sx={{ paddingRight: '0.5rem' }} />
-              Delete
+              {t("Delete")}
             </MenuItem>
           </Menu>
         </Popover>

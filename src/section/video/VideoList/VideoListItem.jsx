@@ -6,6 +6,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import PropTypes from 'prop-types';
 //utils
 import { fShortenNumber } from '../../../utils/formatNumber';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------------
 
 const VideoListItem = (props) => {
@@ -13,6 +15,7 @@ const VideoListItem = (props) => {
   const toggleDrawer = props.toggleDrawer;
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const {t} = useTranslation('videos');
 
   const handleNavigate = () => {
     navigate(`/course/${courseId}?videoId=${_id}`);
@@ -60,7 +63,7 @@ const VideoListItem = (props) => {
         <Box sx={{ display: 'flex', my: '0.2rem', alignItems: 'center' }}>
           <VisibilityIcon sx={{ width: '1rem', mr: '0.5rem' }} />
           <Typography variant="body2" color="text.secondary">
-            {fShortenNumber(view)} views
+            {fShortenNumber(view)} {view > 1 ? t("views") : t("view")}
           </Typography>
         </Box>
       </CardContent>
@@ -75,7 +78,7 @@ VideoListItem.propTypes = {
     imageUrl: PropTypes.string.isRequired,
     view: PropTypes.number.isRequired,
   }).isRequired,
-  toggleDrawer: PropTypes.func.isRequired
+  toggleDrawer: PropTypes.func
 };
 
 export default VideoListItem;

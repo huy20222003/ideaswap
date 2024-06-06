@@ -2,6 +2,8 @@
 import { Box, Stack, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
+//i18n
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------------------------------
 
 const Searchbar = () => {
@@ -9,6 +11,8 @@ const Searchbar = () => {
   const handleNavigate = async () => {
     navigate(`/dashboard/app`);
   };
+  const { t } = useTranslation('navbar');
+
   return (
     <Box>
       <Stack
@@ -32,7 +36,7 @@ const Searchbar = () => {
                   <SearchIcon />
                 </InputAdornment>
               ),
-              placeholder: 'Search on ideaswap',
+              placeholder: t('Search on IdeaSwap'),
             }}
             sx={{ bgcolor: 'white', borderRadius: '0.5rem', width: '18rem' }}
           />

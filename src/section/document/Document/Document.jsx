@@ -1,17 +1,17 @@
-//react
 import { useState, useEffect } from 'react';
 //mui
-import { Card, Typography, Box } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Card, Typography, Box, Pagination, Button, Stack } from '@mui/material';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 //component
 import DocumentItem from './DocumentItem';
 //context
 import { useDocument, useCensorships, useUser } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //---------------------------------------------------
 
 const Document = () => {
-  const [displayedItems, setDisplayedItems] = useState(5); // Số item hiện đang được hiển thị
+  const { t } = useTranslation('documents');
   const {
     documentState: { documents },
     handleGetAllDocuments,
@@ -21,7 +21,18 @@ const Document = () => {
     handleGetAllCensorships,
   } = useCensorships();
 
-  const {userState: {users}, handleGetAllUsers} = useUser();
+  const { userState: { users }, handleGetAllUsers } = useUser();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const documentsPerPage = 5; // Set the number of documents per page
+
+  // Calculate the indexes for slicing the documents array
+  const indexOfLastDocument = currentPage * documentsPerPage;
+  const indexOfFirstDocument = indexOfLastDocument - documentsPerPage;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   useEffect(() => {
     handleGetAllDocuments();
@@ -30,29 +41,29 @@ const Document = () => {
   }, [handleGetAllDocuments, handleGetAllCensorships, handleGetAllUsers]);
 
   const newDocuments = documents
-  .map((document) => {
-    const censorshipItem = censorships.find(
-      (item) => item?.contentID === document?._id
-    );
-    const status = censorshipItem ? censorshipItem.status : 'pending';
-    return {
-      ...document,
-      status,
-    };
-  })
-  .filter((document) => document?.status === 'approved')
-  .map((document) => {
-    const user = users.find((user) => user?._id === document?.userID);
-    return {
-      ...document,
-      user,
-    };
-  });
+    .map((document) => {
+      const censorshipItem = censorships.find(
+        (item) => item?.contentID === document?._id
+      );
+      const status = censorshipItem ? censorshipItem.status : 'pending';
+      return {
+        ...document,
+        status,
+      };
+    })
+    .filter((document) => document?.status === 'approved')
+    .map((document) => {
+      const user = users.find((user) => user?._id === document?.userID);
+      return {
+        ...document,
+        user,
+      };
+    });
 
-
-  const handleShowMore = () => {
-    setDisplayedItems((prev) => prev + 2); // Hiển thị thêm 2 item
-  };
+  const currentDocuments = newDocuments.slice(
+    indexOfFirstDocument,
+    indexOfLastDocument
+  );
 
   return (
     <Card sx={{ p: '1rem' }}>
@@ -65,7 +76,7 @@ const Document = () => {
         }}
       >
         <Typography variant="h5" sx={{ color: 'white' }}>
-          DOWNLOAD DOCUMENT FREE
+          {t("DOWNLOAD DOCUMENT FREE")}
         </Typography>
       </Box>
       <Box
@@ -77,34 +88,31 @@ const Document = () => {
           tabIndex={-1}
           startIcon={<FilterAltOutlinedIcon />}
         >
-          FILTER
+          {t("FILTER")}
         </Button>
       </Box>
       <Box>
         <Box>
           {newDocuments.length > 0 ? (
-            newDocuments
-              .slice(0, displayedItems)
-              .map((document) => (
+            <>
+              {currentDocuments.map((document) => (
                 <DocumentItem key={document?._id} document={document} />
-              ))
+              ))}
+              <Stack sx={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <Pagination
+                  count={Math.ceil(newDocuments.length / documentsPerPage)}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  shape='rounded'
+                />
+              </Stack>
+            </>
           ) : (
             <Typography variant="body1" sx={{ textAlign: 'center' }}>
-              There are no documents to download yet
+              {t("There are no documents to download yet")}
             </Typography>
           )}
         </Box>
-        {displayedItems < newDocuments.length && (
-          <Box sx={{ textAlign: 'center', mt: '1rem' }}>
-            <Typography
-              onClick={handleShowMore}
-              variant="caption"
-              sx={{ fontStyle: 'italic', cursor: 'pointer' }}
-            >
-              Show More
-            </Typography>
-          </Box>
-        )}
       </Box>
     </Card>
   );

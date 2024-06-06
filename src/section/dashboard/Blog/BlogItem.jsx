@@ -39,6 +39,7 @@ import {
   useShare,
 } from '../../../hooks/context';
 import HTMLReactParser from 'html-react-parser';
+import { useTranslation } from 'react-i18next';
 //--------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -64,6 +65,7 @@ const BlogItem = ({ blog }) => {
     user,
   } = blog;
   const { handleCreateShare, handleGetAllShares } = useShare();
+  const { t } = useTranslation('blogs');
 
   const [expanded, setExpanded] = useState(false);
   const { authState } = useAuth();
@@ -75,7 +77,8 @@ const BlogItem = ({ blog }) => {
   } = useBlog();
   const navigate = useNavigate();
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
-  const { handleCreateHeart, handleDeleteHeart, handleGetAllHearts } = useHeart();
+  const { handleCreateHeart, handleDeleteHeart, handleGetAllHearts } =
+    useHeart();
   const [anchorEl, setAnchorEl] = useState(null);
   const [heartLength, setHeartLength] = useState(heartArrays.length);
 
@@ -109,7 +112,7 @@ const BlogItem = ({ blog }) => {
         (heart) => heart?.userID === authState.user?._id && heart.bvID === _id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -184,18 +187,17 @@ const BlogItem = ({ blog }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Error',
-        text: 'An error occurred while processing your action. Please try again later.',
+        title: t('Error'),
+        text: t(
+          'An error occurred while processing your action. Please try again later.'
+        ),
         icon: 'error',
       });
     }
   };
 
-  const handleNavigateBlogDetail = async (blogId) => {
-    const response = await handleGetOneBlog(blogId);
-    if (response.success) {
-      navigate(`/dashboard/blog/${_id}`);
-    }
+  const handleNavigateBlogDetail = (blogId) => {
+    navigate(`/dashboard/blog/${blogId}`);
   };
 
   const handleCopyToClipboard = () => {
@@ -243,7 +245,7 @@ const BlogItem = ({ blog }) => {
               {`${user?.firstName} ${user?.lastName}`}
             </Typography>
             {newUser?.roleName?.name == 'creator' && (
-              <LightTooltip title="Creator" placement="right">
+              <LightTooltip title={t('Creator')} placement="right">
                 <CheckCircleIcon sx={{ color: '#3366FF', fontSize: '1rem' }} />
               </LightTooltip>
             )}
@@ -264,13 +266,13 @@ const BlogItem = ({ blog }) => {
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
-              <ListItemText primary="Sửa bài viết" />
+              <ListItemText primary={t('Edit Blog')} />
             </MenuItem>
             <MenuItem onClick={() => handleDeleteBlog(_id)}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
-              <ListItemText primary="Xoá bài viết" />
+              <ListItemText primary={t('Delete Blog')} />
             </MenuItem>
           </Box>
         )}
@@ -278,7 +280,7 @@ const BlogItem = ({ blog }) => {
           <ListItemIcon>
             <FlagCircleIcon />
           </ListItemIcon>
-          <ListItemText primary="Báo cáo bài viết" />
+          <ListItemText primary={t('Report Blog')} />
         </MenuItem>
       </Menu>
       <CardContent sx={{ pb: '0.2rem' }}>
@@ -291,7 +293,7 @@ const BlogItem = ({ blog }) => {
               onClick={toggleExpand}
               sx={{ cursor: 'pointer', display: 'inline' }}
             >
-              {expanded ? ' Show less' : '... Show more'}
+              {expanded ? t('Show less') : '...' + t('Show more')}
             </Typography>
           )}
         </Typography>
@@ -319,7 +321,7 @@ const BlogItem = ({ blog }) => {
         }}
       >
         <Stack sx={{ flexDirection: 'row' }}>
-          <FavoriteIcon sx={{ color: 'red' }} />
+          <FavoriteIcon sx={{ color: '#54D62C' }} />
           <Typography
             variant="body1"
             color="text.secondary"
@@ -334,14 +336,16 @@ const BlogItem = ({ blog }) => {
             color="text.secondary"
             sx={{ mx: '0.4rem' }}
           >
-            {commentArrays.length} comments
+            {commentArrays.length}{' '}
+            {commentArrays.length > 1 ? t('comments') : t('comment')}
           </Typography>
           <Typography
             variant="body1"
             color="text.secondary"
             sx={{ mx: '0.4rem' }}
           >
-            {shareArrays.length} shares
+            {shareArrays.length}{' '}
+            {shareArrays.length > 1 ? t('shares') : t('share')}
           </Typography>
         </Stack>
       </Box>
@@ -357,7 +361,7 @@ const BlogItem = ({ blog }) => {
           <CommentIcon />
         </IconButton>
         <LightTooltip
-          title="URL copied to clipboard!"
+          title={t('URL copied to clipboard!')}
           open={tooltipOpen}
           disableFocusListener
           disableHoverListener

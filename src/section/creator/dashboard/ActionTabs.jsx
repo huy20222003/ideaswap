@@ -15,11 +15,14 @@ import dayjs from 'dayjs';
 import OverviewTab from './OverviewTab';
 import VideoTab from './VideoTab';
 import FollowerTab from './FollowerTab';
+//i18n
+import { useTranslation } from 'react-i18next';
 //-------------------------------------------------
 
 const ActionTabs = () => {
   const [tabValue, setTabValue] = useState('1');
   const [datimeValue, setDateTimeValue] = useState(dayjs(Date.now()));
+  const {t} = useTranslation('dashboardCreator');
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
@@ -34,7 +37,7 @@ const ActionTabs = () => {
             sx={{ alignItems: 'flex-end' }}
           >
             <DatePicker
-              label="Select Date"
+              label={t("Select Date")}
               value={datimeValue}
               sx={{ maxWidth: '5rem' }}
               slotProps={{
@@ -61,9 +64,9 @@ const ActionTabs = () => {
                   onChange={handleChange}
                   aria-label="lab API tabs example"
                 >
-                  <Tab label="Overview" value="1" />
-                  <Tab label="Video" value="2" />
-                  <Tab label="Follower" value="3" />
+                  <Tab label={t("Overview")} value="1" />
+                  <Tab label={t("Video")} value="2" />
+                  <Tab label={t("Follower")} value="3" />
                 </TabList>
               </Box>
               <TabPanel value="1">

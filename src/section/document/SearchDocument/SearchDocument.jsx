@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, startTransition } from 'react';
 import {
   Avatar,
   Box,
@@ -9,7 +9,12 @@ import {
   InputAdornment,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+//icon
+import MicIcon from '@mui/icons-material/Mic';
 import { useDocument, useAuth } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
+//----------------------------------------------------------
 
 const SearchDocument = () => {
   const { handleSearchDocuments } = useDocument();
@@ -17,6 +22,7 @@ const SearchDocument = () => {
   const {
     authState: { user },
   } = useAuth();
+  const { t } = useTranslation('documents');
 
   const handleSearch = useCallback(async () => {
     try {
@@ -38,6 +44,17 @@ const SearchDocument = () => {
     setSearchTerm(event.target.value);
   };
 
+  const startSpeechRecognition = () => {
+    var recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+    recognition.onresult = function (event) {
+      var result = event.results[0][0].transcript;
+      startTransition(() => setSearchTerm(result));
+    };
+
+    recognition.start();
+  };
+
   return (
     <Card sx={{ m: '5rem 0 1rem 0', bgcolor: 'primary.main' }}>
       <CardContent>
@@ -46,13 +63,13 @@ const SearchDocument = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '1rem'
+            gap: '1rem',
           }}
         >
           <Box>
             <Avatar alt="Avatar" src={user?.avatar} />
           </Box>
-          <Box sx={{width: '100%'}}>
+          <Box sx={{ width: '100%' }}>
             <TextField
               variant="outlined"
               fullWidth
@@ -67,7 +84,15 @@ const SearchDocument = () => {
                     <SearchIcon />
                   </InputAdornment>
                 ),
-                placeholder: "Search for documents"
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <MicIcon
+                      sx={{ cursor: 'pointer' }}
+                      onClick={startSpeechRecognition}
+                    />
+                  </InputAdornment>
+                ),
+                placeholder: t('Search for documents'),
               }}
               value={searchTerm}
               onChange={handleChange}

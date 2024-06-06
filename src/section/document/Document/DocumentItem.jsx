@@ -8,6 +8,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PropTypes from 'prop-types';
 //context
 import { useDocument, useAuth } from '../../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
+//utils
+import { fShortenNumber } from '../../../utils/formatNumber';
 //----------------------------------------------------------------
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -23,20 +27,30 @@ const LightTooltip = styled(({ className, ...props }) => (
 
 const DocumentItem = ({ document }) => {
   const { _id, title, imageUrl, user, countDownload, fileUrl } = document;
-  const {authState: {isAuthenticated}} = useAuth();
+  const { t } = useTranslation('documents');
+  const {
+    authState: { isAuthenticated },
+  } = useAuth();
+
   const navigate = useNavigate();
+
   const { handleUpdateCountDownloadDocument } = useDocument();
+
   const shortenedTitle =
     title.length > 50 ? title.substring(0, 50) + '...' : title;
 
   const handleUpdateCountDownload = async () => {
-    if(isAuthenticated) {
+    if (isAuthenticated) {
       await handleUpdateCountDownloadDocument(_id, {
         countDownload: countDownload + 1,
       });
     } else {
-      navigate("/auth/login");
+      navigate('/auth/login');
     }
+  };
+
+  const handleNavigateDocumentDetail = async(documentId) => {
+    navigate(`/dashboard/document/${documentId}`);
   };
 
   return (
@@ -77,13 +91,26 @@ const DocumentItem = ({ document }) => {
             flexDirection: 'column',
           }}
         >
-          <Typography variant="body1">{shortenedTitle}</Typography>
+          <Typography
+            variant="body1"
+            onClick={() => handleNavigateDocumentDetail(_id)}
+            sx={{
+              textDecoration: 'none', // Không có gạch chân mặc định
+              cursor: 'pointer',
+              '&:hover': {
+                textDecoration: 'underline', // Gạch chân khi hover
+              },
+            }}
+          >
+            {shortenedTitle}
+          </Typography>
+
           <Stack
             sx={{ flexDirection: 'row', gap: '0.25rem', alignItems: 'center' }}
           >
             <Typography variant="body2">
               {' '}
-              Author: {user?.firstName + ' ' + user?.lastName}
+              {t('Author')}: {user?.firstName + ' ' + user?.lastName}
             </Typography>
             <LightTooltip title="Creator" placement="right">
               <CheckCircleIcon sx={{ color: '#3366FF', fontSize: '1rem' }} />
@@ -106,11 +133,10 @@ const DocumentItem = ({ document }) => {
             target="_blank"
             onClick={handleUpdateCountDownload}
           >
-            Download
+            {t('Download')}
           </Button>
           <Typography variant="body2">
-            {countDownload}
-            {countDownload > 1 ? ' downloads' : ' download'}
+            {fShortenNumber(countDownload)} {countDownload > 1 ? t('downloads') : t('download')}
           </Typography>
         </Box>
       </Box>
@@ -124,9 +150,8 @@ DocumentItem.propTypes = {
     title: PropTypes.string.isRequired,
     imageUrl: PropTypes.string.isRequired,
     countDownload: PropTypes.number.isRequired,
-    countVote: PropTypes.number.isRequired,
     fileUrl: PropTypes.string.isRequired,
-    user: PropTypes.object.isRequired,
+    user: PropTypes.object,
   }).isRequired,
 };
 

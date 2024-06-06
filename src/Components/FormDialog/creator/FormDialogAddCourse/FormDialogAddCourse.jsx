@@ -38,6 +38,8 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import editorConfig from '../../../../config/editorConfig';
 import HTMLReactParser from 'html-react-parser';
+//i18n
+import { useTranslation } from 'react-i18next';
 //------------------------------------------------
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -54,6 +56,7 @@ const FormDialogAddCourse = () => {
   const {
     authState: { user },
   } = useAuth();
+  const {t} = useTranslation('courses');
 
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
@@ -72,13 +75,13 @@ const FormDialogAddCourse = () => {
     validationSchema: yup.object({
       title: yup
         .string()
-        .required('Title is required')
-        .max(100, 'The maximum number of characters is 100'),
+        .required(t("Title is required"))
+        .max(100, t("The maximum number of characters is 100")),
       description: yup
         .string()
-        .required('Description is required')
-        .max(5000, 'The maximum number of characters is 5000'),
-      imageBase64: yup.string().required('Image URL is required'),
+        .required(t("Description is required"))
+        .max(5000, t("The maximum number of characters is 5000")),
+      imageBase64: yup.string().required(t("Image URL is required")),
       userID: yup.string().required('User ID is required'),
     }),
     onSubmit: async (values) => {
@@ -89,14 +92,14 @@ const FormDialogAddCourse = () => {
           setOpenFormDialogAddCourse(false);
           handleGetAllCourses();
           Swal.fire({
-            title: 'Add course successful!',
+            title: t("Add course successful!"),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
           });
         } else {
           Swal.fire({
-            title: 'Add course failed!',
+            title: t("Add course failed!"),
             icon: 'error',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -105,7 +108,7 @@ const FormDialogAddCourse = () => {
       } catch (error) {
         setOpenFormDialogAddCourse(false);
         Swal.fire({
-          title: 'Server Error',
+          title: t("Server Error"),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -135,7 +138,7 @@ const FormDialogAddCourse = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>Add Course</DialogTitle>
+        <DialogTitle>{t("Add Course")}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -148,7 +151,7 @@ const FormDialogAddCourse = () => {
             <Box sx={{ mb: '1.5rem' }}>
               <TextField
                 variant="outlined"
-                label="Title"
+                label={t("Title")}
                 id="title"
                 name="title"
                 fullWidth
@@ -253,7 +256,7 @@ const FormDialogAddCourse = () => {
           startIcon={<UploadIcon />}
           sx={{ color: '#fff' }}
         >
-          Add
+          {t("Add")}
         </Button>
       </DialogActions>
     </Dialog>

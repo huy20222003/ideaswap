@@ -24,10 +24,13 @@ import FollowingTab from './FollowingTab';
 import VideoTab from './VideoTab';
 //context
 import { useUser, useAuth, useFollow } from '../../hooks/context';
+//i18n
+import { useTranslation } from 'react-i18next';
 //---------------------------------------------------
 
 const AccountActionTabs = () => {
   const [value, setValue] = useState('1');
+  const {t} = useTranslation('account');
   const {
     followState: { follows },
     handleGetAllFollows,
@@ -100,8 +103,8 @@ const AccountActionTabs = () => {
                   <CheckCircleIcon sx={{ color: '#3366FF' }} />
                 </Stack>
                 <Typography variant="subtitle2" sx={{ color: '#fff' }}>
-                  {fShortenNumber(followFilters.length)}
-                  {followFilters.length > 1 ? ' Followers' : ' Follower'}
+                  {fShortenNumber(followFilters.length)}{' '}
+                  {followFilters.length > 1 ? t("Followers") : t("Follower")}
                 </Typography>
               </Stack>
             </Stack>
@@ -120,7 +123,7 @@ const AccountActionTabs = () => {
                 sx={{ color: '#fff', mt: '2rem', mr: '2rem' }}
                 onClick={handleNavigate}
               >
-                Update Profile
+                {t("Update Profile")}
               </Button>
             </Stack>
           )}
@@ -132,9 +135,9 @@ const AccountActionTabs = () => {
                 onChange={handleChange}
                 aria-label="lab API tabs example"
               >
-                <Tab label="Posts" value="1" />
-                <Tab label="Following" value="2" />
-                <Tab label="Video" value="3" />
+                <Tab label={t("Posts")} value="1" />
+                <Tab label={t("Following")} value="2" />
+                <Tab label={t("Video")} value="3" />
               </TabList>
             </Box>
             <TabPanel value="1">

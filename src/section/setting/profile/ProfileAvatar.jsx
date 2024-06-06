@@ -1,11 +1,14 @@
 import { Avatar, Box, Typography, Button } from '@mui/material';
 import { useAuth, useUser } from '../../../hooks/context';
 import Swal from 'sweetalert2';
+//i18n
+import { useTranslation } from 'react-i18next';
 //----------------------------------------------
 
 const ProfileAvatar = () => {
   const { authState: { user }, loadUser } = useAuth();
   const {handleUpdateUser} = useUser();
+  const {t} = useTranslation('setting');
 
   // Hàm xử lý khi có sự thay đổi trong input file
   const handleFileChange = (event) => {
@@ -19,9 +22,9 @@ const ProfileAvatar = () => {
       const base64String = e.target.result; // Chuỗi base64 của file đã chọn
       const respone = await handleUpdateUser(user?._id, {imageBase64: base64String});
       if(respone.success) {
-        Swal.fire({title: 'Success', text: 'Successfully updated profile picture', icon: 'success'});
+        Swal.fire({title: t("Success"), text: t("Successfully updated profile picture"), icon: 'success'});
       } else {
-        Swal.fire({title: 'Failed', text: 'Updating profile picture failed', icon: 'error'});
+        Swal.fire({title: t("Error"), text: t("Updating profile picture failed"), icon: 'error'});
       }
       await loadUser();
     };
@@ -65,7 +68,7 @@ const ProfileAvatar = () => {
             sx={{ color: '#fff', mt: '1rem', px: '1.5rem' }}
             onClick={handleChangeButtonClick} // Khi nhấp vào nút, gọi hàm handleChangeButtonClick
           >
-            Change
+            {t("Change")}
           </Button>
         </Box>
       </Box>
