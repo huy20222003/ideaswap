@@ -29,7 +29,7 @@ const RelatedDocumentItem = ({
   fileUrl,
 }) => {
   const truncatedTitle =
-    title && title.length > 15 ? `${title.slice(0, 15)}...` : title;
+    title && title.length > 25 ? `${title.slice(0, 25)}...` : title;
 
   const { handleUpdateCountDownloadDocument } = useDocument();
   const {
@@ -59,7 +59,7 @@ const RelatedDocumentItem = ({
         m: 1,
         p: 1,
         width: '100%',
-        height: 'auto',
+        maxHeight: '20rem',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',

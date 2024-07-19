@@ -94,6 +94,10 @@ const LoginForm = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleNavigateForgetPasswordPage = ()=> {
+    navigate('/forget-password');
+  }
+
   return (
     <Box sx={{ maxWidth: '30rem', margin: 'auto' }}>
       <Typography variant="h4" sx={{ my: '0.5rem', textAlign: 'center' }}>
@@ -186,6 +190,7 @@ const LoginForm = () => {
                   mt: '0.25rem',
                   cursor: 'pointer',
                 }}
+                onClick={handleNavigateForgetPasswordPage}
               >
                 {t("Forget password?")}
               </Typography>
@@ -202,6 +207,7 @@ const LoginForm = () => {
               mt: '0.25rem',
               cursor: 'pointer',
             }}
+            onClick={handleNavigateForgetPasswordPage}
           >
             {t("Forget password?")}
           </Typography>

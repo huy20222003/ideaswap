@@ -16,6 +16,8 @@ import styled from '@emotion/styled';
 import HeaderLogo from './HeaderLogo';
 //i18n
 import { useTranslation } from 'react-i18next';
+//component
+import LanguagePopover from '../../../Components/language-popover';
 //----------------------------------------------
 
 const NavLinkStyled = styled(NavLink)`
@@ -35,7 +37,7 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const {t} = useTranslation('auth');
+  const { t } = useTranslation('auth');
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
@@ -51,17 +53,18 @@ const Header = () => {
       }}
     >
       <NavLinkStyled to="/dashboard/app" onClick={toggleDrawer(false)}>
-        {t("Home")}
+        {t('Home')}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/course" onClick={toggleDrawer(false)}>
-        {t("Course")}
+        {t('Course')}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/document" onClick={toggleDrawer(false)}>
-        {t("Document")}
+        {t('Document')}
       </NavLinkStyled>
       <NavLinkStyled to="/dashboard/donate" onClick={toggleDrawer(false)}>
-        {t("Donate")}
+        {t('Donate')}
       </NavLinkStyled>
+      <LanguagePopover />
 
       <Stack
         sx={{
@@ -71,10 +74,10 @@ const Header = () => {
         }}
       >
         <Button variant="text" href="/auth/login">
-          {t("Login")}
+          {t('Login')}
         </Button>
         <Button variant="outlined" href="/auth/register" sx={{ px: '2rem' }}>
-          {t("Register")}
+          {t('Register')}
         </Button>
       </Stack>
     </Stack>

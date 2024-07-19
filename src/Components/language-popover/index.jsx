@@ -1,1 +1,1 @@
-export {default} from './LanguagePopover';
+export { default } from './LanguagePopover';

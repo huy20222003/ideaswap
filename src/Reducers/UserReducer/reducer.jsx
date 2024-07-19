@@ -1,4 +1,10 @@
-import { GET_ALL_USERS, GET_USER_BY_ID, UPDATE_USER } from './constants';
+import {
+  FORGET_PASSWORD,
+  GET_ALL_USERS,
+  GET_USER_BY_ID,
+  RESET_PASSWORD,
+  UPDATE_USER,
+} from './constants';
 
 export const initUserState = {
   user: null,
@@ -19,15 +25,24 @@ export const reducer = (state, action) => {
         ...state,
         user: payload,
       };
-      case UPDATE_USER:
-        const newUsers = state.users.map((user) =>
-          user._id === payload._id ? payload : user
-        );
-  
-        return {
-          ...state,
-          users: newUsers,
-        };
+    case FORGET_PASSWORD:
+      return {
+        ...state,
+        user: payload,
+      };
+    case RESET_PASSWORD:
+      return {
+        ...state,
+      };
+    case UPDATE_USER:
+      const newUsers = state.users.map((user) =>
+        user._id === payload._id ? payload : user
+      );
+
+      return {
+        ...state,
+        users: newUsers,
+      };
     default:
       return {
         ...state,

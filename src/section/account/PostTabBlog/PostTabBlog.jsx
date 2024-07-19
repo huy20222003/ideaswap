@@ -13,7 +13,6 @@ import {
 } from '../../../hooks/context';
 import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
 import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
-import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
 //i18n
 import { useTranslation } from 'react-i18next';
 //-------------------------------------------------------------------------------------------------
@@ -92,7 +91,6 @@ const PostTabBlog = () => {
       )}
       <FormDialogEditBlog />
       <FormDialogDeleteBlog />
-      <FormDialogCommentBlog />
     </Box>
   );
 };

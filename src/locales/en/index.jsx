@@ -12,3 +12,4 @@ export {default as VIDEOS_EN} from './videos.json';
 export {default as NOTIFICATION_EN} from './notification.json';
 export {default as FOOTER_EN} from './footer.json';
 export {default as PAGE404_EN} from './page404.json';
+export {default as CHAT_EN} from './chat.json';

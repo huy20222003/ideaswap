@@ -20,6 +20,7 @@ export const BlogProvider = (prop) => {
     const [blogState, dispatch] = useReducer(reducer, initBlogState);
     const [openFormDialogDeleteBlog, setOpenFormDialogDeleteBlog] = useState(false);
     const [openFormDialogCommentBlog, setOpenFormDialogCommentBlog] = useState(false);
+    const [openFormDialogEditBlog, setOpenFormDialogEditBlog] = useState(false);
   
     const handleError = useCallback((error) => {
       if (error.response && error.response.data) {
@@ -110,6 +111,8 @@ export const BlogProvider = (prop) => {
       setOpenFormDialogDeleteBlog,
       openFormDialogCommentBlog, 
       setOpenFormDialogCommentBlog,
+      openFormDialogEditBlog,
+      setOpenFormDialogEditBlog,
       handleGetAllBlog,
       handleGetOneBlog,
       handleCreateBlog,

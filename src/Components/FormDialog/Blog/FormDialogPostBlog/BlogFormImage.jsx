@@ -89,11 +89,6 @@ const BlogFormImage = ({ formik }) => {
               />
             </Box>
           )}
-          {!imageSelected && ( // Hiển thị thông báo dưới phần chọn ảnh
-            <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'red' }}>
-              {t("Please select an image")}
-            </Typography>
-          )}
         </Box>
       </Stack>
     </>

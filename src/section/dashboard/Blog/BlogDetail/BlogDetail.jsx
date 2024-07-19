@@ -18,11 +18,20 @@ import {
   TextField,
   Button,
   styled,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import CommentIcon from '@mui/icons-material/Comment';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LinkIcon from '@mui/icons-material/Link';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FlagCircleIcon from '@mui/icons-material/FlagCircle';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 // context
 import {
   useBlog,
@@ -31,11 +40,14 @@ import {
   useAuth,
   useHeart,
   useShare,
+  useRole,
 } from '../../../../hooks/context';
 // utils
 import { fDateTime } from '../../../../utils/formatTime';
 // component
 import CommentList from '../../../../Components/comments/CommentList';
+import FormDialogEditBlog from '../../../../Components/FormDialog/Blog/FormDialogEditBlog';
+import FormDialogDeleteBlog from '../../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
 // formik
 import { useFormik } from 'formik';
 // yup
@@ -62,8 +74,13 @@ const BlogDetail = () => {
   const {
     blogState: { blog },
     handleGetOneBlog,
+    setOpenFormDialogDeleteBlog,
+    setOpenFormDialogEditBlog,
   } = useBlog();
   const [expanded, setExpanded] = useState(false);
+  const {
+    roleState: { roles },
+  } = useRole();
   const { t } = useTranslation('blogs');
   const toggleExpand = useCallback(() => setExpanded((prev) => !prev), []);
   const {
@@ -78,21 +95,11 @@ const BlogDetail = () => {
     handleGetUserById,
   } = useUser();
   const { authState } = useAuth();
-  const {
-    heartState,
-    handleGetAllHearts,
-    handleCreateHeart,
-    handleDeleteHeart,
-  } = useHeart();
+  const { heartState, handleCreateHeart, handleDeleteHeart } = useHeart();
   const { shareState, handleCreateShare, handleGetAllShares } = useShare();
   const { hearts } = heartState;
   const { shares } = shareState;
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
-
-  useEffect(() => {
-    handleGetAllHearts();
-    handleGetAllShares();
-  }, [handleGetAllHearts, handleGetAllShares]);
 
   const handleShare = async () => {
     if (!authState.isAuthenticated) {
@@ -101,7 +108,7 @@ const BlogDetail = () => {
     }
     await handleCreateShare({
       userID: authState?.user?._id,
-      bvID: blog?._id,
+      referenceID: blog?._id,
     });
     handleGetAllShares();
   };
@@ -111,6 +118,19 @@ const BlogDetail = () => {
   const fetchBlog = useCallback(async () => {
     await handleGetOneBlog(_id);
   }, [_id, handleGetOneBlog]);
+
+  const handleNavigateToUserAccount = (userID) => {
+    navigate(`/account/${userID}`);
+  };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  const newUser = {
+    ...user,
+    roleName: roles.find((role) => role?._id === user?.roleID),
+  };
 
   const handleCopyToClipboard = () => {
     const url = new URL(window.location.href);
@@ -142,36 +162,38 @@ const BlogDetail = () => {
   }, [blog?.userID, handleGetAllComments, handleGetUserById]);
 
   const commentsFilter = useMemo(() => {
-    // Lọc ra tất cả các comment có bvID trùng khớp với blog?._id
+    // Lọc ra tất cả các comment có referenceID trùng khớp với blog?._id
     const commentsForBlog = comments.filter(
-      (comment) => comment?.bvID === blog?._id
+      (comment) => comment?.referenceID === blog?._id
     );
-  
+
     // Lấy ra những comment có parentCommentID = null
     const topLevelComments = commentsForBlog.filter(
       (comment) => comment.parentCommentID === null
     );
-  
+
     // Sắp xếp các comment có parentCommentID = null theo trường createdAt
-    topLevelComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
+    topLevelComments.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
     // Lấy ra những comment có parentCommentID khác null
     const childComments = commentsForBlog.filter(
       (comment) => comment.parentCommentID !== null
     );
-  
+
     // Kết hợp những comment có parentCommentID = null và các comment con
     const sortedComments = [...topLevelComments, ...childComments];
-  
+
     return sortedComments;
   }, [comments, blog?._id]);
-  
+
   const heartArrays = useMemo(() => {
-    return hearts.filter((heart) => heart?.bvID === blog?._id);
+    return hearts.filter((heart) => heart?.referenceID === blog?._id);
   }, [hearts, blog?._id]);
 
   const shareArrays = useMemo(() => {
-    return shares.filter((share) => share?.bvID === blog?._id);
+    return shares.filter((share) => share?.referenceID === blog?._id);
   }, [shares, blog?._id]);
 
   const [heartLength, setHeartLength] = useState(heartArrays.length);
@@ -180,10 +202,11 @@ const BlogDetail = () => {
     const updateHeartIcon = () => {
       const heartFind = heartArrays.find(
         (heart) =>
-          heart?.userID === authState.user?._id && heart.bvID === blog?._id
+          heart?.userID === authState.user?._id &&
+          heart.referenceID === blog?._id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -194,7 +217,7 @@ const BlogDetail = () => {
       navigate('/auth/login');
       return;
     }
-    const data = { userID: authState?.user?._id, bvID: blog?._id };
+    const data = { userID: authState?.user?._id, referenceID: blog?._id };
     try {
       if (heartIcon.props.sx) {
         await handleDeleteHeart(data);
@@ -231,13 +254,13 @@ const BlogDetail = () => {
 
   const validationSchema = yup.object({
     userID: yup.string().required('User ID is required'),
-    bvID: yup.string().required('Bv ID is required'),
+    referenceID: yup.string().required('Bv ID is required'),
   });
 
   const formik = useFormik({
     initialValues: {
       content: '',
-      bvID: _id,
+      referenceID: _id,
       userID: authState?.user?._id,
       parentCommentID: null,
     },
@@ -264,8 +287,30 @@ const BlogDetail = () => {
     },
   });
 
+  const handleEditBlogClick = useCallback(
+    async (blogId) => {
+      const response = await handleGetOneBlog(blogId);
+      if (response.success) {
+        setOpenFormDialogEditBlog(true);
+        handleClose();
+      }
+    },
+    [handleGetOneBlog, setOpenFormDialogEditBlog]
+  );
+
+  const handleDeleteBlog = useCallback(
+    async (blogId) => {
+      const response = await handleGetOneBlog(blogId);
+      if (response.success) {
+        setOpenFormDialogDeleteBlog(true);
+        handleClose();
+      }
+    },
+    [handleGetOneBlog, setOpenFormDialogDeleteBlog]
+  );
+
   useEffect(() => {
-    formik.setFieldValue('bvID', blog?._id);
+    formik.setFieldValue('referenceID', blog?._id);
   }, [blog?._id]);
 
   return (
@@ -273,11 +318,68 @@ const BlogDetail = () => {
       <Box>
         <Card sx={{ my: '1rem', p: '1rem' }}>
           <CardHeader
-            avatar={<Avatar src={user?.avatar} />}
-            title={`${user?.firstName} ${user?.lastName}`}
+            avatar={
+              <Avatar
+                src={user?.avatar}
+                onClick={() => handleNavigateToUserAccount(user?._id)}
+                style={{ cursor: 'pointer' }}
+              />
+            }
+            action={
+              <IconButton aria-label="settings" onClick={handleClick}>
+                <MoreVertIcon />
+              </IconButton>
+            }
+            title={
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography
+                  variant="subtitle1"
+                  onClick={() => handleNavigateToUserAccount(user?._id)}
+                  style={{ cursor: 'pointer', marginRight: '0.25rem' }}
+                >
+                  {`${user?.firstName} ${user?.lastName}`}
+                </Typography>
+                {newUser?.roleName?.name == 'creator' && (
+                  <LightTooltip title={t('Creator')} placement="right">
+                    <CheckCircleIcon
+                      sx={{ color: '#3366FF', fontSize: '1rem' }}
+                    />
+                  </LightTooltip>
+                )}
+              </div>
+            }
             subheader={fDateTime(blog?.createdAt)}
-            sx={{ py: 0 }}
           />
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            MenuListProps={{ 'aria-labelledby': 'basic-button' }}
+          >
+            {authState?.user?._id === user?._id && (
+              <Box>
+                <MenuItem onClick={() => handleEditBlogClick(_id)}>
+                  <ListItemIcon>
+                    <EditIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={t('Edit Blog')} />
+                </MenuItem>
+                <MenuItem onClick={() => handleDeleteBlog(_id)}>
+                  <ListItemIcon>
+                    <DeleteIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={t('Delete Blog')} />
+                </MenuItem>
+              </Box>
+            )}
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <FlagCircleIcon />
+              </ListItemIcon>
+              <ListItemText primary={t('Report Blog')} />
+            </MenuItem>
+          </Menu>
           <CardContent sx={{ pb: '0.2rem' }}>
             <Typography variant="body2" color="text.primary">
               {HTMLReactParser(truncatedContent)}
@@ -314,16 +416,20 @@ const BlogDetail = () => {
               p: '0.5rem',
             }}
           >
-            <Stack sx={{ flexDirection: 'row' }}>
-              <FavoriteIcon sx={{ color: '#54D62C' }} />
-              <Typography
-                variant="body1"
-                color="text.secondary"
-                sx={{ mx: '0.2rem' }}
-              >
-                {heartLength}
-              </Typography>
-            </Stack>
+            {heartLength > 0 ? (
+              <Stack sx={{ flexDirection: 'row' }}>
+                <FavoriteIcon sx={{ color: 'red' }} />
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mx: '0.2rem' }}
+                >
+                  {heartLength}
+                </Typography>
+              </Stack>
+            ) : (
+              <Box></Box>
+            )}
             <Stack sx={{ flexDirection: 'row' }}>
               <Typography
                 variant="body1"
@@ -393,17 +499,32 @@ const BlogDetail = () => {
         </Box>
         <Box sx={{ my: '1rem' }}>
           <Typography variant="subtitle1" sx={{ ml: '1rem' }}>
-            {t('comments')}
+            {t('Comments')}
           </Typography>
           {commentsFilter.length > 0 ? (
             <Box>
               <CommentList comments={commentsFilter} />
             </Box>
           ) : (
-            t('No comments yet')
+            <Box
+              sx={{
+                width: '100$',
+                height: '5rem',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Stack sx={{gap: '1rem', alignItems: 'center', mt: '2rem'}}>
+                <CommentIcon sx={{ fontSize: '2rem' }} />
+                <Typography>{t('No comments yet')}</Typography>
+              </Stack>
+            </Box>
           )}
         </Box>
       </Box>
+      <FormDialogEditBlog />
+      <FormDialogDeleteBlog />
     </Box>
   );
 };

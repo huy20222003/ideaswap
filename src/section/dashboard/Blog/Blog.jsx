@@ -11,7 +11,6 @@ import {
 } from '../../../hooks/context';
 import FormDialogEditBlog from '../../../Components/FormDialog/Blog/FormDialogEditBlog';
 import FormDialogDeleteBlog from '../../../Components/FormDialog/Blog/FormDialogDeleteBlog';
-import FormDialogCommentBlog from '../../../Components/FormDialog/Blog/FormDialogCommentBlog';
 import { useTranslation } from 'react-i18next';
 //------------------------------------------------------------
 
@@ -22,7 +21,7 @@ const Blog = () => {
   const { shareState, handleGetAllShares } = useShare();
   const { userState, handleGetAllUsers } = useUser();
   const { censorshipsState, handleGetAllCensorships } = useCensorships();
-  const {t} = useTranslation('blogs');
+  const { t } = useTranslation('blogs');
 
   useEffect(() => {
     handleGetAllBlog();
@@ -48,11 +47,11 @@ const Blog = () => {
   const { censorships } = censorshipsState;
 
   const blogsWithStatus = blogs.map((blog) => {
-    const heartArrays = hearts.filter((heart) => heart?.bvID === blog?._id);
+    const heartArrays = hearts.filter((heart) => heart?.referenceID === blog?._id);
     const commentArrays = comments.filter(
-      (comment) => comment?.bvID === blog?._id
+      (comment) => comment?.referenceID === blog?._id
     );
-    const shareArrays = shares.filter((share) => share?.bvID === blog?._id);
+    const shareArrays = shares.filter((share) => share?.referenceID === blog?._id);
     const user = users.find((user) => user?._id === blog?.userID);
     const censorshipItem = censorships.find(
       (item) => item?.contentID === blog?._id
@@ -79,13 +78,12 @@ const Blog = () => {
       ) : (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Typography variant="body2">
-            {t("There are no posts to display yet")}
+            {t('There are no posts to display yet')}
           </Typography>
         </Box>
       )}
       <FormDialogEditBlog />
       <FormDialogDeleteBlog />
-      <FormDialogCommentBlog />
     </Box>
   );
 };

@@ -1,9 +1,9 @@
-import { GET_ALL_NOTIFICATIONS, UPDATE_NOTIFICATION } from "./constants"
+import { GET_NOTIFICATIONS_BY_USERID, UPDATE_NOTIFICATION } from "./constants"
 
 
-export const getAll = (payload)=> {
+export const getByUserId = (payload)=> {
     return {
-        type: GET_ALL_NOTIFICATIONS,
+        type: GET_NOTIFICATIONS_BY_USERID,
         payload
     }
 }

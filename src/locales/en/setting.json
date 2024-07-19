@@ -48,5 +48,7 @@
     "Password update failed!": "Password update failed!",
     "Updated password successfully!": "Updated password successfully!",
     "Code is required": "Code is required",
-    "Password": "Password"
+    "Password": "Password",
+    "Please enter the 6-digit code sent to your email. Please enter the 6-digit code sent to your email": "Please enter the 6-digit code sent to your email. Please enter the 6-digit code sent to your email",
+    "Select an Avatar": "Select an Avatar"
 }

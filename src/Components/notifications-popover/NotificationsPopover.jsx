@@ -42,14 +42,10 @@ export default function NotificationsPopover() {
   } = useAuth();
 
   useEffect(() => {
-    isAuthenticated && handleGetAllNotifications();
-  }, [handleGetAllNotifications, isAuthenticated]);
+    isAuthenticated && handleGetAllNotifications(user?._id);
+  }, [handleGetAllNotifications, isAuthenticated, user?._id]);
 
-  const notificationByUserId = notifications.filter(
-    (item) => item?.userID === user?._id
-  );
-
-  const totalUnRead = notificationByUserId.filter(
+  const totalUnRead = notifications.filter(
     (item) => item.isUnRead === true
   ).length;
 
@@ -64,7 +60,7 @@ export default function NotificationsPopover() {
   };
 
   const handleMarkAllAsRead = async() => {
-    const notificationFilters = notificationByUserId
+    const notificationFilters = notifications
       .filter((notification) => notification?.isUnRead === true)
       .map((notification) => notification?._id);
     
@@ -128,7 +124,7 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notificationByUserId.slice(0, 2).map((notification) => (
+            {notifications.slice(0, 2).map((notification) => (
               <NotificationItem
                 key={notification._id}
                 notification={notification}
@@ -147,8 +143,8 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notificationByUserId
-              .slice(2, notificationByUserId.length)
+            {notifications
+              .slice(2, notifications.length)
               .map((notification) => (
                 <NotificationItem
                   key={notification._id}

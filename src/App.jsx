@@ -27,6 +27,9 @@ import { CodeProvider } from './Contexts/CodeContext';
 import { DocumentProvider } from './Contexts/DocumentContext';
 import { BannerProvider } from './Contexts/BannerContext';
 import { NotificationProvider } from './Contexts/NotificationContext';
+import { SocketProvider } from './Contexts/SocketContext';
+import { ConversationProvider } from './Contexts/ConversationContext';
+import { MessageProvider } from './Contexts/MessageContext';
 
 // ----------------------------------------------------------------------
 
@@ -40,35 +43,41 @@ export default function App() {
           <CheckInternet />
           <CommonProvider>
             <AuthProvider>
-              <BlogProvider>
-                <HeartProvider>
-                  <CommentProvider>
-                    <ShareProvider>
-                      <UserProvider>
-                        <CourseProvider>
-                          <VideoProvider>
-                            <CensorshipsProvider>
-                              <FollowProvider>
-                                <RoleProvider>
-                                  <CodeProvider>
-                                    <DocumentProvider>
-                                      <BannerProvider>
-                                        <NotificationProvider>
-                                          <Router />
-                                        </NotificationProvider>
-                                      </BannerProvider>
-                                    </DocumentProvider>
-                                  </CodeProvider>
-                                </RoleProvider>
-                              </FollowProvider>
-                            </CensorshipsProvider>
-                          </VideoProvider>
-                        </CourseProvider>
-                      </UserProvider>
-                    </ShareProvider>
-                  </CommentProvider>
-                </HeartProvider>
-              </BlogProvider>
+              <SocketProvider>
+                <BlogProvider>
+                  <HeartProvider>
+                    <CommentProvider>
+                      <ShareProvider>
+                        <UserProvider>
+                          <CourseProvider>
+                            <VideoProvider>
+                              <CensorshipsProvider>
+                                <FollowProvider>
+                                  <RoleProvider>
+                                    <CodeProvider>
+                                      <DocumentProvider>
+                                        <BannerProvider>
+                                          <NotificationProvider>
+                                            <ConversationProvider>
+                                              <MessageProvider>
+                                              <Router />
+                                              </MessageProvider>
+                                            </ConversationProvider>
+                                          </NotificationProvider>
+                                        </BannerProvider>
+                                      </DocumentProvider>
+                                    </CodeProvider>
+                                  </RoleProvider>
+                                </FollowProvider>
+                              </CensorshipsProvider>
+                            </VideoProvider>
+                          </CourseProvider>
+                        </UserProvider>
+                      </ShareProvider>
+                    </CommentProvider>
+                  </HeartProvider>
+                </BlogProvider>
+              </SocketProvider>
             </AuthProvider>
           </CommonProvider>
         </ThemeProvider>

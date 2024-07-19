@@ -1,4 +1,4 @@
-import { GET_ALL_NOTIFICATIONS, UPDATE_NOTIFICATION } from './constants';
+import { GET_NOTIFICATIONS_BY_USERID, UPDATE_NOTIFICATION } from './constants';
 
 export const initNotificationState = {
   notification: null,
@@ -9,7 +9,7 @@ export const reducer = (state, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case GET_ALL_NOTIFICATIONS:
+    case GET_NOTIFICATIONS_BY_USERID:
       return {
         ...state,
         notifications: payload,

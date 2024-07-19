@@ -142,7 +142,7 @@ const CommentItem = ({ comment }) => {
       {showReplyComment && selectedCommentId === comment._id && (
         <ReplyComment
           parentCommentID={comment?._id}
-          bvID={comment?.bvID}
+          referenceID={comment?.referenceID}
           handleToggleReplyComment={handleToggleReplyComment}
         />
       )}
@@ -156,7 +156,7 @@ CommentItem.propTypes = {
     _id: PropTypes.string,
     content: PropTypes.string.isRequired,
     userID: PropTypes.string.isRequired,
-    bvID: PropTypes.string.isRequired,
+    referenceID: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,
   }).isRequired,
 };

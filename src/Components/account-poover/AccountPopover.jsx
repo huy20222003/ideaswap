@@ -13,7 +13,7 @@ import {
   Popover,
 } from '@mui/material';
 //context
-import { useAuth, useRole } from '../../hooks/context';
+import { useAuth, useRole, useConversation } from '../../hooks/context';
 //js-cookie
 import Cookie from 'js-cookie';
 //i18n
@@ -26,7 +26,10 @@ export default function AccountPopover() {
   const {
     authState: { user, isAuthenticated },
   } = useAuth();
-  const {t} = useTranslation('navbar');
+  const {
+    conversationState: { conversations },
+  } = useConversation();
+  const { t } = useTranslation('navbar');
 
   const {
     roleState: { roles },
@@ -40,7 +43,7 @@ export default function AccountPopover() {
   const newUser = {
     ...user,
     roleName: roles.find((role) => role?._id === user?.roleID),
-  };  
+  };
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -59,6 +62,9 @@ export default function AccountPopover() {
     switch (data) {
       case 'dashboard':
         navigate('/dashboard/app');
+        break;
+      case 'chat':
+        navigate(`/chat/${conversations[0]?._id}`);
         break;
       case 'setting':
         navigate('/setting/profile');
@@ -134,14 +140,17 @@ export default function AccountPopover() {
           {isAuthenticated ? (
             <>
               <MenuItem onClick={() => handleNavigate('dashboard')}>
-                {t("Dashboard")}
+                {t('Dashboard')}
+              </MenuItem>
+              <MenuItem onClick={() => handleNavigate('chat')}>
+                {t('Chat with the Creator')}
               </MenuItem>
               <MenuItem onClick={() => handleNavigate('setting')}>
-                {t("Setting")}
+                {t('Setting')}
               </MenuItem>
               {newUser?.roleName?.name == 'creator' ? (
                 <MenuItem onClick={() => handleNavigate('creator')}>
-                  {t("Creator")}
+                  {t('Creator')}
                 </MenuItem>
               ) : (
                 ''
@@ -156,15 +165,15 @@ export default function AccountPopover() {
 
         {isAuthenticated ? (
           <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
-            {t("Logout")}
+            {t('Logout')}
           </MenuItem>
         ) : (
           <>
             <MenuItem onClick={() => handleNavigate('login')} sx={{ m: 1 }}>
-              {t("Login")}
+              {t('Login')}
             </MenuItem>
             <MenuItem onClick={() => handleNavigate('register')} sx={{ m: 1 }}>
-              {t("Register")}
+              {t('Register')}
             </MenuItem>
           </>
         )}

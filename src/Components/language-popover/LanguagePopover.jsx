@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next';
 // Define your locales
 const locales = {
   en: { label: 'English', icon: '/assets/icons/langs/ic_flag_en.svg' },
-  de: { label: 'German', icon: '/assets/icons/langs/ic_flag_de.svg' },
-  fr: { label: 'French', icon: '/assets/icons/langs/ic_flag_fr.svg' },
   vi: { label: 'Tiếng Việt', icon: '/assets/icons/langs/ic_flag_vi.svg' },
 };
 
@@ -17,16 +15,6 @@ const LANGS = [
     value: 'en',
     label: 'English',
     icon: '/assets/icons/langs/ic_flag_en.svg',
-  },
-  {
-    value: 'de',
-    label: 'German',
-    icon: '/assets/icons/langs/ic_flag_de.svg',
-  },
-  {
-    value: 'fr',
-    label: 'French',
-    icon: '/assets/icons/langs/ic_flag_fr.svg',
   },
   {
     value: 'vi',
@@ -45,7 +33,7 @@ export default function LanguagePopover() {
     if (storedLanguage && locales[storedLanguage]) {
       i18n.changeLanguage(storedLanguage);
     }
-  }, [i18n]);
+  }, [i18n]); // The empty array ensures this runs only on mount
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -72,7 +60,11 @@ export default function LanguagePopover() {
           width: 44,
           height: 44,
           ...(open && {
-            bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
+            bgcolor: (theme) =>
+              alpha(
+                theme.palette.primary.main,
+                theme.palette.action.focusOpacity
+              ),
           }),
         }}
       >
@@ -101,8 +93,17 @@ export default function LanguagePopover() {
       >
         <Stack spacing={0.75}>
           {LANGS.map((option) => (
-            <MenuItem key={option.value} selected={option.value === i18n.language} onClick={() => handleChangeLanguage(option.value)}>
-              <Box component="img" alt={option.label} src={option.icon} sx={{ width: 28, mr: 2 }} />
+            <MenuItem
+              key={option.value}
+              selected={option.value === i18n.language}
+              onClick={() => handleChangeLanguage(option.value)}
+            >
+              <Box
+                component="img"
+                alt={option.label}
+                src={option.icon}
+                sx={{ width: 28, mr: 2 }}
+              />
               {option.label}
             </MenuItem>
           ))}

@@ -16,12 +16,13 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import UploadIcon from '@mui/icons-material/Upload';
+import CollectionsOutlinedIcon from '@mui/icons-material/CollectionsOutlined';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { fDateTime } from '../../../../utils/formatTime';
 import BlogFormImage from './BlogFormImage';
-import { useCommon, useAuth, useBlog } from '../../../../hooks/context';
+import { useAuth, useBlog } from '../../../../hooks/context';
 //ckeditor
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -35,7 +36,6 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 const FormDialogEditBlog = () => {
-  const { openFormDialogEditBlog, setOpenFormDialogEditBlog } = useCommon();
   const {
     authState: { user },
   } = useAuth();
@@ -43,10 +43,19 @@ const FormDialogEditBlog = () => {
     blogState: { blog },
     handleUpdateBlog,
     handleGetAllBlog,
+    openFormDialogEditBlog,
+    setOpenFormDialogEditBlog,
   } = useBlog();
   const [progressValue, setProgressValue] = useState(0);
   const [showProgress, setShowProgress] = useState(false);
-  const {t} = useTranslation('blogs');
+  const { t } = useTranslation('blogs');
+
+  const [showBlogFormImage, setShowBlogFormImage] = useState(false);
+
+  useEffect(() => {
+    // Cập nhật showBlogFormImage dựa trên blog.url khi blog thay đổi
+    setShowBlogFormImage(!!blog?.url); // Sử dụng !! để chuyển đổi thành giá trị boolean
+  }, [blog]); // Theo dõi thay đổi của biến blog để cập nhật lại showBlogFormImage
 
   useEffect(() => {
     handleGetAllBlog();
@@ -65,19 +74,23 @@ const FormDialogEditBlog = () => {
     validationSchema: yup.object({
       content: yup
         .string()
-        .required(t("Content is required"))
-        .max(5000, t("The maximum number of characters is 5000")),
+        .required(t('Content is required'))
+        .max(5000, t('The maximum number of characters is 5000')),
       userID: yup.string().required('UserID is required'),
       imageBase64: yup.string().required('Image base64 is required'),
     }),
     onSubmit: async (values) => {
       try {
         setShowProgress(true);
-        const response = await handleUpdateBlog(blog?._id, values, setProgressValue);
+        const response = await handleUpdateBlog(
+          blog?._id,
+          values,
+          setProgressValue
+        );
         if (response.success) {
           setOpenFormDialogEditBlog(false);
           Swal.fire({
-            title: t("Update Blog successful!"),
+            title: t('Update Blog successful!'),
             icon: 'success',
             showCancelButton: true,
             confirmButtonText: 'OK',
@@ -86,7 +99,7 @@ const FormDialogEditBlog = () => {
       } catch (error) {
         setOpenFormDialogEditBlog(false);
         Swal.fire({
-          title: t("Update Blog failed!"),
+          title: t('Update Blog failed!'),
           icon: 'success',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -106,7 +119,7 @@ const FormDialogEditBlog = () => {
       });
     }
   }, [blog, user?._id]);
-  
+
   return (
     <Dialog
       open={openFormDialogEditBlog}
@@ -121,7 +134,7 @@ const FormDialogEditBlog = () => {
           alignItems: 'center',
         }}
       >
-        <DialogTitle>{t("Edit Blog")}</DialogTitle>
+        <DialogTitle>{t('Edit Blog')}</DialogTitle>
         <CloseIcon
           onClick={handleClose}
           sx={{ cursor: 'pointer', mr: '1rem' }}
@@ -143,7 +156,7 @@ const FormDialogEditBlog = () => {
           </Stack>
         </Box>
         <Box sx={{ mb: '1.5rem' }}>
-        <CKEditor
+          <CKEditor
             editor={ClassicEditor}
             data={formik.values.content}
             config={editorConfig}
@@ -159,7 +172,25 @@ const FormDialogEditBlog = () => {
             {formik.values.description?.length}/5000
           </Stack>
         </Box>
-        <BlogFormImage formik={formik} />
+        <Stack
+          sx={{
+            gap: '1rem',
+            my: '1rem',
+            width: '100%',
+            p: '0.5rem',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            border: '0.1rem #ccc solid',
+            borderRadius: '0.4rem',
+          }}
+        >
+          <CollectionsOutlinedIcon
+            sx={{ cursor: 'pointer', color: '#54D62C' }}
+            onClick={() => setShowBlogFormImage(!showBlogFormImage)}
+          />
+        </Stack>
+        {showBlogFormImage && <BlogFormImage formik={formik} />}{' '}
+        {/* Hiển thị BlogFormImage nếu showBlogFormImage là true */}
         {showProgress && ( // Hiển thị thanh tiến trình và label phần trăm khi showProgress là true
           <Box sx={{ my: '0.5rem' }}>
             <LinearProgress variant="determinate" value={progressValue} />
@@ -177,7 +208,7 @@ const FormDialogEditBlog = () => {
           sx={{ px: '1rem', mx: '0.5rem' }}
           onClick={handleClose}
         >
-          {t("Cancel")}
+          {t('Cancel')}
         </Button>
         <Button
           variant="contained"
@@ -185,7 +216,7 @@ const FormDialogEditBlog = () => {
           sx={{ color: 'white', px: '1rem', mx: '0.5rem' }}
           onClick={formik.handleSubmit}
         >
-          {t("Post")}
+          {t('Post')}
         </Button>
       </DialogActions>
     </Dialog>

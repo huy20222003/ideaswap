@@ -1,5 +1,5 @@
 //react
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 //mui
 import {
   Box,
@@ -14,11 +14,20 @@ import { useTranslation } from 'react-i18next';
 //------------------------------------------------------
 
 const Language = () => {
-  const [language, setLanguage] = useState('en');
-  const {t} = useTranslation(['setting']);
+  const [language, setLanguage] = useState(localStorage.getItem('i18nextLng'));
+  const {t, i18n} = useTranslation(['setting']);
+
+  useEffect(() => {
+    const storedLanguage = localStorage.getItem('i18nextLng');
+    if (storedLanguage) {
+      i18n.changeLanguage(storedLanguage);
+    }
+  }, [i18n]); // The empty array ensures this runs only on mount
 
   const handleChange = (event) => {
     setLanguage(event.target.value);
+    i18n.changeLanguage(event.target.value);
+    localStorage.setItem('i18nextLng', event.target.value);
   };
   return (
     <Box

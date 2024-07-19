@@ -16,24 +16,8 @@ import {
   NOTIFICATION_EN,
   FOOTER_EN,
   PAGE404_EN,
+  CHAT_EN
 } from '../locales/en';
-//de
-import {
-  NAVBAR_DE,
-  BLOGS_DE,
-  ACCOUNT_DE,
-  SETTING_DE,
-  VIDEOS_DE,
-  DASHBOARD_CREATOR_DE,
-  DOCUMENTS_DE,
-  DONATE_DE,
-  COURSES_DE,
-  CONTENT_CREATOR_DE,
-  AUTH_DE,
-  NOTIFICATION_DE,
-  FOOTER_DE,
-  PAGE404_DE,
-} from '../locales/de';
 
 const resources = {
   en: {
@@ -51,23 +35,9 @@ const resources = {
     notification: NOTIFICATION_EN,
     footer: FOOTER_EN,
     page404: PAGE404_EN,
+    chat: CHAT_EN
   },
-  de: {
-    navbar: NAVBAR_DE,
-    blogs: BLOGS_DE,
-    account: ACCOUNT_DE,
-    setting: SETTING_DE,
-    videos: VIDEOS_DE,
-    dashboardCreator: DASHBOARD_CREATOR_DE, // Fixed typo
-    contentCreator: CONTENT_CREATOR_DE,
-    documents: DOCUMENTS_DE,
-    donate: DONATE_DE,
-    courses: COURSES_DE,
-    auth: AUTH_DE,
-    notification: NOTIFICATION_DE,
-    footer: FOOTER_DE,
-    page404: PAGE404_DE,
-  },
+  
 };
 
 i18n.use(initReactI18next).init({
@@ -96,6 +66,6 @@ i18n.use(initReactI18next).init({
   },
 });
 
-i18n.reloadResources(['en', 'de']);
+i18n.reloadResources(['en']);
 
 export default i18n;

@@ -158,12 +158,9 @@ const FormDialogUploadDocument = () => {
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/x-rar-compressed',
-        'application/zip',
-        'application/x-zip-compressed',
-        'multipart/x-zip'
       ];
 
-      const validExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'rar', 'zip'];
+      const validExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'rar'];
 
       const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
@@ -172,7 +169,7 @@ const FormDialogUploadDocument = () => {
         formik.setFieldValue('file', selectedFile);
         setSelectedFileName(selectedFile.name);
       } else {
-        setFileError(t("Invalid file type. Only PDF, Word, Excel, RAR, and ZIP files are allowed."));
+        setFileError(t("Invalid file type. Only PDF, Word, Excel, RAR files are allowed."));
       }
     }
   };

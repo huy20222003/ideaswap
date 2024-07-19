@@ -13,6 +13,20 @@ const DashboardAppPage = () => {
       <Container maxWidth="xl">
         <Box>
           <Slider />
+          <marquee
+            width="100%"
+            height="25px"
+            behavior="scroll"
+            bgcolor="#54D62C"
+            style={{
+              fontSize: '14px',
+              color: 'white',
+              marginTop: '10px',
+              borderRadius: '4px',
+            }}
+          >
+            Nếu bạn không thấy dữ liệu hiển thị. Vui lòng chờ 30s-1 phút rồi refresh lại trang
+          </marquee>
         </Box>
         <Box>
           <PostBlog />

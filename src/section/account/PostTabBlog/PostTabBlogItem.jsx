@@ -74,11 +74,7 @@ const PostTabBlogItem = ({ blog }) => {
   const { t } = useTranslation(['blogs', 'account']);
   const { authState } = useAuth();
   const { setOpenFormDialogEditBlog } = useCommon();
-  const {
-    setOpenFormDialogDeleteBlog,
-    handleGetOneBlog,
-    setOpenFormDialogCommentBlog,
-  } = useBlog();
+  const { setOpenFormDialogDeleteBlog, handleGetOneBlog } = useBlog();
 
   const { handleCreateShare, handleGetAllShares } = useShare();
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -99,7 +95,7 @@ const PostTabBlogItem = ({ blog }) => {
         (heart) => heart?.userID === authState.user?._id && heart.bvID == _id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -157,17 +153,6 @@ const PostTabBlogItem = ({ blog }) => {
     [handleGetOneBlog, setOpenFormDialogDeleteBlog]
   );
 
-  const handleOpenFormCommentBlog = useCallback(
-    async (blogId) => {
-      const response = await handleGetOneBlog(blogId);
-      if (response.success) {
-        setOpenFormDialogCommentBlog(true);
-        handleClose();
-      }
-    },
-    [handleGetOneBlog, setOpenFormDialogCommentBlog]
-  );
-
   const handleClickHeart = async () => {
     if (!authState.isAuthenticated) {
       navigate('/auth/login');
@@ -182,7 +167,7 @@ const PostTabBlogItem = ({ blog }) => {
       } else {
         await handleCreateHeart(data);
         setHeartLength((prevHeartLength) => prevHeartLength + 1);
-        setHeartIcon(<FavoriteIcon sx={{ color: '#54D62C' }} />);
+        setHeartIcon(<FavoriteIcon sx={{ color: 'red' }} />);
       }
     } catch (error) {
       Swal.fire({
@@ -283,16 +268,20 @@ const PostTabBlogItem = ({ blog }) => {
           p: '0.5rem',
         }}
       >
-        <Stack sx={{ flexDirection: 'row' }}>
-          <FavoriteIcon sx={{ color: 'red' }} />
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ mx: '0.2rem' }}
-          >
-            {heartLength}
-          </Typography>
-        </Stack>
+        {heartLength > 0 ? (
+          <Stack sx={{ flexDirection: 'row' }}>
+            <FavoriteIcon sx={{ color: 'red' }} />
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mx: '0.2rem' }}
+            >
+              {heartLength}
+            </Typography>
+          </Stack>
+        ) : (
+          <Box></Box>
+        )}
         <Stack sx={{ flexDirection: 'row' }}>
           <Typography
             variant="body1"
@@ -319,7 +308,7 @@ const PostTabBlogItem = ({ blog }) => {
         </IconButton>
         <IconButton
           aria-label="share"
-          onClick={() => handleOpenFormCommentBlog(blog?._id)}
+          onClick={() => handleNavigateBlogDetail(blog?._id)}
         >
           <CommentIcon />
         </IconButton>

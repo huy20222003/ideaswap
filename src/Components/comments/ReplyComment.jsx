@@ -19,28 +19,28 @@ const ReplyComment = (props) => {
   const {
     authState: { user, isAuthenticated },
   } = useAuth();
-  const { bvID, handleToggleReplyComment, parentCommentID } = props; // Fix typo here
+  const { referenceID, handleToggleReplyComment, parentCommentID } = props; // Fix typo here
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchComments = async () => {
       await handleGetAllComments();
-      formik.setFieldValue('bvID', bvID);
+      formik.setFieldValue('referenceID', referenceID);
     };
     fetchComments();
-  }, [handleGetAllComments, bvID]);
+  }, [handleGetAllComments, referenceID]);
 
   const validationSchema = yup.object({
     content: yup.string().required('Content is required'),
     userID: yup.string(),
-    bvID: yup.string().required('Bv ID is required'),
+    referenceID: yup.string().required('Bv ID is required'),
     parentCommentID: yup.string().required('ParentCommentID is required'),
   });
 
   const formik = useFormik({
     initialValues: {
       content: '',
-      bvID: bvID,
+      referenceID: referenceID,
       userID: user?._id,
       parentCommentID: parentCommentID,
     },
@@ -103,7 +103,7 @@ const ReplyComment = (props) => {
 ReplyComment.propTypes = {
   parentCommentID: PropTypes.string.isRequired, // Add PropTypes for commentId
   handleToggleReplyComment: PropTypes.func,
-  bvID: PropTypes.string.isRequired
+  referenceID: PropTypes.string.isRequired
 };
 
 export default ReplyComment;

@@ -12,6 +12,7 @@ import {
   Menu,
   MenuItem,
   InputAdornment,
+  Pagination,
 } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from '@mui/icons-material/Person';
@@ -40,7 +41,7 @@ const FollowingTab = () => {
   } = useUser();
 
   const { _id } = useParams();
-  const [followArrays, setFollowArrays] = useState([]);
+  const [followingArrays, setFollowingArrays] = useState([]);
 
   useEffect(() => {
     handleGetAllFollows();
@@ -55,7 +56,7 @@ const FollowingTab = () => {
     setSearchValue(event.target.value);
   };
 
-  const followsWithUser = follows
+  const followingsWithUser = follows
     .map((follow) => {
       // Tìm user tương ứng với followerID từ mảng users
       const user = users.find((user) => user?._id === follow?.userID);
@@ -80,20 +81,36 @@ const FollowingTab = () => {
 
   useEffect(() => {
     if (searchValue === '') {
-      setFollowArrays(followsWithUser);
+      setFollowingArrays(followingsWithUser);
     } else {
-      setFollowArrays(
-        followsWithUser.filter((folow) =>
+      setFollowingArrays(
+        followingsWithUser.filter((folow) =>
           folow.user.firstName.toLowerCase().includes(searchValue.toLowerCase())
         ) ||
-          followsWithUser.filter((folow) =>
+          followingsWithUser.filter((folow) =>
             folow.user.lastName
               .toLowerCase()
               .includes(searchValue.toLowerCase())
           )
       );
     }
-  }, [followsWithUser, searchValue]);
+  }, [followingsWithUser, searchValue]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const followingsPerPage = 9; // Set the number of documents per page
+
+  // Calculate the indexes for slicing the documents array
+  const indexOfLastFollowing = currentPage * followingsPerPage;
+  const indexOfFirstFollowing = indexOfLastFollowing - followingsPerPage;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const currentFollowings = followingArrays.slice(
+    indexOfFirstFollowing,
+    indexOfLastFollowing
+  );
 
   return (
     <Box>
@@ -138,9 +155,9 @@ const FollowingTab = () => {
       </Stack>
       <hr />
       <Stack sx={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-        {followArrays.length > 0 ? (
-          followArrays &&
-          followArrays.map((follow) => (
+        {followingArrays.length > 0 ? (
+          followingArrays &&
+          currentFollowings.map((follow) => (
             <Card
               key={follow?._id}
               sx={{ p: '0.5rem', width: '21rem', m: '1rem', cursor: 'pointer' }}
@@ -175,8 +192,8 @@ const FollowingTab = () => {
                       }}
                     >
                       <Typography variant="caption">
-                        {fShortenNumber(followsWithUser.length)}{' '}
-                        {followsWithUser.length > 1
+                        {fShortenNumber(followingsWithUser.length)}{' '}
+                        {followingsWithUser.length > 1
                           ? t('Followers')
                           : t('Follower')}
                       </Typography>
@@ -219,6 +236,14 @@ const FollowingTab = () => {
             <Typography variant="body2">{t('No users found')}</Typography>
           </Box>
         )}
+      </Stack>
+      <Stack sx={{ flexDirection: 'row', justifyContent: 'center' }}>
+        <Pagination
+          count={Math.ceil(followingArrays.length / followingsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          shape="rounded"
+        />
       </Stack>
     </Box>
   );

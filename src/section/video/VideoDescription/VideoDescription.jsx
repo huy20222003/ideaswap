@@ -15,6 +15,7 @@ import {
   useAuth,
   useHeart,
   useShare,
+  useConversation,
 } from '../../../hooks/context';
 //utils
 import { fToNow, fDateTime } from '../../../utils/formatTime';
@@ -47,6 +48,8 @@ const VideoDescription = ({ video }) => {
     userState: { users },
     handleGetAllUsers,
   } = useUser();
+  const { handleAddConversation } = useConversation();
+
   const { t } = useTranslation('videos');
 
   const {
@@ -152,8 +155,10 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: t("Error"),
-        text: t("An error occurred while processing your action. Please try again later."),
+        title: t('Error'),
+        text: t(
+          'An error occurred while processing your action. Please try again later.'
+        ),
         icon: 'error',
       });
     }
@@ -187,7 +192,7 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: t("Server Error!"),
+        title: t('Server Error!'),
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
@@ -206,7 +211,7 @@ const VideoDescription = ({ video }) => {
       }
     } catch (error) {
       Swal.fire({
-        title: t("Server Error!"),
+        title: t('Server Error!'),
         icon: 'error',
         showCancelButton: true,
         confirmButtonText: 'OK',
@@ -255,6 +260,40 @@ const VideoDescription = ({ video }) => {
       : fToNow(videoDate);
   };
 
+  const addConversation = async () => {
+    try {
+      // Kiểm tra xem video và authState có hợp lệ không
+      if (!video || !authState?.user?._id) {
+        console.error('Video or user information is missing.');
+        return;
+      }
+
+      // Tạo danh sách thành viên
+      const members = [
+        {
+          userId: video.userID,
+          nickName: '',
+        },
+        {
+          userId: authState.user._id,
+          nickName: '',
+        },
+      ];
+
+      // Gửi yêu cầu thêm cuộc hội thoại mới
+      const response = await handleAddConversation({ members });
+
+      // Kiểm tra phản hồi và điều hướng nếu thành công
+      if (response.success) {
+        navigate(`/chat/${response.conversation._id}`);
+      } else {
+        console.error('Failed to add conversation:', response.message);
+      }
+    } catch (error) {
+      console.error('An error occurred while adding the conversation:', error);
+    }
+  };
+
   return (
     <Box sx={{ mt: '0.5rem' }}>
       <Typography variant="h6">{video?.title}</Typography>
@@ -288,8 +327,9 @@ const VideoDescription = ({ video }) => {
               {newVideo?.user?.firstName + newVideo?.user?.lastName}
             </Typography>
             <Typography variant="body2">
-              {fShortenNumber(followsFilter?.length)}{''}
-              {followsFilter?.length > 1 ? t("Followers") : t("Follower")}
+              {fShortenNumber(followsFilter?.length)}
+              {''}
+              {followsFilter?.length > 1 ? t('Followers') : t('Follower')}
             </Typography>
           </Stack>
           {followFind ? (
@@ -305,7 +345,7 @@ const VideoDescription = ({ video }) => {
               }}
               onClick={handleDeleteFollowById}
             >
-              {t("Followed")}
+              {t('Followed')}
             </Button>
           ) : (
             <Button
@@ -320,9 +360,16 @@ const VideoDescription = ({ video }) => {
               }}
               onClick={handleAddFollow}
             >
-              {t("Follow")}
+              {t('Follow')}
             </Button>
           )}
+          <Button
+            variant="contained"
+            sx={{ ml: '1rem', color: 'white' }}
+            onClick={addConversation}
+          >
+            Chat
+          </Button>
         </Stack>
         <Stack
           sx={{
@@ -354,7 +401,7 @@ const VideoDescription = ({ video }) => {
             startIcon={<FlagIcon />}
           ></Button>
           <LightTooltip
-            title={t("URL copied to clipboard!")}
+            title={t('URL copied to clipboard!')}
             open={tooltipOpen}
             disableFocusListener
             disableHoverListener
@@ -377,7 +424,8 @@ const VideoDescription = ({ video }) => {
       </Stack>
       <Stack sx={{ flexDirection: 'row', gap: '1rem', my: '1rem' }}>
         <Typography variant="subtitle2">
-          {fShortenNumber(video?.view)} {video?.view > 1 ? t("views") : t("view")}
+          {fShortenNumber(video?.view)}{' '}
+          {video?.view > 1 ? t('views') : t('view')}
         </Typography>
         <Typography variant="subtitle2">
           {formatDate(video?.createdAt)}
@@ -392,7 +440,7 @@ const VideoDescription = ({ video }) => {
             onClick={toggleExpand}
             sx={{ cursor: 'pointer', display: 'inline' }}
           >
-            {expanded ? t("Show less") : '... ' + t("Show more")}
+            {expanded ? t('Show less') : '... ' + t('Show more')}
           </Typography>
         )}
       </Typography>

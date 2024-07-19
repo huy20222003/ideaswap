@@ -1,12 +1,13 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
-import DashboardLayout from '../layouts/dashboard';
+import DashboardLayout from '../layouts/dashboardLayout';
 import AuthLayout from '../layouts/authLayout';
 import VideoLayout from '../layouts/VideoLayout';
 import CreatorLayout from '../layouts/creatorLayout';
 import SettingLayout from '../layouts/settingLayout';
 import AccountLayout from '../layouts/accountLayout';
+import ChatLayout from '../layouts/chatLayout';
 //loader
 import Loader from '../Components/Loader';
 //private router
@@ -25,6 +26,10 @@ const LanguagePage = lazy(() => import('../Pages/LanguagePage'));
 const AccountPage = lazy(() => import('../Pages/AccountPage'));
 const BlogDetailPage = lazy(() => import('../Pages/BlogDetailPage'));
 const DocumentDetailPage = lazy(() => import('../Pages/DocumentDetailPage'));
+const ForgetPasswordPage = lazy(() => import('../Pages/ForgetPasswordPage'));
+const VerifyCodePage = lazy(() => import('../Pages/VerifyCodePage'));
+const ResetPasswordPage = lazy(() => import('../Pages/ResetPasswordPage'));
+const ChatPage = lazy(() => import('../Pages/ChatPage'));
 //auth page
 const LoginPage = lazy(() => import('../Pages/AuthPage/LoginPage'));
 const RegiterPage = lazy(() => import('../Pages/AuthPage/RegisterPage'));
@@ -60,6 +65,9 @@ export default function Router() {
         { path: 'register', element: <RegiterPage /> },
       ],
     },
+    { path: '/forget-password', element: <ForgetPasswordPage /> },
+    { path: '/verify-code', element: <VerifyCodePage /> },
+    { path: '/reset-password', element: <ResetPasswordPage /> },
     {
       path: '/course',
       element: <VideoLayout />,
@@ -82,6 +90,21 @@ export default function Router() {
           path: 'content',
           element: (
             <PrivateRouter element={<ContentPage />} redirectTo="/auth/login" />
+          ),
+        },
+      ],
+    },
+    {
+      path: '/chat',
+      element: <ChatLayout />,
+      children: [
+        {
+          path: ':_id',
+          element: (
+            <PrivateRouter
+              element={<ChatPage />}
+              redirectTo="/auth/login"
+            />
           ),
         },
       ],

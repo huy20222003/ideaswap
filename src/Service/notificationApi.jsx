@@ -1,8 +1,8 @@
 import axiosConfig from './axiosConfig';
 
 const notificationApi = {
-  getAll: () => {
-    const url = '/notification';
+  getByUserId: (userId) => {
+    const url = `/notification/${userId}`;
     return axiosConfig.get(url);
   },
   update: (data) => {

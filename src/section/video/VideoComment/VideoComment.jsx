@@ -10,6 +10,7 @@ import {
   TextField,
   Button,
 } from '@mui/material';
+import CommentIcon from '@mui/icons-material/Comment';
 //component
 import CommentList from '../../../Components/comments/CommentList';
 //context
@@ -33,7 +34,7 @@ const VideoComment = () => {
     handleGetAllComments,
     handleCreateComment,
   } = useComment();
-  const {t} = useTranslation('videos');
+  const { t } = useTranslation('videos');
   const {
     authState: { user, isAuthenticated },
   } = useAuth();
@@ -58,23 +59,25 @@ const VideoComment = () => {
     const commentsForVideo = comments.filter(
       (comment) => comment?.bvID === videoId
     );
-  
+
     // Lấy ra những comment có parentCommentID = null
     const topLevelComments = commentsForVideo.filter(
       (comment) => comment.parentCommentID === null
     );
-  
+
     // Sắp xếp các comment có parentCommentID = null theo trường createdAt
-    topLevelComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
+    topLevelComments.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
     // Lấy ra những comment có parentCommentID khác null
     const childComments = commentsForVideo.filter(
       (comment) => comment.parentCommentID !== null
     );
-  
+
     // Kết hợp những comment có parentCommentID = null và các comment con
     const sortedComments = [...topLevelComments, ...childComments];
-  
+
     return sortedComments;
   }, [comments, videoId]);
 
@@ -105,7 +108,7 @@ const VideoComment = () => {
         }
       } catch (error) {
         Swal.fire({
-          title: t("Server Error"),
+          title: t('Server Error'),
           icon: 'error',
           showCancelButton: true,
           confirmButtonText: 'OK',
@@ -124,7 +127,7 @@ const VideoComment = () => {
         <Avatar alt={user?.firstName + user?.lastName} src={user?.avatar} />
         <TextField
           fullWidth
-          label={t("Comment")}
+          label={t('Comment')}
           variant="outlined"
           size="medium"
           id="content"
@@ -142,11 +145,30 @@ const VideoComment = () => {
           sx={{ color: '#fff', my: '1rem' }}
           onClick={formik.handleSubmit}
         >
-          {t("Comment")}
+          {t('Comment')}
         </Button>
       </Stack>
       <Box sx={{ mt: '1rem', mb: '2rem' }}>
-        <CommentList comments={commentsFilter} />
+        {commentsFilter.length > 0 ? (
+          <Box>
+            <CommentList comments={commentsFilter} />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              width: '100$',
+              height: '5rem',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Stack sx={{ gap: '1rem', alignItems: 'center', mt: '2rem' }}>
+              <CommentIcon sx={{ fontSize: '2rem' }} />
+              <Typography>{t('No comments yet')}</Typography>
+            </Stack>
+          </Box>
+        )}
       </Box>
     </Box>
   );

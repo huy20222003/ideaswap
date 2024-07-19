@@ -32,7 +32,6 @@ import Swal from 'sweetalert2';
 import { fDateTime } from '../../../utils/formatTime';
 import {
   useAuth,
-  useCommon,
   useHeart,
   useBlog,
   useRole,
@@ -69,11 +68,10 @@ const BlogItem = ({ blog }) => {
 
   const [expanded, setExpanded] = useState(false);
   const { authState } = useAuth();
-  const { setOpenFormDialogEditBlog } = useCommon();
   const {
     setOpenFormDialogDeleteBlog,
-    setOpenFormDialogCommentBlog,
     handleGetOneBlog,
+    setOpenFormDialogEditBlog
   } = useBlog();
   const navigate = useNavigate();
   const [heartIcon, setHeartIcon] = useState(<FavoriteIcon />);
@@ -103,16 +101,13 @@ const BlogItem = ({ blog }) => {
   };
 
   useEffect(() => {
-    handleGetAllShares();
-  }, [handleGetAllShares]);
-
-  useEffect(() => {
     const updateHeartIcon = () => {
       const heartFind = heartArrays.find(
-        (heart) => heart?.userID === authState.user?._id && heart.bvID === _id
+        (heart) =>
+          heart?.userID === authState.user?._id && heart.referenceID === _id
       );
       setHeartIcon(
-        heartFind ? <FavoriteIcon sx={{ color: '#54D62C' }} /> : <FavoriteIcon />
+        heartFind ? <FavoriteIcon sx={{ color: 'red' }} /> : <FavoriteIcon />
       );
     };
     updateHeartIcon();
@@ -125,7 +120,7 @@ const BlogItem = ({ blog }) => {
     }
     await handleCreateShare({
       userID: authState?.user?._id,
-      bvID: blog?._id,
+      referenceID: blog?._id,
     });
     handleGetAllShares();
   };
@@ -152,27 +147,20 @@ const BlogItem = ({ blog }) => {
     [handleGetOneBlog, setOpenFormDialogDeleteBlog]
   );
 
-  const handleNavigate = (userID) => {
+  const handleNavigateToUserAccount = (userID) => {
     navigate(`/account/${userID}`);
   };
 
-  const handleOpenFormCommentBlog = useCallback(
-    async (blogId) => {
-      const response = await handleGetOneBlog(blogId);
-      if (response.success) {
-        setOpenFormDialogCommentBlog(true);
-        handleClose();
-      }
-    },
-    [handleGetOneBlog, setOpenFormDialogCommentBlog]
-  );
+  const handleNavigateToBlogDetail = (blogID) => {
+    navigate(`/dashboard/blog/${blogID}`);
+  };
 
   const handleClickHeart = async () => {
     if (!authState.isAuthenticated) {
       navigate('/auth/login');
       return;
     }
-    const data = { userID: authState.user._id, bvID: _id };
+    const data = { userID: authState.user._id, referenceID: _id };
     try {
       if (heartIcon.props.sx) {
         await handleDeleteHeart(data);
@@ -194,10 +182,6 @@ const BlogItem = ({ blog }) => {
         icon: 'error',
       });
     }
-  };
-
-  const handleNavigateBlogDetail = (blogId) => {
-    navigate(`/dashboard/blog/${blogId}`);
   };
 
   const handleCopyToClipboard = () => {
@@ -226,7 +210,7 @@ const BlogItem = ({ blog }) => {
         avatar={
           <Avatar
             src={user?.avatar}
-            onClick={() => handleNavigate(user?._id)}
+            onClick={() => handleNavigateToUserAccount(user?._id)}
             style={{ cursor: 'pointer' }}
           />
         }
@@ -239,7 +223,7 @@ const BlogItem = ({ blog }) => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Typography
               variant="subtitle1"
-              onClick={() => handleNavigate(user?._id)}
+              onClick={() => handleNavigateToUserAccount(user?._id)}
               style={{ cursor: 'pointer', marginRight: '0.25rem' }}
             >
               {`${user?.firstName} ${user?.lastName}`}
@@ -309,7 +293,7 @@ const BlogItem = ({ blog }) => {
         }}
         image={url}
         alt={`${user?.firstName} ${user?.lastName}`}
-        onClick={() => handleNavigateBlogDetail(_id)}
+        onClick={() => handleNavigateToBlogDetail(_id)}
       />
       <Box
         sx={{
@@ -320,16 +304,20 @@ const BlogItem = ({ blog }) => {
           p: '0.5rem',
         }}
       >
-        <Stack sx={{ flexDirection: 'row' }}>
-          <FavoriteIcon sx={{ color: '#54D62C' }} />
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ mx: '0.2rem' }}
-          >
-            {heartLength}
-          </Typography>
-        </Stack>
+        {heartLength > 0 ? (
+          <Stack sx={{ flexDirection: 'row' }}>
+            <FavoriteIcon sx={{ color: 'red' }} />
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ mx: '0.2rem' }}
+            >
+              {heartLength}
+            </Typography>
+          </Stack>
+        ) : (
+          <Box></Box>
+        )}
         <Stack sx={{ flexDirection: 'row' }}>
           <Typography
             variant="body1"
@@ -356,7 +344,7 @@ const BlogItem = ({ blog }) => {
         </IconButton>
         <IconButton
           aria-label="share"
-          onClick={() => handleOpenFormCommentBlog(blog?._id)}
+          onClick={() => handleNavigateToBlogDetail(blog?._id)}
         >
           <CommentIcon />
         </IconButton>

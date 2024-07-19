@@ -12,6 +12,7 @@ import {
   CardContent,
   CardMedia,
   InputAdornment,
+  Pagination,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SearchIcon from '@mui/icons-material/Search';
@@ -28,7 +29,7 @@ const VideoTab = () => {
     videoState: { videos },
     handleGetAllVideo,
   } = useVideo();
-  const {t} = useTranslation(['account', 'videos']);
+  const { t } = useTranslation(['account', 'videos']);
 
   const [searchValue, setSearchValue] = useState('');
   const [videoArrays, setVideoArrays] = useState([]);
@@ -83,6 +84,19 @@ const VideoTab = () => {
     }
   }, [videos, censorships, searchValue, _id]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const videosPerPage = 9; // Set the number of documents per page
+
+  // Calculate the indexes for slicing the documents array
+  const indexOfLastVideo = currentPage * videosPerPage;
+  const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const currentVideos = videoArrays.slice(indexOfFirstVideo, indexOfLastVideo);
+
   return (
     <Box>
       <Stack
@@ -120,14 +134,14 @@ const VideoTab = () => {
                 <SearchIcon />
               </InputAdornment>
             ),
-            placeholder: t("Search for video")
+            placeholder: t('Search for video'),
           }}
         />
       </Stack>
       <hr />
       <Stack sx={{ flexDirection: 'row', flexWrap: 'wrap' }}>
         {videoArrays.length > 0 ? (
-          videoArrays.map((video) => {
+          currentVideos.map((video) => {
             const truncatedTitle =
               video?.title && video?.title.length > 20
                 ? `${video?.title.slice(0, 20)}...`
@@ -162,11 +176,16 @@ const VideoTab = () => {
                     {truncatedTitle}
                   </Typography>
                   <Box
-                    sx={{ display: 'flex', my: '0.2rem', alignItems: 'center' }}
+                    sx={{
+                      display: 'flex',
+                      my: '0.2rem',
+                      alignItems: 'center',
+                    }}
                   >
                     <VisibilityIcon sx={{ width: '1rem', mr: '0.5rem' }} />
                     <Typography variant="body2" color="text.secondary">
-                      {fShortenNumber(video?.view)}{' '}{video?.view > 1 ? t("views") : t("view")}
+                      {fShortenNumber(video?.view)}{' '}
+                      {video?.view > 1 ? t('views') : t('view')}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -183,9 +202,17 @@ const VideoTab = () => {
               alignItems: 'center',
             }}
           >
-            <Typography variant="body2">{t("No videos found")}</Typography>
+            <Typography variant="body2">{t('No videos found')}</Typography>
           </Box>
         )}
+      </Stack>
+      <Stack sx={{ flexDirection: 'row', justifyContent: 'center', mt: '2rem' }}>
+        <Pagination
+          count={Math.ceil(videoArrays.length / videosPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          shape="rounded"
+        />
       </Stack>
     </Box>
   );

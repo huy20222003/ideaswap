@@ -26,14 +26,18 @@ import VideoTab from './VideoTab';
 import { useUser, useAuth, useFollow } from '../../hooks/context';
 //i18n
 import { useTranslation } from 'react-i18next';
+//Swal
+import Swal from 'sweetalert2';
 //---------------------------------------------------
 
 const AccountActionTabs = () => {
   const [value, setValue] = useState('1');
-  const {t} = useTranslation('account');
+  const { t } = useTranslation('account');
   const {
     followState: { follows },
     handleGetAllFollows,
+    handleDeleteFollow,
+    handleCreateFollow,
   } = useFollow();
 
   const handleChange = (event, newValue) => {
@@ -44,6 +48,53 @@ const AccountActionTabs = () => {
 
   const { _id } = useParams();
   const navigate = useNavigate();
+
+  const followFind = follows.find(
+    (follow) =>
+      follow?.userID === _id && follow?.followerID === authState?.user?._id
+  );
+
+  const handleDeleteFollowById = async () => {
+    try {
+      const response = await handleDeleteFollow({
+        followerID: authState?.user?._id,
+        userID: _id,
+      });
+      if (response.success) {
+        handleGetAllFollows();
+      }
+    } catch (error) {
+      Swal.fire({
+        title: t('Server Error!'),
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+      });
+    }
+  };
+
+  const handleAddFollow = async () => {
+    if (!authState.isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    try {
+      const response = await handleCreateFollow({
+        followerID: authState?.user?._id,
+        userID: _id,
+      });
+      if (response.success) {
+        handleGetAllFollows();
+      }
+    } catch (error) {
+      Swal.fire({
+        title: t('Server Error!'),
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+      });
+    }
+  };
 
   const {
     userState: { user },
@@ -71,7 +122,7 @@ const AccountActionTabs = () => {
           sx={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            bgcolor: 'primary.main',
+            bgcolor: '#34b50d',
           }}
         >
           <Stack sx={{ gap: '2rem' }}>
@@ -104,8 +155,35 @@ const AccountActionTabs = () => {
                 </Stack>
                 <Typography variant="subtitle2" sx={{ color: '#fff' }}>
                   {fShortenNumber(followFilters.length)}{' '}
-                  {followFilters.length > 1 ? t("Followers") : t("Follower")}
+                  {followFilters.length > 1 ? t('Followers') : t('Follower')}
                 </Typography>
+                {followFind ? (
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      px: '1.5rem', // Smaller horizontal padding
+                      color: 'white',
+                      fontSize: '0.8rem', // Smaller font size
+                      mt: '1rem'
+                    }}
+                    onClick={handleDeleteFollowById}
+                  >
+                    {t('Followed')}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      px: '1.5rem', // Smaller horizontal padding
+                      color: 'white',
+                      fontSize: '0.8rem', // Smaller font size
+                      mt: '1rem'
+                    }}
+                    onClick={handleAddFollow}
+                  >
+                    {t('Follow')}
+                  </Button>
+                )}
               </Stack>
             </Stack>
           </Stack>
@@ -123,7 +201,7 @@ const AccountActionTabs = () => {
                 sx={{ color: '#fff', mt: '2rem', mr: '2rem' }}
                 onClick={handleNavigate}
               >
-                {t("Update Profile")}
+                {t('Update Profile')}
               </Button>
             </Stack>
           )}
@@ -135,9 +213,9 @@ const AccountActionTabs = () => {
                 onChange={handleChange}
                 aria-label="lab API tabs example"
               >
-                <Tab label={t("Posts")} value="1" />
-                <Tab label={t("Following")} value="2" />
-                <Tab label={t("Video")} value="3" />
+                <Tab label={t('Posts')} value="1" />
+                <Tab label={t('Following')} value="2" />
+                <Tab label={t('Video')} value="3" />
               </TabList>
             </Box>
             <TabPanel value="1">

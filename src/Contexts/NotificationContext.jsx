@@ -5,7 +5,7 @@ import {
   reducer,
 } from '../Reducers/NotificationReducer/reducer';
 import {
-  getAll,
+  getByUserId,
   updateNotification,
 } from '../Reducers/NotificationReducer/action';
 //api
@@ -27,11 +27,11 @@ export const NotificationProvider = (prop) => {
     }
   }, []);
 
-  const handleGetAllNotifications = useCallback(async () => {
+  const handleGetAllNotifications = useCallback(async (userId) => {
     try {
-      const response = await notificationApi.getAll();
+      const response = await notificationApi.getByUserId(userId);
       if (response.data.success) {
-        dispatch(getAll(response.data.notifications));
+        dispatch(getByUserId(response.data.notifications));
       }
     } catch (error) {
       return handleError(error);

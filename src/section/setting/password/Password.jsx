@@ -1,5 +1,15 @@
+import { useState } from 'react';
 //mui
-import { Box, TextField, Button, Stack } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Stack,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 //yup
 import * as yup from 'yup';
 //formik
@@ -10,16 +20,20 @@ import Swal from 'sweetalert2';
 import { useCode, useAuth } from '../../../hooks/context';
 //component
 import FormDialogVerifyCode from '../../../Components/FormDialog/Code/FormDialogVerifyCode';
+import Iconify from '../../../Components/iconify/Iconify';
 //i18n
 import { useTranslation } from 'react-i18next';
 //--------------------------------------------------
 
 const Password = () => {
   const { handleSendCode, setOpenFormDialogVerifyCode } = useCode();
-  const {t} = useTranslation('setting');
+  const { t } = useTranslation('setting');
   const {
     authState: { user },
   } = useAuth();
+
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -29,30 +43,35 @@ const Password = () => {
     validationSchema: yup.object({
       newPassword: yup
         .string()
-        .required(t("Password is required"))
+        .required(t('Password is required'))
         .min(7)
         .matches(
           /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=]).{7,}$/,
-          t("Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters")
+          t(
+            'Minimum password consists of 7 characters, with uppercase letters, lowercase letters, numbers and special characters'
+          )
         ),
       confirmPassword: yup
         .string()
-        .required(t("ConfirmPassword is required"))
-        .oneOf([yup.ref('newPassword')], t("Password do not match")),
+        .required(t('ConfirmPassword is required'))
+        .oneOf([yup.ref('newPassword')], t('Password do not match')),
     }),
     onSubmit: async (values) => {
       if (values.newPassword !== values.confirmPassword) {
-        Swal.fire(t("Error"), t("Password do not match"), 'error');
+        Swal.fire(t('Error'), t('Password do not match'), 'error');
       } else {
+        setLoading(true);
         try {
           const response = await handleSendCode({ email: user?.email });
           if (response.success) {
             setOpenFormDialogVerifyCode(true);
           } else {
-            Swal.fire(t("Error"), t("Email has not been sent!"), 'error');
+            Swal.fire(t('Error'), t('Email has not been sent!'), 'error');
           }
         } catch (error) {
-          Swal.fire(t("Error"), t("Server Error"), 'error');
+          Swal.fire(t('Error'), t('Server Error'), 'error');
+        } finally {
+          setLoading(false);
         }
       }
     },
@@ -62,10 +81,9 @@ const Password = () => {
     <Box>
       <Box sx={{ mb: '1.5rem' }}>
         <TextField
-          label={t("New Password")}
+          label={t('New Password')}
           name="newPassword"
           id="newPassword"
-          type="password"
           required
           variant="outlined"
           fullWidth
@@ -75,12 +93,31 @@ const Password = () => {
           error={!!(formik.touched.newPassword && formik.errors.newPassword)}
           helperText={formik.touched.newPassword && formik.errors.newPassword}
           autoComplete="password"
+          type={showPassword ? 'text' : 'password'}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockOutlinedIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  <Iconify
+                    icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
+                  />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Box>
       <Box sx={{ mb: '1.5rem' }}>
         <TextField
-          type="password"
-          label={t("Confirm Password")}
+          label={t('Confirm Password')}
           name="confirmPassword"
           id="confirmPassword"
           required
@@ -96,6 +133,26 @@ const Password = () => {
             formik.touched.confirmPassword && formik.errors.confirmPassword
           }
           autoComplete="password"
+          type={showPassword ? 'text' : 'password'}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockOutlinedIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  <Iconify
+                    icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
+                  />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
       </Box>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -105,8 +162,13 @@ const Password = () => {
             size="medium"
             sx={{ px: '1.5rem', color: '#fff' }}
             onClick={formik.handleSubmit}
+            disabled={loading}
           >
-            {t("Change")}
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: 'white' }} />
+            ) : (
+              t('Change')
+            )}
           </Button>
         </Box>
       </Stack>
