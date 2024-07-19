@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from '../hooks/context';
 
-const SOCKET_ENDPOINT = 'http://localhost:3000'; // Socket.IO server URL
+const SOCKET_ENDPOINT = 'https://ideaswap-server.onrender.com'; // Socket.IO server URL
 
 export const SocketContext = createContext();
 
